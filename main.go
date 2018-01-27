@@ -18,7 +18,7 @@ var (
 )
 
 func main() {
-	var port = flag.Int("port", 8080, "http port")
+	var port = flag.Int("port", 5000, "http port")
 	var dataDir = flag.String("data", "data/", "path to user data directory")
 	var siteDir = flag.String("site", "site/", "path to static site directory")
 	var debug = flag.Bool("debug", false, "enable debug logging")
