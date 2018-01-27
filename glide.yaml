@@ -1,2 +1,4 @@
 package: github.com/ngwese/norns-web
-import: []
+import:
+- package: github.com/kataras/iris
+  version: ^10.0.2
