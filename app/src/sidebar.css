@@ -1,0 +1,12 @@
+.sidebar-container {
+    position: relative;
+    /* height: 100%; */
+    width: 160px;
+    position: absolute;
+    top: 20px;
+    left: 60px;
+    /* bottom: 0; */
+    /* z-index: 1; */
+    overflow-x: hidden;
+    background: burlywood;
+}

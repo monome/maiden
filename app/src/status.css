@@ -1,0 +1,10 @@
+.status-container {
+    padding-left: .3em;
+    background-color: rgb(173, 136, 136);
+    color: white;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    font-style: italic;
+}

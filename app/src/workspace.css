@@ -1,0 +1,19 @@
+.workspace {
+    display: flex;
+}
+
+.activity-bar {
+    flex: 0 0 auto;
+    /* background-color: blue; */
+    background-color: rgb(230, 230, 230);
+}
+
+.side-bar {
+    flex: 0 0 auto;
+    background-color: red;
+}
+
+.editor {
+    flex-grow: 1;
+    background-color: green;
+}

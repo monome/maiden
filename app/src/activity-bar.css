@@ -1,0 +1,20 @@
+.activity-bar-container {
+    /* height: 100%; */
+    /* width:60px; */
+    /* position: absolute; */
+    /* top: 20px; */
+    /* left: 0; */
+    /* bottom: 0; */
+    /* z-index: 1; */
+    /* overflow-x: hidden; */
+    background: greenyellow;
+}
+
+.activity-bar-switcher {
+    -webkit-padding-start: 0px;  /* why is browser setting this to 40px? */
+    list-style-type: none;
+}
+
+.activity-bar {
+    margin: 0px;
+}

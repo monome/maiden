@@ -1,0 +1,15 @@
+.explorer-tree {
+    font: inherit;
+}
+
+.hidden {
+    display: none;
+}
+
+.dirty {
+    color: red;
+}
+
+.explorer-list-item {
+    display: flex;
+}

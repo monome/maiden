@@ -1,0 +1,20 @@
+.edit-view {
+    display: flex;
+}
+
+/* .side-bar {
+    flex: 0 0 auto;
+    background-color: red;
+}
+*/
+
+.editor-container {
+    flex-grow: 1 1 auto;
+    background-color: green;
+}
+
+.explorer-container {
+    flex: 0 0 auto;
+    background-color: rgb(175, 175, 175);
+    height: 20px;
+}
