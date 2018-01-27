@@ -1,3 +1,9 @@
+# glide project dependencies
 vendor/
 
+# executables
 norns-web
+
+# misc stuff
+.DS_Store
+*.pdf
