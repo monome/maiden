@@ -37,3 +37,7 @@ as a user/tinkerer/musician i would like to:
 
 - plug in a usb key drive and use/edit scripts and samples on that usb drive
 
+
+## cross building
+
+https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
