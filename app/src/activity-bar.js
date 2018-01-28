@@ -13,7 +13,7 @@ class ActivityBar extends Component {
                     key={name}
                     action={() => this.props.buttonAction(name)}
                     icon={icon}
-                    color="black"   // FIXME: this should be styled
+                    color="#979797"   // FIXME: this should be styled
                     size="24"       // FIXME: this should be configurable?
                 />
             );

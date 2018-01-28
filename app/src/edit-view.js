@@ -25,7 +25,7 @@ const EditTools = (props) => {
                 key={tool.name}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
-                color="black"       // FIXME:
+                color="#979797"       // FIXME:
                 size="24"           // FIXME:
             />
         );

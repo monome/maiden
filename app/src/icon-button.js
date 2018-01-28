@@ -10,7 +10,7 @@ class IconButton extends Component {
     render() {
         return (
             <button className="icon-button" onClick={() => this.props.action()}>
-                <Icon icon={this.props.icon} size={this.props.size} />
+                <Icon icon={this.props.icon} size={this.props.size} color={this.props.color}/>
             </button>
         );
     }
