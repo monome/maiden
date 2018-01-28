@@ -5,6 +5,10 @@ import {
     activitySelect,
 } from './model/activity-actions';
 
+import {
+    sidebarToggle,
+} from './model/sidebar-actions';
+
 const mapStateToProps = (state) => {
     const selected = state.activity.selected;
     return { selected };
@@ -14,6 +18,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         activitySelect: (name) => {
             dispatch(activitySelect(name))
+        },
+        sidebarToggle: () => {
+            dispatch(sidebarToggle())
         },
     }
 }

@@ -7,7 +7,6 @@ class Workspace extends Component {
         super(props);
         this.state = {
             activityBarWidth: 50,
-            selectedView: undefined,
         };
     }
 
@@ -25,20 +24,28 @@ class Workspace extends Component {
         };
     }
 
+    handleActivitySelection = (name) => {
+        if (name === this.props.selected) {
+            this.props.sidebarToggle()
+        }
+        else {
+            this.props.activitySelect(name)
+        }
+    }
+
     render() {
-        // console.log('workspace; => ', this.props)
         const selectedActivity = this.props.activities.find(a => {
             return this.props.selected === a.getSelector()
         });
         const ActivityView = selectedActivity.getView();
-        
+
         return (
             <div className="workspace">
                 <ActivityBar
                     style={this.activityBarSize()}
                     selected={this.props.selected}
-                    activities={this.props.activities} 
-                    buttonAction={this.props.activitySelect} />
+                    activities={this.props.activities}
+                    buttonAction={this.handleActivitySelection} />
                 <ActivityView
                     {...this.activityViewSize()}
                     api={this.props.api}
