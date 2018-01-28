@@ -31,8 +31,9 @@ const EditTools = (props) => {
         );
     });
 
+    const style = { width: props.width, height: props.height };
     return (
-        <ToolBar style={props.style}>
+        <ToolBar style={style}>
             {items}
         </ToolBar>
     );
