@@ -6,12 +6,15 @@ import {
     scriptRead,
     scriptChange,
     scriptSelect,
+
+    toolInvoke,
 } from './model/script-actions';
 
 import {
     sidebarToggle,
     sidebarSize,
 } from './model/sidebar-actions';
+
 
 const getScriptListing = ({buffers, activeBuffer, listing}) => {
     // enrich script listing w/ modification state, etc.
@@ -62,6 +65,11 @@ const mapDispatchToProps = (dispatch) => {
         },
         sidebarSize: (width) => {
             dispatch(sidebarSize(width))
+        },
+
+        // tools
+        toolInvoke: (name) => {
+            dispatch(toolInvoke(name))
         },
     }
 }

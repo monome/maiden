@@ -4,6 +4,8 @@ import {
     SCRIPT_READ_SUCCESS,
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
+    
+    TOOL_INVOKE,
 } from './script-actions';
 
 /*
@@ -59,6 +61,10 @@ const scripts = (state = initialScriptsState, action) => {
             modified: modified,
         });
         return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
+
+    case TOOL_INVOKE:
+        console.log("tool invoke => ", action.name);
+        return state;
 
     default:
         return state

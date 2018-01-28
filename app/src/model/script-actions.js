@@ -14,6 +14,8 @@ export const SCRIPT_SAVE_FAILURE = 'SCRIPT_SAVE_FAILURE'
 
 export const SCRIPT_SELECT = 'SCRIPT_SELECT'
 
+export const TOOL_INVOKE = 'TOOL_INVOKE'
+
 //
 // sync actions
 //
@@ -50,6 +52,10 @@ export const scriptChange = (resource, value) => {
 
 export const scriptSelect = (resource) => {
     return { type: SCRIPT_SELECT, resource }
+}
+
+export const toolInvoke = (name) => {
+    return { type: TOOL_INVOKE, name }
 }
 
 
