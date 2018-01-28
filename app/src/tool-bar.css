@@ -1,0 +1,11 @@
+.tool-bar {
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-bar-container {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}

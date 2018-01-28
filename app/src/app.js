@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import Workspace from './workspace';
+import BoundWorkspace from './bound-workspace';
+import { EditActivity, ReplActivity } from './activities';
 import './app.css';
 
 const activities = [
-  // new EditActivity(api),
+  new EditActivity(),
+  new ReplActivity(),
 ];
 
 class App extends Component {
@@ -27,7 +29,7 @@ class App extends Component {
 
   render() {
     return (
-      <Workspace
+      <BoundWorkspace
         activities={activities}
         api={this.props.api}
         {...this.state}

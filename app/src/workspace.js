@@ -1,7 +1,5 @@
-
 import React, { Component } from 'react';
 import ActivityBar from './activity-bar';
-import ScriptEditor from './script-editor';
 import './workspace.css';
 
 class Workspace extends Component {
@@ -9,39 +7,8 @@ class Workspace extends Component {
         super(props);
         this.state = {
             activityBarWidth: 50,
-            selectedActivity: this.props.activities[0],
             selectedView: undefined,
         };
-        this.handleActivityClicked = this.handleActivityClicked.bind(this);
-        this.isActive = this.isActive.bind(this);
-    }
-
-    componentWillMount() {
-
-    }
-
-    handleActivityClicked(key) {
-        // if this is a new activity, switch active
-        if (this.isActive(key) && this.state.selectedView) {
-            console.log(this.state.selectedView);
-            // this.state.selectedView.doToggle();
-        }
-        else {
-            const activity = this.props.activities.find((a) => {
-                return a.key === key;
-            });
-            this.setState({
-                selectedActivity: activity,
-                selectedView: activity.getView({
-                    ...this.activityViewSize(),
-                })
-            });
-        }
-    }
-
-    isActive(key) {
-        const selected = this.state.selectedActivity;
-        return (selected && selected.key === key);
     }
 
     activityBarSize() {
@@ -59,20 +26,20 @@ class Workspace extends Component {
     }
 
     render() {
-        // const {height, width} = this.activityViewSize();
-        // const view = this.state.selectedActivity.getView({
-        //     className: "activity-view",
-        //     ...this.activityViewSize(),
-        // });
+        // console.log('workspace; => ', this.props)
+        const selectedActivity = this.props.activities.find(a => {
+            return this.props.selected === a.getSelector()
+        });
+        const ActivityView = selectedActivity.getView();
+        
         return (
             <div className="workspace">
                 <ActivityBar
                     style={this.activityBarSize()}
-                    isActive={this.isActive}
-                    onActivityClicked={this.handleActivityClicked}
-                    activities={this.props.activities} />
-                {/* {this.state.selectedView} */}
-                <ScriptEditor
+                    selected={this.props.selected}
+                    activities={this.props.activities} 
+                    buttonAction={this.props.activitySelect} />
+                <ActivityView
                     {...this.activityViewSize()}
                     api={this.props.api}
                 />

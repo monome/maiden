@@ -1,19 +1,28 @@
 import React, { Component } from 'react';
-import ActivityItem from './activity-item';
+import ToolBar from './tool-bar';
+import IconButton from './icon-button';
 import './activity-bar.css'
 
 class ActivityBar extends Component {
     render() {
-        const items = this.props.activities.map((activity) =>
-            <ActivityItem
-                activity={activity}
-                isActive={this.props.isActive}
-                onActivityClicked={this.props.onActivityClicked} />
-        );
+        const items = this.props.activities.map(activity => {
+            const name = activity.getSelector();
+            const icon = activity.getIcon();
+            return (
+                <IconButton
+                    key={name}
+                    action={() => this.props.buttonAction(name)}
+                    icon={icon}
+                    color="black"   // FIXME: this should be styled
+                    size="24"       // FIXME: this should be configurable?
+                />
+            );
+        });
+
         return (
-            <ul className="activity-bar">
+            <ToolBar style={this.props.style}>
                 {items}
-            </ul>
+            </ToolBar>
         );
     }
 }

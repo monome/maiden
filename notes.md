@@ -41,3 +41,9 @@ as a user/tinkerer/musician i would like to:
 ## cross building
 
 https://www.digitalocean.com/community/tutorials/how-to-build-go-executables-for-multiple-platforms-on-ubuntu-16-04
+
+## misc resources
+
+* https://medium.com/@david.gilbertson/icons-as-react-components-de3e33cb8792
+* https://icomoon.io/app/#/select
+* https://formidable.com/open-source/radium/
