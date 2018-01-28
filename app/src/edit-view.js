@@ -24,14 +24,6 @@ class EditView extends Component {
         }
     }
 
-    toggleSidebar = () => {
-        // TODO: update for redux
-        this.setState((prevState, props) => ({
-            sidebarHidden: !prevState.sidebarHidden
-        }));
-        console.log('toggleSidebar() [hidden] -> ', this.state.sidebarHidden);
-    }
-
     sidebarSize() {
         return {
             width: this.props.sidebar.width,
