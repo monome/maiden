@@ -1,0 +1,12 @@
+/* https://stackoverflow.com/questions/26210839/hide-scrollbars-if-not-necessary-ace-editor */
+body .ace_scrollbar {
+    -webkit-transition: opacity .3s ease-in-out;
+       -moz-transition: opacity .3s ease-in-out;
+        -ms-transition: opacity .3s ease-in-out;
+         -o-transition: opacity .3s ease-in-out;
+            transition: opacity .3s ease-in-out;
+    opacity: 0;
+}
+body .ace_editor .ace_scrollbar:hover {
+    opacity: 1;
+}

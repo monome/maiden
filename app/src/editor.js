@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
 
+import './editor.css';
+
 import 'brace/mode/lua';
 import 'brace/theme/dawn';
 
