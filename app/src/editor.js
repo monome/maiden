@@ -29,10 +29,24 @@ class Editor extends Component {
         return this.editor.getValue();
     }
 
+    bufferWillSave = (bufferName) => {
+        if (bufferName !== this.props.bufferName) {
+            console.log('buffer save mismatch ', bufferName, ' vs ', this.props.bufferName)
+        }
+        this.props.scriptChange(this.props.bufferName, this.getValue())
+    }
+
+    bufferWasSaved = (bufferName) => {
+        if (this.props.bufferName === bufferName) {
+            // MAINT: the edit-view takes care of the modified flag on the buffer state and should call this method to in order to enable dirty 
+            this.modified = false;
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         if (nextProps.bufferName !== this.props.bufferName && this.modified) {
             // active buffer is being changed, sync current value to parent view before the editor is re-rendered
-            this.props.scriptChange(this.props.bufferName, this.editor.getValue())
+            this.props.scriptChange(this.props.bufferName, this.getValue())
 
             // reset dirty flag so that any change will mark (or remark) the buffer as dirty
             this.modified = false;

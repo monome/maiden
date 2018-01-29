@@ -2,6 +2,7 @@ import { Map, List, fromJS } from 'immutable';
 import {
     SCRIPT_LIST_SUCCESS,
     SCRIPT_READ_SUCCESS,
+    SCRIPT_SAVE_SUCCESS,
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
     
@@ -50,11 +51,21 @@ const scripts = (state = initialScriptsState, action) => {
             })),
         };
 
+    case SCRIPT_SAVE_SUCCESS:
+        let savedBuffer = state.buffers.get(action.resource).set("modified", false)
+        return {
+            ...state,
+            buffers: state.buffers.set(action.resource, savedBuffer)
+        };
+
     case SCRIPT_SELECT:
         return { ...state, activeBuffer: action.resource };
 
     case SCRIPT_CHANGE:
+        console.log(action)
+        console.log(state)
         let buffer = state.buffers.get(action.resource);
+        console.log(buffer)
         let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
         let changes = new Map({
             value: action.value,

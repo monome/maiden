@@ -7,6 +7,7 @@ function api_path(p) {
     return API_ROOT + p;
 }
 
+// TODO: switch all this to just use fetch and remove 'rest'
 class API {
     constructor() {
         this.client = rest.wrap(mime);
@@ -23,18 +24,17 @@ class API {
     read_script(url, cb) {
         this.client(url).then(cb);
     }
-
-    write_script(code, url, cb) {
-        const request = {
+    
+    //https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
+    write_script(resource, code, cb) {
+        const formData = new FormData();
+        formData.append('value', code)
+        fetch(resource, {
             method: 'PUT',
-            path: url,
-            entity: code, // MAINT: does this need encoding?
-            headers: {
-                'Content-Type': 'text/plain',
-            }
-        };
-        this.client(request).then(cb);
+            body: formData,
+        }).then(cb)
     }
+    
 
 }
 

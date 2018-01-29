@@ -4,9 +4,10 @@ import EditView from './edit-view';
 import {
     scriptList,
     scriptRead,
+    scriptSave,
     scriptChange,
     scriptSelect,
-
+    
     toolInvoke,
 } from './model/script-actions';
 
@@ -57,6 +58,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         scriptSelect: (resource) => {
             dispatch(scriptSelect(resource))
+        },
+        scriptSave: (api, resource, code, completionCB = () => {}) => {
+            dispatch(scriptSave(api, resource, code, completionCB))
         },
 
         // sidebar

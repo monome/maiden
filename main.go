@@ -3,9 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/url"
+	"os"
 	"path/filepath"
 
 	"github.com/kataras/iris"
@@ -76,7 +78,7 @@ func main() {
 
 	api.Get("/scripts/{name}", func(ctx iris.Context) {
 		name := ctx.Params().Get("name")
-		path := filepath.Join(*dataDir, "scripts", name)
+		path := scriptPath(dataDir, &name)
 		ctx.ContentType("text/utf-8") // FIXME: is this needed? is it bad?
 		err := ctx.ServeFile(path, false)
 		if err != nil {
@@ -84,7 +86,39 @@ func main() {
 		}
 	})
 
+	api.Put("/scripts/{name}", func(ctx iris.Context) {
+		name := ctx.Params().Get("name")
+		path := scriptPath(dataDir, &name)
+		script := ctx.PostValue("value")
+
+		app.Logger().Debug("save path: ", path)
+		app.Logger().Debug("content type: ", ctx.GetContentType())
+		app.Logger().Debug("content: ", script)
+
+		// open destination stream
+		out, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0666)
+		defer out.Close()
+
+		if err != nil {
+			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.JSON(errorInfo{err.Error()})
+			return
+		}
+
+		size, err := io.WriteString(out, script)
+		if err != nil {
+			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.JSON(errorInfo{err.Error()})
+			return
+		}
+		app.Logger().Debugf("wrote %d bytes to %s", size, path)
+	})
+
 	app.Run(iris.Addr(fmt.Sprintf(":%d", *port)))
+}
+
+func scriptPath(dataDir *string, name *string) string {
+	return filepath.Join(*dataDir, "scripts", *name)
 }
 
 type prefixFunc func(...string) string
@@ -107,4 +141,8 @@ type apiInfo struct {
 type scriptInfo struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
+}
+
+type errorInfo struct {
+	Error string `json:"error"`
 }

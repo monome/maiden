@@ -92,10 +92,28 @@ class EditView extends Component {
         };
     }
 
-    render() {
+    getActiveBuffer = () => {
         const { buffers, activeBuffer } = this.props.editor;
-        const buffer = buffers.get(activeBuffer);
+        return buffers.get(activeBuffer);
+    }
 
+    handleToolInvoke = (tool) => {
+        if (tool === "save") {
+            const resource = this.props.editor.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
+            this.editor.bufferWillSave(resource)
+            this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                this.editor.bufferWasSaved(resource)
+            })
+            return
+        }
+
+        // fallthrough behavior
+        this.props.toolInvoke(tool)
+    }
+
+    render() {
+        const activeBuffer = this.props.editor.activeBuffer;
+        const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
         return (
@@ -119,7 +137,7 @@ class EditView extends Component {
                     className='edit-tools'
                     {...this.toolsSize()}
                     tools={tools}
-                    buttonAction={this.props.toolInvoke}
+                    buttonAction={this.handleToolInvoke}
                 />
             </div>
         );
