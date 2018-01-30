@@ -15,6 +15,14 @@ class Editor extends Component {
     onLoad = (editor) => {
         // grab reference to ace editor
         this.editor = editor;
+        /*
+        if (this.refs.ace) {
+            window.setTimeout(() => {
+                this.refs.ace.editor.focus();
+                console.log("OL focused on", this.refs.ace.editor)
+            }, 3);
+        }
+        */
     }
 
     onChange = (event) => {
@@ -38,7 +46,7 @@ class Editor extends Component {
 
     bufferWasSaved = (bufferName) => {
         if (this.props.bufferName === bufferName) {
-            // MAINT: the edit-view takes care of the modified flag on the buffer state and should call this method to in order to enable dirty 
+            // MAINT: the edit-view takes care of the modified flag on the buffer state and should call this method to in order to enable dirty
             this.modified = false;
         }
     }
@@ -50,14 +58,27 @@ class Editor extends Component {
 
             // reset dirty flag so that any change will mark (or remark) the buffer as dirty
             this.modified = false;
-        
+
             // MAINT: work around a react-ace behavior; it restores the selection when the editor value prop changes but that means the selection is retained when switching between buffers too.
             this.editor.clearSelection();
-            
+
             // MAINT: really lame, undo stack is global to the single wrapped editor so it extends across buffer switching. call undo repeatly will result in buffer switch (confusingly)
-            this.editor.getSession().getUndoManager().reset();    
+            this.editor.getSession().getUndoManager().reset();
         }
     }
+
+    /*
+    componentDidMount = () => {
+        // this.editor.focus()
+        window.setTimeout(() => {
+            this.refs.ace.editor.focus();
+            console.log("CDM focused on", this.refs.ace.editor)
+        }, 3);
+
+        //this.refs.ace.editor.focus();
+
+    }
+    */
 
     render () {
         const width = `${this.props.width}px`;
@@ -65,6 +86,7 @@ class Editor extends Component {
 
         return (
             <AceEditor
+                ref="ace"
                 mode="lua"
                 theme="dawn"
                 width={width}
