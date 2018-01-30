@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import EditView from './edit-view';
+import EditActivity from './edit-activity';
 
 import {
     scriptList,
@@ -78,9 +78,9 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-const ScriptEditor = connect(
+const BoundEditActivity = connect(
     mapStateToProps,
     mapDispatchToProps
-)(EditView);
+)(EditActivity);
 
-export default ScriptEditor;
+export default BoundEditActivity;

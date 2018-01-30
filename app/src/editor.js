@@ -46,7 +46,7 @@ class Editor extends Component {
 
     bufferWasSaved = (bufferName) => {
         if (this.props.bufferName === bufferName) {
-            // MAINT: the edit-view takes care of the modified flag on the buffer state and should call this method to in order to enable dirty
+            // MAINT: the edit-activity takes care of the modified flag on the buffer state and should call this method to in order to enable dirty
             this.modified = false;
         }
     }

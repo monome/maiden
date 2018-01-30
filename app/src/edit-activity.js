@@ -5,7 +5,7 @@ import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 
-import './edit-view.css';
+import './edit-activity.css';
 
 const tools = [
     {
@@ -39,7 +39,7 @@ const EditTools = (props) => {
     );
 };
 
-class EditView extends Component {
+class EditActivity extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -120,7 +120,7 @@ class EditView extends Component {
         const code = buffer ? buffer.get('value') : '';
 
         return (
-            <div className='edit-view'>
+            <div className='edit-activity'>
                 <Explorer
                     className='explorer-container'
                     {...this.sidebarSize()}
@@ -147,4 +147,4 @@ class EditView extends Component {
     }
 }
 
-export default EditView;
+export default EditActivity;

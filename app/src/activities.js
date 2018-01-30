@@ -1,5 +1,5 @@
 import React from 'react';
-import ScriptEditor from './script-editor';
+import BoundEditActivity from './bound-edit-activity';
 import ReplView from './repl-view';
 import { ICONS } from './svg-icons';
 
@@ -8,7 +8,7 @@ const definitions = [
     {
         selector: 'editor',
         icon: ICONS.pencil,
-        view: ScriptEditor,
+        view: BoundEditActivity,
     }
 ];
 */
@@ -40,7 +40,7 @@ export class EditActivity extends Activity {
     }
 
     getView = () => {
-        return ScriptEditor;
+        return BoundEditActivity;
     }
 
 }
