@@ -60,7 +60,7 @@ class EditView extends Component {
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
             this.props.scriptChange(activeBuffer, this.editor.getValue());
         }
-    
+
         let newBuffers = newProps.editor.buffers;
         if (newActiveBuffer && !newBuffers.has(activeBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
@@ -99,11 +99,14 @@ class EditView extends Component {
 
     handleToolInvoke = (tool) => {
         if (tool === "save") {
-            const resource = this.props.editor.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
-            this.editor.bufferWillSave(resource)
-            this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
-                this.editor.bufferWasSaved(resource)
-            })
+            const buffer = this.getActiveBuffer()
+            if (buffer && buffer.get('modified')) {
+               const resource = this.props.editor.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
+                this.editor.bufferWillSave(resource)
+                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                    this.editor.bufferWasSaved(resource)
+                })
+            }
             return
         }
 
