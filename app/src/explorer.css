@@ -1,3 +1,14 @@
+.explorer {
+    background-color: #F9F9F9;
+}
+
+.explorer-header {
+    background-color: #979797;
+    color: #e4e4e4;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+}
+
 .explorer-tree {
     font: inherit;
 }
@@ -6,8 +17,14 @@
     display: none;
 }
 
+.explorer-entry {
+    padding-left: 5px;
+    color: rgb(117, 117, 117);
+}
 .dirty {
-    color: red;
+    /* color: red; */
+    color: rgb(151, 80, 49);
+    font-style: italic;
 }
 
 .explorer-list-item {
