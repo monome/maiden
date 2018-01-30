@@ -5,7 +5,7 @@ import {
     SCRIPT_SAVE_SUCCESS,
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
-    
+
     TOOL_INVOKE,
 } from './script-actions';
 
@@ -62,10 +62,11 @@ const scripts = (state = initialScriptsState, action) => {
         return { ...state, activeBuffer: action.resource };
 
     case SCRIPT_CHANGE:
-        console.log(action)
-        console.log(state)
+        // console.log(action)
+        // console.log(state)
         let buffer = state.buffers.get(action.resource);
-        console.log(buffer)
+        // console.log(buffer)
+        // TODO: if buffer === nil then create a new "scratch buffer" with a proper resource
         let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
         let changes = new Map({
             value: action.value,
