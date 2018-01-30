@@ -28,12 +28,20 @@ class App extends Component {
   }
 
   render() {
+    const headerStyle = {
+      width: this.state.width,
+      height: "6px",
+    };
+
     return (
-      <BoundWorkspace
-        activities={activities}
-        api={this.props.api}
-        {...this.state}
-      />
+      <div>
+        <div className="app-header" style={headerStyle} />
+        <BoundWorkspace
+          activities={activities}
+          api={this.props.api}
+          {...this.state}
+        />
+      </div>
     );
   }
 }
