@@ -6,8 +6,8 @@ import './activity-bar.css'
 class ActivityBar extends Component {
     render() {
         const items = this.props.activities.map(activity => {
-            const name = activity.getSelector();
-            const icon = activity.getIcon();
+            const name = activity.selector;
+            const icon = activity.icon;
             return (
                 <IconButton
                     key={name}

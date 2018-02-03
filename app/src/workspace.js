@@ -35,9 +35,9 @@ class Workspace extends Component {
 
     render() {
         const selectedActivity = this.props.activities.find(a => {
-            return this.props.selected === a.getSelector()
+            return this.props.selected === a.selector
         });
-        const ActivityView = selectedActivity.getView();
+        const ActivityView = selectedActivity.view;
 
         return (
             <div className="workspace">

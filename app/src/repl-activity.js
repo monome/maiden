@@ -1,16 +1,16 @@
 import React from 'react';
 
-const ReplView = (props) => {
+const ReplActivity = (props) => {
     const style = {
         display: "flex",
         ...props.size,
     };
 
     return (
-        <div className="repl-view" style={style}>
+        <div className="repl-activity" style={style}>
             ...this is the repl...
         </div>
     );
 };
 
-export default ReplView;
+export default ReplActivity;
