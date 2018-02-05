@@ -1,0 +1,15 @@
+.repl-activity {
+    display: flex;
+}
+
+.repl-container {
+    flex-grow: 1 1 auto;
+    background-color: green;
+}
+
+.repl-tools {
+    flex: 0 0 auto;
+    /* background-color: rgb(175, 175, 175); */
+    /* height: 20px; */
+    background-color: blue;
+}

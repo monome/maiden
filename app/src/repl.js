@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Terminal } from 'xterm';
+// import { Terminal } from 'xterm';
 // import * as fit from 'xterm/dist/addons/fit/fit';
-import * as attach from 'xterm/dist/addons/attach/attach';
+// import * as attach from 'xterm/dist/addons/attach/attach';
 // import 'xterm/dist/xterm.css'
 import './repl.css';
 
@@ -13,6 +13,7 @@ class Repl extends Component {
         };
     }
 
+    /*
     componentDidMount() {
         console.log(this.refs.container)
         // Terminal.applyAddon(fit);
@@ -69,7 +70,8 @@ class Repl extends Component {
         this.socket.send(stuff);
         console.log(`onInput('${stuff}')`);
     }
-
+    */
+    
     render() {
         const style = {
             height: this.props.height,
