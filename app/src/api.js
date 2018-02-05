@@ -35,7 +35,16 @@ class API {
         }).then(cb)
     }
     
-
+    // FIXME: find a better place for this
+    repl_socket() {
+        // const endpoint = `ws://${document.location.hostname}:5555`;
+        const endpoint = "ws://nnnn.local:5555";
+        const socket = new WebSocket(
+            endpoint, ['bus.sp.nanomsg.org']
+        );
+        console.log("new socket: ", socket)
+        return socket;
+    }
 }
 
 export default API;

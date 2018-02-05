@@ -1,15 +1,14 @@
 import React from 'react';
+import Repl from './repl';
 
 const ReplActivity = (props) => {
-    const style = {
-        display: "flex",
-        ...props.size,
-    };
-
+    // const size = { 
+        // height: props.height,
+        // width: props.width,
+    // };
     return (
-        <div className="repl-activity" style={style}>
-            ...this is the repl...
-        </div>
+        <Repl {...props}/>
+        // <div>foobar...</div>
     );
 };
 
