@@ -1,0 +1,92 @@
+import { Map } from 'immutable';
+import {
+    REPL_CONNECT_DIAL,
+    REPL_CONNECT_FAILURE,
+    REPL_CONNECT_SUCCESS,
+    REPL_CONNECT_CLOSE,
+    REPL_RECEIVE,
+    REPL_SEND,
+    REPL_SELECT,
+} from './repl-actions';
+
+/*
+-- shape of the repl connection and scrollback buffer state
+
+repl: {
+    connections: Map({
+        componentName: { url: ..., socket: ..., error: ... }
+    }),
+    activeComponent: name,
+    buffers: Map({
+        value: <string>
+        scrollPosition: ?,
+    })
+}
+
+TODO: does the 
+*/
+
+const initialReplState = {
+    activeRepl: undefined,
+    connections: new Map(),
+    buffers: new Map(),
+}
+
+const repl = (state = initialReplState, action) => {
+    let conn = state.connections.get(action.component);
+    var changes;
+
+    switch (action.type) {
+    case REPL_CONNECT_DIAL:
+        console.log("Connecting to [", action.component, "] ", action.endpoint)
+        let details = new Map({
+            url: action.endpoint,
+            socket: undefined,
+            error: undefined
+        });
+        return { ...state, connections: state.connections.set(action.component, details) };
+    
+    case REPL_CONNECT_FAILURE:
+        // let conn = state.connections.get(action.component);
+        changes = new Map({
+            socket: undefined, // ensure this goes away
+            error: action.error,
+        });
+        return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+
+    case REPL_CONNECT_CLOSE:
+        // let conn = state.connections.get(action.component);
+        changes = new Map({
+            socket: undefined,
+            error: undefined,
+        });
+        return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+    
+    case REPL_CONNECT_SUCCESS:
+        // let conn = state.connections.get(action.component);
+        changes = new Map({
+            socket: action.socket
+        })
+        // TODO: should we initialize the scrollback buffer? or at least push some note into the buffer that we are connected?
+
+        return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+
+    case REPL_RECEIVE:
+        // FIXME: needs implementation....
+        console.log(action.component, action.event);
+        return state;
+
+    case REPL_SEND:
+        let socket = conn.get('socket');
+        socket.send(action.value);
+        return state;
+
+    case REPL_SELECT:
+        return { ...state, activeRepl: action.component }
+
+    default:
+        return state;
+    }
+};
+
+export default repl;

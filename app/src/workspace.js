@@ -10,6 +10,14 @@ class Workspace extends Component {
         };
     }
 
+    componentDidMount() {
+        // MAINT: this is a bit odd here but we initiate the connections for the repl early so that any actions taken in the editor (or output from matron/crone) is captured even if the repl isn't being displayed
+
+        // TODO: make these configurable and not hard coded
+        this.props.replConnect('matron', 'ws://nnnn.local:5555');
+        this.props.replConnect('crone', 'ws://nnnn.local:5556');
+    }
+
     activityBarSize() {
         return {
             width: this.state.activityBarWidth,

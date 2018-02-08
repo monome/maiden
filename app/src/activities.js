@@ -1,5 +1,5 @@
 import BoundEditActivity from './bound-edit-activity';
-import ReplActivity from './repl-activity';
+import BoundReplActivity from './bound-repl-activity';
 import { ICONS } from './svg-icons';
 
 const activities = [
@@ -11,7 +11,7 @@ const activities = [
     {
         selector: 'repl',
         icon: ICONS['terminal'],
-        view: ReplActivity,
+        view: BoundReplActivity,
     }
 ];
 
