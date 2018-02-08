@@ -58,11 +58,14 @@ class ReplActivity extends Component {
     }
     
     render() {
+        let { activeRepl, buffers } = this.props;
         return (
             <div className="repl-activity">
                 <Repl 
                     className="repl-container"
                     {...this.replSize()}
+                    activeRepl={activeRepl}
+                    buffers={buffers}
                 />
                 <ReplTools
                     className="repl-tools"

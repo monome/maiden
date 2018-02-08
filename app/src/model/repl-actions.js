@@ -29,8 +29,8 @@ export const replConnectClose = (component) => {
     return { type: REPL_CONNECT_CLOSE, component }
 }
 
-export const replReceive = (component, event) => {
-    return { type: REPL_RECEIVE, component, event }
+export const replReceive = (component, data) => {
+    return { type: REPL_RECEIVE, component, data }
 }
 
 export const replSend = (component, value) => {
@@ -59,7 +59,7 @@ export const replConnect = (component, endpoint) => {
             dispatch(replConnectClose(component))
         }
         socket.onmessage = (event) => {
-            dispatch(replReceive(component, event))
+            dispatch(replReceive(component, event.data))
         }
     }
 }

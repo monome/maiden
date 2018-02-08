@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import {
     REPL_CONNECT_DIAL,
     REPL_CONNECT_FAILURE,
@@ -17,17 +17,16 @@ repl: {
         componentName: { url: ..., socket: ..., error: ... }
     }),
     activeComponent: name,
+    scrollbackLimit: <int>,
     buffers: Map({
-        value: <string>
-        scrollPosition: ?,
+        componentName: List(<string>, ...)
     })
 }
-
-TODO: does the 
 */
 
 const initialReplState = {
-    activeRepl: undefined,
+    scrollbackLimit: 200,
+    activeRepl: 'matron',
     connections: new Map(),
     buffers: new Map(),
 }
@@ -67,14 +66,19 @@ const repl = (state = initialReplState, action) => {
         changes = new Map({
             socket: action.socket
         })
-        // TODO: should we initialize the scrollback buffer? or at least push some note into the buffer that we are connected?
-
-        return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+        return { 
+            ...state, 
+            connections: state.connections.set(action.component, conn.merge(changes)),
+            buffers: state.buffers.set(action.component, new List())
+        };
 
     case REPL_RECEIVE:
-        // FIXME: needs implementation....
-        console.log(action.component, action.event);
-        return state;
+        // console.log(action.component, action.data);
+        var lines = state.buffers.get(action.component).push(action.data);
+        if (lines.size > state.scrollbackLimit) {
+            lines = lines.shift();
+        }
+        return { ...state, buffers: state.buffers.set(action.component, lines) };
 
     case REPL_SEND:
         let socket = conn.get('socket');
