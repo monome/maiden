@@ -21,6 +21,9 @@ repl: {
     buffers: Map({
         componentName: List(<string>, ...)
     })
+    history: Map({
+        componentName: List(<command>, ...)
+    })
 }
 */
 
@@ -29,11 +32,12 @@ const initialReplState = {
     activeRepl: 'matron',
     connections: new Map(),
     buffers: new Map(),
+    history: new Map(),
 }
 
 const repl = (state = initialReplState, action) => {
     let conn = state.connections.get(action.component);
-    var changes;
+    var changes, history;
 
     switch (action.type) {
     case REPL_CONNECT_DIAL:
@@ -69,7 +73,8 @@ const repl = (state = initialReplState, action) => {
         return { 
             ...state, 
             connections: state.connections.set(action.component, conn.merge(changes)),
-            buffers: state.buffers.set(action.component, new List())
+            buffers: state.buffers.set(action.component, new List()),
+            history: state.history.set(action.component, new List()),
         };
 
     case REPL_RECEIVE:
@@ -78,12 +83,19 @@ const repl = (state = initialReplState, action) => {
         if (lines.size > state.scrollbackLimit) {
             lines = lines.shift();
         }
-        return { ...state, buffers: state.buffers.set(action.component, lines) };
+        return { 
+            ...state, 
+            buffers: state.buffers.set(action.component, lines),
+        };
 
     case REPL_SEND:
         let socket = conn.get('socket');
-        socket.send(action.value);
-        return state;
+        socket.send(action.value + "\n");
+        history = state.history.get(action.component).unshift(action.value)
+        return {
+            ...state,
+            history: state.history.set(action.component, history)
+        };
 
     case REPL_SELECT:
         return { ...state, activeRepl: action.component }

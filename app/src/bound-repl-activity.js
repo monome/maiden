@@ -7,8 +7,8 @@ import {
 
 
 const mapStateToProps = (state) => {
-    let { activeRepl, buffers } = state.repl;
-    return { activeRepl, buffers };
+    let { activeRepl, buffers, history } = state.repl;
+    return { activeRepl, buffers, history };
 }
 
 const mapDispatchToProps = (dispatch) => {

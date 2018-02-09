@@ -58,7 +58,7 @@ class ReplActivity extends Component {
     }
     
     render() {
-        let { activeRepl, buffers } = this.props;
+        let { activeRepl, buffers, history } = this.props;
         return (
             <div className="repl-activity">
                 <Repl 
@@ -66,6 +66,8 @@ class ReplActivity extends Component {
                     {...this.replSize()}
                     activeRepl={activeRepl}
                     buffers={buffers}
+                    history={history}
+                    replSend={this.props.replSend}
                 />
                 <ReplTools
                     className="repl-tools"
