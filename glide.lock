@@ -1,5 +1,5 @@
 hash: f52ba0426d8c6657bf369910d58721c81481b24052e5d9d993d3f129d5139a44
-updated: 2018-01-26T23:09:02.102989-08:00
+updated: 2018-02-09T00:49:51.6034-08:00
 imports:
 - name: github.com/aymerick/raymond
   version: 72acac2207479d21dd45898c2a4264246c818148
@@ -30,7 +30,7 @@ imports:
 - name: github.com/kataras/golog
   version: 85424b54aeb661d802fad5c305f0e4406a89ade2
 - name: github.com/kataras/iris
-  version: 8be504fe1304c9c2dfdbc805b55f740d4c0a8acf
+  version: 2546d8bca00d42e7dbcc63d8dbbcfc0735808600
   subpackages:
   - cache
   - cache/cfg
@@ -87,12 +87,12 @@ imports:
   version: 9520e82c474b0a04dd04f8a40959027271bab992
 - name: github.com/microcosm-cc/bluemonday
   version: 542fd4642604d0d0c26112396ce5b1a9d01eee0b
-- name: github.com/russross/blackfriday
-  version: 6d1ef893fcb01b4f50cb6e57ed7df3e2e627b6b2
 - name: github.com/ryanuber/columnize
   version: abc90934186a77966e2beeac62ed966aac0561d5
 - name: github.com/satori/go.uuid
   version: 36e9d2ebbde5e3f13ab2e25625fd453271d6522e
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 86672fcb3f950f35f2e675df2240550f2a50762f
 - name: golang.org/x/crypto
   version: 0efb9460aaf800c6376acf625be2853bceac2e06
   subpackages:
@@ -107,6 +107,8 @@ imports:
   version: ff2a66f350cefa5c93a634eadb5d25bb60c85a9c
   subpackages:
   - unix
+- name: gopkg.in/russross/blackfriday.v2
+  version: cadec560ec52d93835bf2f15bd794700d3a2473b
 - name: gopkg.in/yaml.v2
   version: d670f9405373e636a5a2765eea47fac0c9bc91a4
 testImports: []

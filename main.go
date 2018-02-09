@@ -114,7 +114,7 @@ func main() {
 		app.Logger().Debugf("wrote %d bytes to %s", size, path)
 	})
 
-	app.Run(iris.Addr(fmt.Sprintf(":%d", *port)))
+	app.Run(iris.Addr(fmt.Sprintf(":%d", *port)), iris.WithoutVersionChecker)
 }
 
 func scriptPath(dataDir *string, name *string) string {
