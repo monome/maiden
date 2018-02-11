@@ -2,16 +2,62 @@ import React, { Component } from 'react';
 import './repl.css';
 
 
-const ReplOutput = (props) => {
-    // FIXME: some lines have multiple \n\n but we are still displaying as one line
-    let children = props.lines.map((l) =>
-        <div className="repl-line">{l}</div>
-    )
-    return (
-        <div className="repl-output">
-            {children}
-        </div>
-    )
+class ReplOutput extends Component {
+    constructor(props) {
+        super(props)
+        this.scrollAdjusted = false;
+    }
+
+    /*
+    componentDidMount() {
+        this.output.onscroll = () => {
+            this.scrollAdjusted = true;
+            console.log("scrollAdjusted:", this.scrollAdjusted)
+        }
+   
+        // this.observer = new MutationObserver(this.scrollToOutput);
+        // this.observer.observe(this.output, {childList: true});
+    }
+
+    componentDidUpdate() {
+        this.scrollToOutput();
+    }
+
+    scrollToOutput = () => {
+        if (!this.scrollAdjusted) {
+            console.log("scrollToOutput")
+            this.output.scrollTop = this.output.scrollHeight;
+        }
+    }
+    */
+
+    isScrolledBottom() {
+        if (!this.output) {
+            return false;
+        }
+        let top = this.output.scrollTop;
+        let totalHeight = this.output.offsetHeight;
+        let clientHeight = this.output.clientHeight;
+        let atBottom = totalHeight <= top + clientHeight;
+        console.log("top", top, "totalH", totalHeight, "clientH", clientHeight, "bottom", atBottom);
+        return atBottom;
+    }
+
+    render() {
+        let lines = this.props.lines.map((l, key) =>
+            <div className="repl-line" key={key}>{l}</div>
+        )
+        
+        // this.isScrolledBottom()
+        return (
+            <div 
+                className="repl-output"
+                ref={elem => this.output = elem}
+            >
+                {lines}
+            </div>
+        )
+    };
 }
 
 class ReplInput extends Component {

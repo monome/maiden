@@ -79,13 +79,22 @@ const repl = (state = initialReplState, action) => {
 
     case REPL_RECEIVE:
         // console.log(action.component, action.data);
+        var buffer = state.buffers.get(action.component)
+        action.data.split("\n").forEach(line => {
+            buffer = buffer.push(line);
+            if (buffer.size > state.scrollbackLimit) {
+                buffer = buffer.shift();
+            }
+        });
+        /*
         var lines = state.buffers.get(action.component).push(action.data);
         if (lines.size > state.scrollbackLimit) {
             lines = lines.shift();
         }
+        */
         return { 
             ...state, 
-            buffers: state.buffers.set(action.component, lines),
+            buffers: state.buffers.set(action.component, buffer),
         };
 
     case REPL_SEND:

@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { createSelector } from 'reselect';
 import EditActivity from './edit-activity';
 
 import {
@@ -16,8 +17,13 @@ import {
     sidebarSize,
 } from './model/sidebar-actions';
 
+const getBuffers = (scriptState) => scriptState.buffers;
+const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
+const getListing = (scriptState) => scriptState.listing;
 
-const getScriptListing = ({buffers, activeBuffer, listing}) => {
+const getScriptListing = createSelector(
+    [getBuffers, getActiveBuffer, getListing],
+    (buffers, activeBuffer, listing) => {
     // enrich script listing w/ modification state, etc.
     return listing.toJS().map(l => {
         let item = Object.assign({}, l);
@@ -31,16 +37,15 @@ const getScriptListing = ({buffers, activeBuffer, listing}) => {
 
         return item;
     });
-}
+});
 
 const mapStateToProps = (state) => {
     let {activeBuffer, buffers} = state.scripts;
     return {
-        editor: {activeBuffer, buffers},
-        sidebar: {
-            ...state.sidebar,
-            data: getScriptListing(state.scripts),
-        }
+        activeBuffer, 
+        buffers,
+        sidebar: state.sidebar,
+        scriptListing: getScriptListing(state.scripts),
     }
 }
 

@@ -7,6 +7,7 @@ import {
 
 
 const mapStateToProps = (state) => {
+    // TODO: pull out the buffer and history for the active repl to avoid re-renders if output to no-active repl is received.
     let { activeRepl, buffers, history } = state.repl;
     return { activeRepl, buffers, history };
 }

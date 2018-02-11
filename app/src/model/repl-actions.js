@@ -21,7 +21,7 @@ export const replConnectSuccess = (component, socket) => {
 }
 
 export const replConnectFailure = (component, error) => {
-    console.log(error);
+    // console.log(error);
     return { type: REPL_CONNECT_FAILURE, component, error }
 }
 

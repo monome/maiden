@@ -19,14 +19,43 @@
 
 .repl-output {
     flex: 1 1 auto;
-    margin: 5px;
+    margin: 5px, 0px, 5px, 5px;
     color:  rgb(117, 117, 117);
+    overflow: scroll;
+    overflow-x: hidden;
+    /* display: flex; */
+    /* flex-direction: row */
 }
+
+/*
+.repl-output-lines {
+    flex: 1 1 auto;
+    overflow: hidden;
+    margin: 5px;
+    overflow-x: hidden;
+}
+
+.repl-output-scroll-v {
+    -webkit-transition: opacity .3s ease-in-out;
+    -moz-transition: opacity .3s ease-in-out;
+    -ms-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    opacity: 0;
+    background-color: khaki;
+    width: 20px;
+    flex: 0 0 auto;
+}
+
+.repl-output-scroll-v:hover {
+    opacity: 1;
+}
+*/
 
 .repl-input {
     flex: 0 0 auto;
     background-color: #EBEBEB;
-    /* height: 2em; */
+    /* height: 20px; */
     display: flex;
     flex-direction: row;
 }
