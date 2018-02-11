@@ -2,7 +2,8 @@ import { connect } from 'react-redux';
 import ReplActivity from './repl-activity';
 
 import {
-    replSend
+    replSend,
+    replClear,
 } from './model/repl-actions';
 
 
@@ -16,7 +17,10 @@ const mapDispatchToProps = (dispatch) => {
     return {
         replSend: (component, value) => {
             dispatch(replSend(component, value))
-        }
+        },
+        replClear: (component) => {
+            dispatch(replClear(component))
+        },
     }
 }
 

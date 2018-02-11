@@ -7,6 +7,7 @@ import {
     REPL_RECEIVE,
     REPL_SEND,
     REPL_SELECT,
+    REPL_CLEAR,
 } from './repl-actions';
 
 /*
@@ -108,6 +109,12 @@ const repl = (state = initialReplState, action) => {
 
     case REPL_SELECT:
         return { ...state, activeRepl: action.component }
+
+    case REPL_CLEAR:
+        return {
+            ...state,
+            buffers: state.buffers.set(action.component, new List()),
+        }
 
     default:
         return state;

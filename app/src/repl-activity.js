@@ -9,7 +9,7 @@ import './repl-activity.css';
 const tools = [
     {
         name: "clear",
-        icon: ICONS['file-empty'], // FIXME: temp
+        icon: ICONS['forbidden'], // FIXME: temp
     }
 ];
 
@@ -41,6 +41,9 @@ class ReplActivity extends Component {
 
     handleToolInvoke = (name) => {
         console.log("invoke(): ", name);
+        if (name === 'clear') {
+            this.props.replClear(this.props.activeRepl)
+        }
     }
 
     replSize() {

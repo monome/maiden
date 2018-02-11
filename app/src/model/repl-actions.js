@@ -7,6 +7,7 @@ export const REPL_RECEIVE = 'REPL_RECEIVE'
 export const REPL_SEND = 'REPL_SEND'
 
 export const REPL_SELECT = 'REPL_SELECT'
+export const REPL_CLEAR = 'REPL_CLEAR'
 
 //
 // sync action creators
@@ -39,6 +40,10 @@ export const replSend = (component, value) => {
 
 export const replSelect = (component) => {
     return { type: REPL_SELECT, component }
+}
+
+export const replClear = (component) => {
+    return { type: REPL_CLEAR, component }
 }
 
 //
