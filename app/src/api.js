@@ -25,7 +25,7 @@ class API {
         this.client(url).then(cb);
     }
     
-    //https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
+    // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
     write_script(resource, code, cb) {
         const formData = new FormData();
         formData.append('value', code)
@@ -35,7 +35,12 @@ class API {
         }).then(cb)
     }
     
-
+    list_repl_endpoints(cb) {
+        fetch('/repl-endpoints.json').then((response) => {
+            // TODO: parse url and insert hostname if not specified
+            response.json().then(cb)
+        })
+    }
 }
 
 export default API;

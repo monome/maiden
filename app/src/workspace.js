@@ -10,6 +10,15 @@ class Workspace extends Component {
         };
     }
 
+    componentWillMount() {
+        // MAINT: this is a bit odd here but we initiate the connections for the repl early so that any actions taken in the editor (or output from matron/crone) is captured even if the repl isn't being displayed
+       this.props.replEndpoints(this.props.api, (endpoints) => {
+           endpoints.forEach((endpoint, component) => {
+               this.props.replConnect(component, endpoint)
+           })
+       })
+    }
+
     activityBarSize() {
         return {
             width: this.state.activityBarWidth,
@@ -35,9 +44,9 @@ class Workspace extends Component {
 
     render() {
         const selectedActivity = this.props.activities.find(a => {
-            return this.props.selected === a.getSelector()
+            return this.props.selected === a.selector
         });
-        const ActivityView = selectedActivity.getView();
+        const ActivityView = selectedActivity.view;
 
         return (
             <div className="workspace">

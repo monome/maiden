@@ -1,0 +1,84 @@
+.repl {
+    /* font-style: normal;
+    font-variant-ligatures: normal;
+    font-variant-caps: normal;
+    font-variant-numeric: normal;
+    font-variant-east-asian: normal;
+    font-weight: normal;
+    font-stretch: normal;
+    font-size: 16px;
+    line-height: normal;
+    font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace; */
+    /* background-color: #EBEBEB; */
+    background-color: #F9F9F9;
+    /* position: relative; */
+    /* user-select: none; */
+    display: flex;
+    flex-direction: column;
+}
+
+.repl-output {
+    flex: 1 1 auto;
+    margin: 5px, 0px, 5px, 5px;
+    color:  rgb(117, 117, 117);
+    overflow: scroll;
+    overflow-x: hidden;
+    /* display: flex; */
+    /* flex-direction: row */
+}
+
+/*
+.repl-output-lines {
+    flex: 1 1 auto;
+    overflow: hidden;
+    margin: 5px;
+    overflow-x: hidden;
+}
+
+.repl-output-scroll-v {
+    -webkit-transition: opacity .3s ease-in-out;
+    -moz-transition: opacity .3s ease-in-out;
+    -ms-transition: opacity .3s ease-in-out;
+    -o-transition: opacity .3s ease-in-out;
+    transition: opacity .3s ease-in-out;
+    opacity: 0;
+    background-color: khaki;
+    width: 20px;
+    flex: 0 0 auto;
+}
+
+.repl-output-scroll-v:hover {
+    opacity: 1;
+}
+*/
+
+.repl-input {
+    flex: 0 0 auto;
+    background-color: #EBEBEB;
+    /* height: 20px; */
+    display: flex;
+    flex-direction: row;
+}
+
+.repl-input > .label {
+    flex: 0 0 auto;
+    /* height: 40px; */
+    padding: 5px;
+    color:  rgb(117, 117, 117);
+}
+
+.repl-input > .value {
+    flex: 1 1 auto;
+    background-color: #EBEBEB;
+    border: none;
+    resize: none;
+    overflow: auto;
+    outline: none;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    font-size: 16px;
+    /* text-align: center; */
+
+}

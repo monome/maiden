@@ -1,12 +1,7 @@
 import React, { Component } from 'react';
 import BoundWorkspace from './bound-workspace';
-import { EditActivity, ReplActivity } from './activities';
+import activities from './activities';
 import './app.css';
-
-const activities = [
-  new EditActivity(),
-  new ReplActivity(),
-];
 
 class App extends Component {
   constructor(props) {

@@ -55,14 +55,14 @@ class EditActivity extends Component {
 
     componentWillReceiveProps(newProps) {
         // if the active buffer is dirty grab it out of the child prior to a potential re-render so that the current buffer state isn't lost
-        let { activeBuffer, buffers } = this.props.editor;
-        let newActiveBuffer = newProps.editor.activeBuffer;
+        let { activeBuffer, buffers } = this.props;
+        let newActiveBuffer = newProps.activeBuffer;
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
             this.props.scriptChange(activeBuffer, this.editor.getValue());
         }
-
-        let newBuffers = newProps.editor.buffers;
-        if (newActiveBuffer && !newBuffers.has(activeBuffer)) {
+        
+        let newBuffers = newProps.buffers;
+        if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
             this.props.scriptRead(this.props.api, newActiveBuffer);
         }
@@ -93,15 +93,14 @@ class EditActivity extends Component {
     }
 
     getActiveBuffer = () => {
-        const { buffers, activeBuffer } = this.props.editor;
-        return buffers.get(activeBuffer);
+        return this.props.buffers.get(this.props.activeBuffer);
     }
 
     handleToolInvoke = (tool) => {
         if (tool === "save") {
             const buffer = this.getActiveBuffer()
             if (buffer && buffer.get('modified')) {
-               const resource = this.props.editor.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
+               const resource = this.props.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
                 this.editor.bufferWillSave(resource)
                 this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
                     this.editor.bufferWasSaved(resource)
@@ -115,7 +114,7 @@ class EditActivity extends Component {
     }
 
     render() {
-        const activeBuffer = this.props.editor.activeBuffer;
+        const activeBuffer = this.props.activeBuffer;
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
@@ -125,7 +124,7 @@ class EditActivity extends Component {
                     className='explorer-container'
                     {...this.sidebarSize()}
                     hidden={this.props.sidebar.hidden}
-                    data={this.props.sidebar.data}
+                    data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                 />
                 <Editor

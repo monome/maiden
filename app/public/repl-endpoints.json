@@ -1,0 +1,4 @@
+{
+    "matron": "ws://nnnn.local:5555",
+    "crone": "ws://nnnn.local:5556"
+}

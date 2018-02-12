@@ -51,8 +51,13 @@ class Editor extends Component {
         }
     }
 
+    willChangeSize(newProps) {
+        return this.props.height !== newProps.height || this.props.width !== newProps.width;
+    }
+
     componentWillReceiveProps(nextProps) {
-        if (nextProps.bufferName !== this.props.bufferName && this.modified) {
+        if ((nextProps.bufferName !== this.props.bufferName || 
+             this.willChangeSize(nextProps)) && this.modified) {
             // active buffer is being changed, sync current value to parent view before the editor is re-rendered
             this.props.scriptChange(this.props.bufferName, this.getValue())
 
@@ -65,6 +70,10 @@ class Editor extends Component {
             // MAINT: really lame, undo stack is global to the single wrapped editor so it extends across buffer switching. call undo repeatly will result in buffer switch (confusingly)
             this.editor.getSession().getUndoManager().reset();
         }
+    }
+
+    componentWillUnmount() {
+        this.props.scriptChange(this.props.bufferName, this.getValue())
     }
 
     /*
