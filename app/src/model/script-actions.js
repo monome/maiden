@@ -13,6 +13,10 @@ export const SCRIPT_SAVE_SUCCESS = 'SCRIPT_SAVE_SUCCESS'
 export const SCRIPT_SAVE_FAILURE = 'SCRIPT_SAVE_FAILURE'
 
 export const SCRIPT_SELECT = 'SCRIPT_SELECT'
+export const SCRIPT_NEW = 'SCRIPT_NEW'
+export const SCRIPT_DUPLICATE = 'SCRIPT_DUPLICATE'
+export const SCRIPT_RENAME = 'SCRIPT_RENAME'
+export const SCRIPT_DELETE = 'SCRIPT_DELETE'
 
 export const TOOL_INVOKE = 'TOOL_INVOKE'
 
@@ -66,6 +70,10 @@ export const scriptSelect = (resource) => {
     return { type: SCRIPT_SELECT, resource }
 }
 
+export const scriptNew = (resource, value) => {
+    return { type: SCRIPT_NEW, resource, value }
+}
+
 export const toolInvoke = (name) => {
     return { type: TOOL_INVOKE, name }
 }
@@ -105,3 +113,4 @@ export const scriptSave = (api, resource, value, cb) => {
         })
     }
 }
+

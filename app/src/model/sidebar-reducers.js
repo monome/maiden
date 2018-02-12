@@ -14,7 +14,7 @@ sidebar: {
 
 const initialSidebarState = {
     hidden: false,
-    width: 200,
+    width: 250,
 }
 
 const sidebar = (state = initialSidebarState, action) => {

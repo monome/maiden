@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import EditActivity from './edit-activity';
+import { MATRON_COMPONENT } from './constants';
 
 import {
     scriptList,
@@ -16,6 +17,10 @@ import {
     sidebarToggle,
     sidebarSize,
 } from './model/sidebar-actions';
+
+import {
+    replSend,
+} from './model/repl-actions';
 
 const getBuffers = (scriptState) => scriptState.buffers;
 const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
@@ -66,6 +71,11 @@ const mapDispatchToProps = (dispatch) => {
         },
         scriptSave: (api, resource, code, completionCB = () => {}) => {
             dispatch(scriptSave(api, resource, code, completionCB))
+        },
+        scriptRun: (api, resource) => {
+            let file = api.fileFromResource(resource)
+            let cmd = `sys.run("${file}")`
+            dispatch(replSend(MATRON_COMPONENT, cmd))
         },
 
         // sidebar
