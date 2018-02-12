@@ -1,5 +1,6 @@
 import { Map, List } from 'immutable';
 import {
+    REPL_ENDPOINTS_SUCCESS,
     REPL_CONNECT_DIAL,
     REPL_CONNECT_FAILURE,
     REPL_CONNECT_SUCCESS,
@@ -14,6 +15,9 @@ import {
 -- shape of the repl connection and scrollback buffer state
 
 repl: {
+    endpoints: Map({
+        componentName: <string>
+    })
     connections: Map({
         componentName: { url: ..., socket: ..., error: ... }
     }),
@@ -31,6 +35,7 @@ repl: {
 const initialReplState = {
     scrollbackLimit: 200,
     activeRepl: 'matron',
+    endpoints: new Map(),
     connections: new Map(),
     buffers: new Map(),
     history: new Map(),
@@ -41,10 +46,14 @@ const repl = (state = initialReplState, action) => {
     var changes, history;
 
     switch (action.type) {
+
+    case REPL_ENDPOINTS_SUCCESS:
+        console.log("Endpoints:", action.endpoints)
+        return { ...state, endpoints: new Map(action.endpoints) }
+
     case REPL_CONNECT_DIAL:
         console.log("Connecting to [", action.component, "] ", action.endpoint)
         let details = new Map({
-            url: action.endpoint,
             socket: undefined,
             error: undefined
         });

@@ -12,3 +12,29 @@
     /* background-color: rgb(175, 175, 175); */
     /* height: 20px; */
 }
+
+.repl-connect-container {
+    color: #979797;
+    background-color: #F9F9F9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.repl-connect-content {
+    flex: 0 0 auto;
+    /* padding: 20px; */
+    /* background-color: #EBEBEB; */
+}
+
+.repl-connect-content > .message {
+    /* color: #979797; */
+    font-style: italic;
+    text-transform: lowercase;
+}
+
+.repl-connect-content > .component {
+    /* color: #979797; */
+    font-style: italic;
+    font-weight: bold;
+}

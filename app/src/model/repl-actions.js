@@ -1,3 +1,9 @@
+import { Map } from 'immutable'
+
+export const REPL_ENDPOINTS_REQUEST = 'REPL_ENDPOINTS_REQUEST'
+export const REPL_ENDPOINTS_SUCCESS = 'REPL_ENDPOINTS_SUCCESS'
+export const REPL_ENDPOINTS_FAILURE = 'REPL_ENDPOINTS_FAILURE'
+
 export const REPL_CONNECT_DIAL = 'REPL_CONNECT_DIAL'
 export const REPL_CONNECT_SUCCESS = 'REPL_CONNECT_SUCCESS'
 export const REPL_CONNECT_FAILURE = 'REPL_CONNECT_FAILURE'
@@ -12,6 +18,18 @@ export const REPL_CLEAR = 'REPL_CLEAR'
 //
 // sync action creators
 //
+
+export const replEndpointsRequest = () => {
+    return { type: REPL_ENDPOINTS_REQUEST }
+}
+
+export const replEndpointsSuccess = (endpoints) => {
+    return { type: REPL_ENDPOINTS_SUCCESS, endpoints }
+}
+
+export const replEndpointsFailure = (error) => {
+    return { type: REPL_ENDPOINTS_FAILURE, error }
+}
 
 export const replConnectDial = (component, endpoint) => {
     return { type: REPL_CONNECT_DIAL, component, endpoint }
@@ -49,6 +67,20 @@ export const replClear = (component) => {
 //
 // async actions
 //
+
+export const replEndpoints = (api, cb) => {
+    return (dispatch) => {
+        dispatch(replEndpointsRequest());
+        return api.list_repl_endpoints((endpoints) => {
+            // FIXME: handle errors
+            dispatch(replEndpointsSuccess(endpoints))
+            if (cb) {
+                // MAINT: lame, keep immutable map type consistent between this callback and the actual state
+                cb(new Map(endpoints))
+            }
+        })
+    }
+}
 
 export const replConnect = (component, endpoint) => {
     return (dispatch) => {

@@ -10,12 +10,14 @@ import {
 } from './model/sidebar-actions';
 
 import {
+    replEndpoints,
     replConnect,
 } from './model/repl-actions';
 
 const mapStateToProps = (state) => {
     const selected = state.activity.selected;
-    return { selected };
+    const endpoints = state.repl.endpoints;
+    return { selected, endpoints };
 }
 
 const mapDispatchToProps = (dispatch) => {
@@ -25,6 +27,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         sidebarToggle: () => {
             dispatch(sidebarToggle())
+        },
+        replEndpoints: (api, cb) => {
+            dispatch(replEndpoints(api, cb))
         },
         replConnect: (component, endpoint) => {
             dispatch(replConnect(component, endpoint))

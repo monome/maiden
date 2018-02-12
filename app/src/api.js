@@ -25,7 +25,7 @@ class API {
         this.client(url).then(cb);
     }
     
-    //https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
+    // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
     write_script(resource, code, cb) {
         const formData = new FormData();
         formData.append('value', code)
@@ -35,15 +35,11 @@ class API {
         }).then(cb)
     }
     
-    // FIXME: find a better place for this
-    repl_socket() {
-        // const endpoint = `ws://${document.location.hostname}:5555`;
-        const endpoint = "ws://nnnn.local:5555";
-        const socket = new WebSocket(
-            endpoint, ['bus.sp.nanomsg.org']
-        );
-        console.log("new socket: ", socket)
-        return socket;
+    list_repl_endpoints(cb) {
+        fetch('/repl-endpoints.json').then((response) => {
+            // TODO: parse url and insert hostname if not specified
+            response.json().then(cb)
+        })
     }
 }
 
