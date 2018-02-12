@@ -109,6 +109,10 @@ const repl = (state = initialReplState, action) => {
 
     case REPL_SEND:
         let socket = conn.get('socket');
+        if (!socket) {
+            console.log("No socket; can't send", action.value, "to", action.component)
+            return state
+        }
         socket.send(action.value + "\n");
         history = state.history.get(action.component).unshift(action.value)
         return {

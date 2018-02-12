@@ -8,6 +8,7 @@ function api_path(p) {
 }
 
 // TODO: switch all this to just use fetch and remove 'rest'
+// TODO: switch from snake to camel case
 class API {
     constructor() {
         this.client = rest.wrap(mime);
@@ -40,6 +41,18 @@ class API {
             // TODO: parse url and insert hostname if not specified
             response.json().then(cb)
         })
+    }
+
+    resourceForScript(name, path) {
+        // TODO: would be good to clean up and normalize urls
+        // TODO: implement path (subdir) support
+        return api_path(name);
+    }
+
+    fileFromResource(resource) {
+        // FIXME: this totally breaks the encapsulation of script resources and returns what matron would see as the script path
+        let prefix = api_path('/scripts/')
+        return resource.split(prefix)[1];
     }
 }
 

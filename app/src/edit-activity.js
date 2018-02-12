@@ -4,6 +4,7 @@ import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+import { UNTITLED_SCRIPT } from './constants';
 
 import './edit-activity.css';
 
@@ -97,24 +98,43 @@ class EditActivity extends Component {
     }
 
     handleToolInvoke = (tool) => {
-        if (tool === "save") {
-            const buffer = this.getActiveBuffer()
-            if (buffer && buffer.get('modified')) {
-               const resource = this.props.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
-                this.editor.bufferWillSave(resource)
-                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
-                    this.editor.bufferWasSaved(resource)
-                })
-            }
+        const buffer = this.getActiveBuffer()
+        const resource = this.props.activeBuffer;  // FIXME: this assumes the activeBuffer is a URL
+
+        if (!buffer) {
             return
         }
 
-        // fallthrough behavior
-        this.props.toolInvoke(tool)
+        if (tool === 'save') {
+            if (buffer.get('modified')) {
+                this.editor.bufferWillSave(resource)
+                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                    this.editor.bufferWasSaved(resource)
+                 })
+            }
+        } 
+        else if (tool === 'play') {
+            if (buffer.get('modified')) {
+                // save, then run
+                this.editor.bufferWillSave(resource)
+                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                    this.editor.bufferWasSaved(resource)
+                    this.props.scriptRun(this.props.api, resource)
+                })
+            } 
+            else {
+                // not modified, just run
+                this.props.scriptRun(this.props.api, resource)
+            }
+        } 
+        else {
+            // fallthrough behavior
+            this.props.toolInvoke(tool)
+        }
     }
 
     render() {
-        const activeBuffer = this.props.activeBuffer;
+        const activeBuffer = this.props.activeBuffer ? this.props.activeBuffer : UNTITLED_SCRIPT;
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 

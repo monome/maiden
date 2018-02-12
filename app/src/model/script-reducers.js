@@ -8,6 +8,7 @@ import {
 
     TOOL_INVOKE,
 } from './script-actions';
+import { UNTITLED_SCRIPT } from '../constants';
 
 /*
 
@@ -64,6 +65,11 @@ const scripts = (state = initialScriptsState, action) => {
     case SCRIPT_CHANGE:
         // console.log(action)
         // console.log(state)
+        if (action.resource === UNTITLED_SCRIPT) {
+            // FIXME: need to implement script new some how
+            return state;
+        }
+
         let buffer = state.buffers.get(action.resource);
         // console.log(buffer)
         // TODO: if buffer === nil then create a new "scratch buffer" with a proper resource
