@@ -19,6 +19,6 @@ running `yarn build` will output static, bundled, and minified js, css, and html
 
 running `yarn start` starts a local development server which automatically recompiles (and reloads) the application when a file is saved.
 
-the development server runs on port 3000 and forwards any unhandled request to the `"proxy"` defined in the `package.json` file. starting the `norns-web` server in a separate shell allows api calls to be handled during development.
+the development server runs on port 3000 and forwards any unhandled request to the `"proxy"` defined in the `package.json` file. starting the `maiden` server in a separate shell allows api calls to be handled during development.
 
 installing both the `reactjs` and `redux` devtools browser extensions is highly recommended. 

@@ -1,4 +1,4 @@
-# norns-web
+# maiden
 
 self contained web based editor for norns
 
@@ -27,7 +27,7 @@ go build
 
 if developing on a linux or macos it is trivial to cross compile for arm
 ```
-GOOS=linux GOARCH=arm go build -o norns-web.arm
+GOOS=linux GOARCH=arm go build -o maiden.arm
 ```
 **tip:** _install FUSE on your linux/macos machine and then mount the device filesystem using sshfs - the build results can then be written directly to the device._
 
@@ -36,7 +36,7 @@ GOOS=linux GOARCH=arm go build -o norns-web.arm
 ## testing
 
 ```
-./norns-web -debug -site app/build/ -data <norns_repo>/lua
+./maiden -debug -site app/build/ -data <norns_repo>/lua
 ```
 
 

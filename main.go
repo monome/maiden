@@ -28,7 +28,7 @@ func main() {
 	flag.Parse()
 
 	// FIXME: pull in git version
-	log.Printf("norns-web (%s)", version)
+	log.Printf("maiden (%s)", version)
 	log.Printf("  port: %d", *port)
 	log.Printf("  site: %s", *siteDir)
 	log.Printf("  data: %s", *dataDir)

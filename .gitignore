@@ -2,7 +2,7 @@
 vendor/
 
 # executables
-norns-web
+maiden
 
 # misc stuff
 .DS_Store
