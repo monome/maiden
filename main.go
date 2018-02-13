@@ -49,10 +49,10 @@ func main() {
 
 	// api
 	apiRoot := "/api/v1"
-	resourcePath := makeResourcePath(apiRoot)
+	resourcePath := makeResourcePath(filepath.Join(apiRoot, "scripts"))
 	api := app.Party(apiRoot)
 	api.Get("/", func(ctx iris.Context) {
-		ctx.JSON(apiInfo{"norns", version})
+		ctx.JSON(apiInfo{"maiden", version})
 	})
 
 	api.Get("/scripts", func(ctx iris.Context) {
@@ -63,24 +63,40 @@ func main() {
 			return
 		}
 
-		var scripts = []scriptInfo{}
-		for _, entry := range entries {
-			if !entry.IsDir() {
-				scripts = append(scripts, scriptInfo{
-					entry.Name(),
-					resourcePath("scripts", entry.Name()),
-				})
-			}
-		}
-
+		scripts := handleDirRead(&entries, resourcePath)
 		ctx.JSON(scripts)
 	})
 
-	api.Get("/scripts/{name}", func(ctx iris.Context) {
+	api.Get("/scripts/{name:path}", func(ctx iris.Context) {
 		name := ctx.Params().Get("name")
 		path := scriptPath(dataDir, &name)
+
+		// figure out if this is a file or not
+		info, err := os.Stat(path)
+		if err != nil {
+			ctx.Writef("%v", err)
+			ctx.StatusCode(iris.StatusNotFound)
+			return
+		}
+
+		if info.IsDir() {
+			entries, err := ioutil.ReadDir(path)
+			if err != nil {
+				// not sure why this would fail given that we just stat()'d the dir
+				ctx.Writef("%v", err)
+				ctx.StatusCode(iris.StatusBadRequest)
+				return
+			}
+
+			prefix := filepath.Join(apiRoot, "scripts", url.PathEscape(name))
+			subResourcePath := makeResourcePath(prefix)
+			scripts := handleDirRead(&entries, subResourcePath)
+			ctx.JSON(scripts)
+			return
+		}
+
 		ctx.ContentType("text/utf-8") // FIXME: is this needed? is it bad?
-		err := ctx.ServeFile(path, false)
+		err = ctx.ServeFile(path, false)
 		if err != nil {
 			ctx.StatusCode(iris.StatusNotFound)
 		}
@@ -139,10 +155,27 @@ type apiInfo struct {
 }
 
 type scriptInfo struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
+	Name     string        `json:"name"`
+	URL      string        `json:"url"`
+	Children *[]scriptInfo `json:"children,omitempty"`
 }
 
 type errorInfo struct {
 	Error string `json:"error"`
+}
+
+func handleDirRead(entries *[]os.FileInfo, resourcePath prefixFunc) *[]scriptInfo {
+	var scripts = []scriptInfo{}
+	for _, entry := range *entries {
+		var children *[]scriptInfo
+		if entry.IsDir() {
+			children = &[]scriptInfo{}
+		}
+		scripts = append(scripts, scriptInfo{
+			entry.Name(),
+			resourcePath(entry.Name()),
+			children,
+		})
+	}
+	return &scripts
 }
