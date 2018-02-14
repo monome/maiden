@@ -1,5 +1,6 @@
 .explorer {
     background-color: #F9F9F9;
+    font-family: monospace;
 }
 
 .explorer-header {
@@ -18,7 +19,7 @@
 }
 
 .explorer-entry {
-    padding-left: 5px;
+    padding: 0.1em;
     color: rgb(117, 117, 117);
 }
 .dirty {
