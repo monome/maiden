@@ -6,6 +6,10 @@ export const SCRIPT_READ_REQUEST = 'SCRIPT_READ_REQUEST'
 export const SCRIPT_READ_SUCCESS = 'SCRIPT_READ_SUCCESS'
 export const SCRIPT_READ_FAILURE = 'SCRIPT_READ_FAILURE'
 
+export const SCRIPT_DIR_REQUEST = 'SCRIPT_DIR_REQUEST'
+export const SCRIPT_DIR_SUCCESS = 'SCRIPT_DIR_SUCCESS'
+export const SCRIPT_DIR_FAILURE = 'SCRIPT_DIR_FAILURE'
+
 export const SCRIPT_CHANGE = 'SCRIPT_CHANGE'
 
 export const SCRIPT_SAVE_REQUEST = 'SCRIPT_SAVE_REQUEST'
@@ -47,6 +51,18 @@ export const scriptReadSuccess = (resource, value) => {
 
 export const scriptReadFailure = (resource, error) => {
     return { type: SCRIPT_READ_FAILURE, resource, error }
+}
+
+export const scriptDirRequest = (resource) => {
+    return { type: SCRIPT_DIR_REQUEST, resource }
+}
+
+export const scriptDirSuccess = (resource, value) => {
+    return { type: SCRIPT_DIR_SUCCESS, resource, value }
+}
+
+export const scriptDirFailure = (resource, error) => {
+    return { type: SCRIPT_DIR_FAILURE, resource, error }
 }
 
 export const scriptSaveRequest = (resource, value) => {
@@ -99,6 +115,16 @@ export const scriptRead = (api, resource) => {
         return api.read_script(resource, (response) => {
             // FIXME: handle errors
             dispatch(scriptReadSuccess(resource, response.entity))
+        })
+    }
+}
+
+export const scriptDirRead = (api, resource) => {
+    return (dispatch) => {
+        dispatch(scriptDirRequest(resource))
+        return api.read_script(resource, (response) => {
+            // FIXME: handle errors
+            dispatch(scriptDirSuccess(resource, response.entity))
         })
     }
 }

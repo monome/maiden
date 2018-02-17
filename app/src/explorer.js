@@ -4,7 +4,8 @@ import treeStyle from './explorer-style';
 import './explorer.css';
 
 
-const explorerDecorators = Object.assign(decorators, {
+const explorerDecorators = {
+    ...decorators,
     Header: (props) => {
         let className = 'explorer-entry' + (props.node.modified ? ' dirty' : '');
         return (
@@ -13,32 +14,7 @@ const explorerDecorators = Object.assign(decorators, {
             </div>
         );
     },
-});
-
-/*
-const ListItem = (props) => {
-    return (
-        <li className='explorer-list-item'>
-        <div >
-        </div>
-        </li>
-    );
-}
-class List extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {};
-    }
-
-    render() {
-        return (
-            <ul className="explorer-list">
-            {this.props.children}
-            </ul>
-        );
-    }
-}
-*/
+};
 
 class Explorer extends Component {
     constructor(props) {
@@ -55,11 +31,13 @@ class Explorer extends Component {
         node.active = true;
         if (node.children) {
             node.toggled = toggled;
+            if (toggled) {
+                this.props.scriptDirRead(this.props.api, node.url);
+            }
+        } else {
+            this.props.scriptSelect(node.url);
         }
         this.setState({ cursor: node });
-        // inform the view a script was clicked
-        // this.props.onNodeClick(node);
-        this.props.scriptSelect(node.url);
     }
 
     render() {

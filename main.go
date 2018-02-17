@@ -63,8 +63,8 @@ func main() {
 			return
 		}
 
-		scripts := handleDirRead(&entries, resourcePath)
-		ctx.JSON(scripts)
+		dir := handleDirRead("", &entries, resourcePath)
+		ctx.JSON(dir)
 	})
 
 	api.Get("/scripts/{name:path}", func(ctx iris.Context) {
@@ -90,8 +90,8 @@ func main() {
 
 			prefix := filepath.Join(apiRoot, "scripts", url.PathEscape(name))
 			subResourcePath := makeResourcePath(prefix)
-			scripts := handleDirRead(&entries, subResourcePath)
-			ctx.JSON(scripts)
+			dir := handleDirRead(name, &entries, subResourcePath)
+			ctx.JSON(dir)
 			return
 		}
 
@@ -160,11 +160,16 @@ type scriptInfo struct {
 	Children *[]scriptInfo `json:"children,omitempty"`
 }
 
+type dirInfo struct {
+	Path    string       `json:"path"`
+	Entries []scriptInfo `json:"entries"`
+}
+
 type errorInfo struct {
 	Error string `json:"error"`
 }
 
-func handleDirRead(entries *[]os.FileInfo, resourcePath prefixFunc) *[]scriptInfo {
+func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc) *dirInfo {
 	var scripts = []scriptInfo{}
 	for _, entry := range *entries {
 		var children *[]scriptInfo
@@ -177,5 +182,8 @@ func handleDirRead(entries *[]os.FileInfo, resourcePath prefixFunc) *[]scriptInf
 			children,
 		})
 	}
-	return &scripts
+	return &dirInfo{
+		path,
+		scripts,
+	}
 }

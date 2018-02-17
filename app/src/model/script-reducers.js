@@ -2,6 +2,7 @@ import { Map, List, fromJS } from 'immutable';
 import {
     SCRIPT_LIST_SUCCESS,
     SCRIPT_READ_SUCCESS,
+    SCRIPT_DIR_SUCCESS,
     SCRIPT_SAVE_SUCCESS,
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
@@ -14,7 +15,10 @@ import { UNTITLED_SCRIPT } from '../constants';
 
 scripts: {
     listing: [
-        { name: ..., url: ... }
+        { name: ..., url: ... },
+        { name: ..., url:... , children: [
+            <more listings>
+        ]}
     ]
     activeBuffer: <url>,
     buffers: Map({
@@ -41,7 +45,7 @@ const initialScriptsState = {
 const scripts = (state = initialScriptsState, action) => {
     switch (action.type) {
     case SCRIPT_LIST_SUCCESS:
-        return { ...state, listing: fromJS(action.value) };
+        return { ...state, listing: fromJS(action.value.entries) };
 
     case SCRIPT_READ_SUCCESS:
         return {
@@ -50,6 +54,13 @@ const scripts = (state = initialScriptsState, action) => {
                 value: action.value,
                 modified: false,
             })),
+        };
+
+    case SCRIPT_DIR_SUCCESS:
+        // console.log("splice", state.listing, action.resource, action.value)
+        return {
+            ...state,
+            listing: spliceDirInfo(state.listing, action.resource, fromJS(action.value.entries))
         };
 
     case SCRIPT_SAVE_SUCCESS:
@@ -85,8 +96,49 @@ const scripts = (state = initialScriptsState, action) => {
         return state;
 
     default:
-        return state
+        return state;
     }
 };
+
+// FIXME: this seems horrifically inefficient, exhaustive brute force walking of the tree to find one
+const spliceDirInfo = (root, target, info) => {
+    return root.map(node => {
+        // console.log('node =>', node)
+        if (node.get('url') === target) {
+            // console.log('found node:', node)
+            return node.set('children', info)
+        } else if (node.children !== undefined) {
+            // recurse
+            // console.log('recurse node:', node)
+            return node.set('children', spliceDirInfo(node.children, target, info))
+        }
+        return node
+    })
+}
+/*
+const keyPath = (root, components) => {
+    if (components.size === 0) {
+        // we have bottomed out
+        return [];
+    }
+    
+    if (root.size === 0 && components.size > 0) {
+        console.log("path too deep for node structure")
+        return undefined
+    }
+    
+    let name = components.shift();
+    let position = root.findIndex(node => node.name === name)
+    if (position === -1) {
+        return undefined
+    }
+    let children = keyPath(root.get(position).get('children'), components)
+    if (children === undefined) {
+        return undefined
+    }
+    children.unshift(position)
+    return children
+}
+*/
 
 export default scripts;

@@ -6,6 +6,7 @@ import { MATRON_COMPONENT } from './constants';
 import {
     scriptList,
     scriptRead,
+    scriptDirRead,
     scriptSave,
     scriptChange,
     scriptSelect,
@@ -31,7 +32,7 @@ const getScriptListing = createSelector(
     (buffers, activeBuffer, listing) => {
     // enrich script listing w/ modification state, etc.
     return listing.toJS().map(l => {
-        let item = Object.assign({}, l);
+        let item = {...l}
         item.active = l.url === activeBuffer;
 
         let buffer = buffers.get(l.url);
@@ -62,6 +63,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         scriptRead: (api, resource) => {
             dispatch(scriptRead(api, resource))
+        },
+        scriptDirRead: (api, resource) => {
+            dispatch(scriptDirRead(api, resource))
         },
         scriptChange: (resource, value) => {
             dispatch(scriptChange(resource, value))

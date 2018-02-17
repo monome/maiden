@@ -146,6 +146,8 @@ class EditActivity extends Component {
                     hidden={this.props.sidebar.hidden}
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
+                    scriptDirRead={this.props.scriptDirRead}
+                    api={this.props.api}
                 />
                 <Editor
                     className='editor-container'
