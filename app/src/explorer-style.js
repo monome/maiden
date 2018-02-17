@@ -27,19 +27,21 @@ export default {
                     position: 'relative',
                     display: 'inline-block',
                     verticalAlign: 'top',
-                    marginLeft: '-5px',
-                    height: '24px',
-                    width: '24px'
+                    marginLeft: '3px',
+                    height: '8px',
+                    width: '10px'
                 },
                 wrapper: {
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    margin: '-7px 0 0 -7px',
-                    height: '14px'
+                    // position: 'absolute',
+                    // top: '50%',
+                    // left: '50%',
+                    // margin: '-7px 0 0 -7px',
+                    // margin: '-4px 0 0 -4px',
+                    // height: '14px'
+                    // height: '8px'
                 },
-                height: 14,
-                width: 14,
+                height: 8,
+                width: 8,
                 arrow: {
                     fill: '#9DA5AB',
                     strokeWidth: 0

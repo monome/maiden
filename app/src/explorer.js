@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { decorators, Treebeard } from 'react-treebeard';
+import cx from 'classname';
 import treeStyle from './explorer-style';
 import './explorer.css';
 
@@ -7,11 +8,11 @@ import './explorer.css';
 const explorerDecorators = {
     ...decorators,
     Header: (props) => {
-        let className = 'explorer-entry' + (props.node.modified ? ' dirty' : '');
+        let className = cx('explorer-entry', {'dirty': props.node.modified});
         return (
-            <div className={className} style={props.style}>
+            <span className={className} style={props.style}>
             {props.node.name}
-            </div>
+            </span>
         );
     },
 };
@@ -24,20 +25,23 @@ class Explorer extends Component {
 
     onToggle = (node, toggled) => {
         console.log(node);
-        if (this.state.cursor) {
+        // if (this.state.cursor) {
             // FIXME: use setState
-            this.state.cursor.active = false;
-        }
-        node.active = true;
+            // this.state.cursor.active = false;
+        // }
+        // node.active = true;
         if (node.children) {
-            node.toggled = toggled;
+            // if (toggled !== node.toggled) {
+                this.props.explorerToggleNode(node, toggled)
+            // }
+            // node.toggled = toggled;
             if (toggled) {
                 this.props.scriptDirRead(this.props.api, node.url);
             }
         } else {
             this.props.scriptSelect(node.url);
         }
-        this.setState({ cursor: node });
+        // this.setState({ cursor: node });
     }
 
     render() {

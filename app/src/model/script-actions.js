@@ -24,6 +24,9 @@ export const SCRIPT_DELETE = 'SCRIPT_DELETE'
 
 export const TOOL_INVOKE = 'TOOL_INVOKE'
 
+export const EXPLORER_TOGGLE_NODE = 'EXPLORER_TOGGLE_NODE'
+export const EXPLORER_ACTIVE_NODE = 'EXPLORER_ACTIVE_NODE'
+
 //
 // sync actions
 //
@@ -94,6 +97,13 @@ export const toolInvoke = (name) => {
     return { type: TOOL_INVOKE, name }
 }
 
+export const explorerActiveNode = (node) => {
+    return { type: EXPLORER_ACTIVE_NODE, node }
+}
+
+export const explorerToggleNode = (node, toggled) => {
+    return { type: EXPLORER_TOGGLE_NODE, node, toggled }
+}
 
 //
 // async actions

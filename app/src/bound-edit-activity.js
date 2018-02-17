@@ -12,6 +12,9 @@ import {
     scriptSelect,
     
     toolInvoke,
+
+    explorerActiveNode,
+    explorerToggleNode,
 } from './model/script-actions';
 
 import {
@@ -26,23 +29,37 @@ import {
 const getBuffers = (scriptState) => scriptState.buffers;
 const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
 const getListing = (scriptState) => scriptState.listing;
+const getActiveNode = (scriptState) => scriptState.activeNode;
+const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
 
+// FIXME: this doesn't handle a tree
 const getScriptListing = createSelector(
-    [getBuffers, getActiveBuffer, getListing],
-    (buffers, activeBuffer, listing) => {
+    [getBuffers, getActiveBuffer, getListing, getActiveNode, getExpandedNodes],
+    (buffers, activeBuffer, listing, activeNode, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
-    return listing.toJS().map(l => {
-        let item = {...l}
-        item.active = l.url === activeBuffer;
+    
+    // return listing.toJS().map(l => {
+    let enrich = (items) => {
+        return items.map(l => {
+            let item = {...l}
+            item.active = l.url === activeBuffer;
+            item.toggled = expandedNodes.has(l.url);
 
-        let buffer = buffers.get(l.url);
-        if (buffer) {
-            item.loaded = true;
-            item.modified = buffer.get('modified') || false;
-        }
+            let buffer = buffers.get(l.url);
+            if (buffer) {
+                item.loaded = true;
+                item.modified = buffer.get('modified') || false;
+            }
 
-        return item;
-    });
+            if (item.children) {
+                item.children = enrich(item.children)
+            }
+
+            return item;
+        })
+    };
+
+    return enrich(listing.toJS())
 });
 
 const mapStateToProps = (state) => {
@@ -93,6 +110,14 @@ const mapDispatchToProps = (dispatch) => {
         // tools
         toolInvoke: (name) => {
             dispatch(toolInvoke(name))
+        },
+
+        // explorer
+        explorerActiveNode: (node) => {
+            dispatch(explorerActiveNode(node))
+        },
+        explorerToggleNode: (node, toggled) => {
+            dispatch(explorerToggleNode(node, toggled))
         },
     }
 }

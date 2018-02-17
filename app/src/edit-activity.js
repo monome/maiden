@@ -147,6 +147,8 @@ class EditActivity extends Component {
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                     scriptDirRead={this.props.scriptDirRead}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}
                 />
                 <Editor

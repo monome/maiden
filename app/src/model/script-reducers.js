@@ -1,4 +1,4 @@
-import { Map, List, fromJS } from 'immutable';
+import { Map, List, Set, fromJS } from 'immutable';
 import {
     SCRIPT_LIST_SUCCESS,
     SCRIPT_READ_SUCCESS,
@@ -8,12 +8,17 @@ import {
     SCRIPT_CHANGE,
 
     TOOL_INVOKE,
+
+    EXPLORER_ACTIVE_NODE,
+    EXPLORER_TOGGLE_NODE,
 } from './script-actions';
 import { UNTITLED_SCRIPT } from '../constants';
 
 /*
 
 scripts: {
+    activeNode: <url>,
+    expandedNodes: Set(),
     listing: [
         { name: ..., url: ... },
         { name: ..., url:... , children: [
@@ -40,6 +45,8 @@ const initialScriptsState = {
     activeBuffer: undefined,
     listing: new List(),
     buffers: new Map(),
+    activeNode: undefined,
+    expandedNodes: new Set(),
 };
 
 const scripts = (state = initialScriptsState, action) => {
@@ -94,6 +101,16 @@ const scripts = (state = initialScriptsState, action) => {
     case TOOL_INVOKE:
         console.log("tool invoke => ", action.name);
         return state;
+
+    case EXPLORER_ACTIVE_NODE:
+        return { ...state, activeNode: action.node.url }
+
+    case EXPLORER_TOGGLE_NODE:
+        // if (state.expandedNodes.has(action.node.url)) {
+        if (action.toggled) {
+            return { ...state, expandedNodes: state.expandedNodes.add(action.node.url) }
+        }
+        return { ...state, expandedNodes: state.expandedNodes.delete(action.node.url) }
 
     default:
         return state;
