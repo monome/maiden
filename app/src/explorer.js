@@ -7,7 +7,7 @@ import './explorer.css';
 
 const Header = (props) => {
     let className = cx('explorer-entry', {'dirty': props.node.modified}, {'active': props.node.active});
-    console.log(props.node, className)
+    // console.log(props.node, className)
     return (
         <span className={className}>
         {props.node.name}

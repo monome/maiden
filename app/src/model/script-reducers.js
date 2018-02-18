@@ -106,7 +106,6 @@ const scripts = (state = initialScriptsState, action) => {
         return { ...state, activeNode: action.node.url }
 
     case EXPLORER_TOGGLE_NODE:
-        // if (state.expandedNodes.has(action.node.url)) {
         if (action.toggled) {
             return { ...state, expandedNodes: state.expandedNodes.add(action.node.url) }
         }
@@ -124,38 +123,13 @@ const spliceDirInfo = (root, target, info) => {
         if (node.get('url') === target) {
             // console.log('found node:', node)
             return node.set('children', info)
-        } else if (node.children !== undefined) {
+        } else if (node.get('children') !== undefined) {
             // recurse
             // console.log('recurse node:', node)
-            return node.set('children', spliceDirInfo(node.children, target, info))
+            return node.set('children', spliceDirInfo(node.get('children'), target, info))
         }
         return node
     })
 }
-/*
-const keyPath = (root, components) => {
-    if (components.size === 0) {
-        // we have bottomed out
-        return [];
-    }
-    
-    if (root.size === 0 && components.size > 0) {
-        console.log("path too deep for node structure")
-        return undefined
-    }
-    
-    let name = components.shift();
-    let position = root.findIndex(node => node.name === name)
-    if (position === -1) {
-        return undefined
-    }
-    let children = keyPath(root.get(position).get('children'), components)
-    if (children === undefined) {
-        return undefined
-    }
-    children.unshift(position)
-    return children
-}
-*/
 
 export default scripts;

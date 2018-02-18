@@ -88,7 +88,7 @@ func main() {
 				return
 			}
 
-			prefix := filepath.Join(apiRoot, "scripts", url.PathEscape(name))
+			prefix := filepath.Join(apiRoot, "scripts", name)
 			subResourcePath := makeResourcePath(prefix)
 			dir := handleDirRead(name, &entries, subResourcePath)
 			ctx.JSON(dir)
@@ -102,7 +102,7 @@ func main() {
 		}
 	})
 
-	api.Put("/scripts/{name}", func(ctx iris.Context) {
+	api.Put("/scripts/{name:path}", func(ctx iris.Context) {
 		name := ctx.Params().Get("name")
 		path := scriptPath(dataDir, &name)
 		script := ctx.PostValue("value")
