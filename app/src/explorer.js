@@ -5,6 +5,10 @@ import treeStyle from './explorer-style';
 import treeAnim from './explorer-animation';
 import './explorer.css';
 
+import IconButton from './icon-button';
+import { ICONS } from './svg-icons';
+
+
 const TreeHeader = (props) => {
     let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
     // console.log(props.node, className)
@@ -36,18 +40,69 @@ const explorerDecorators = {
 };
 
 const SectionHeader = (props) => {
+    let tools = props.tools.map(tool => {
+        return (
+            <IconButton
+                key={tool.name}
+                action={() => props.buttonAction(tool.name)}
+                icon={tool.icon}
+                size="12"
+                padding="1"
+                color="#e4e4e4"
+            />
+        );
+    });
+
     return (
         <div className='explorer-header'>
             <span className='section-name'>{props.name}</span>
-            {/* <span className='section-tools'>tools</span> */}
+            <span 
+                className={cx('section-tools', {'opaque': props.showTools})}
+            >
+                {tools}
+            </span>
         </div>
     );
 }
 
+const scriptTools = [
+    {
+        name: "add",
+        icon: ICONS["plus"],
+    },
+    {
+        name: "remove",
+        icon: ICONS["minus"],
+    },
+    {
+        name: "duplicate",
+        icon: ICONS["copy"],
+    },
+    {
+        name: "new-folder",
+        icon: ICONS["folder-plus"],
+    }
+]
 class Explorer extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            showTools: false,
+        };
+    }
+
+    componentDidMount() {
+        console.log(this.explorer)
+        this.explorer.onmouseenter = (e) => {
+            this.setState({
+                showTools: true,
+            })
+        }
+        this.explorer.onmouseleave = (e) => {
+            this.setState({
+                showTools: false,
+            })
+        }
     }
 
     onToggle = (node, toggled) => {
@@ -61,12 +116,23 @@ class Explorer extends Component {
         }
     }
 
+    onScriptToolClick = (name) => {
+        console.log(name);
+    }
+
     render() {
         const {width, height} = this.props;
         return (
             <div className={'explorer' + (this.props.hidden ? ' hidden' : '')}
-                 style={{width, height}}>
-                <SectionHeader name='scripts' />
+                 style={{width, height}}
+                 ref={(elem) => this.explorer = elem}
+            >
+                <SectionHeader 
+                    name='scripts'
+                    tools={scriptTools}
+                    buttonAction={this.onScriptToolClick}
+                    showTools={this.state.showTools}
+                />
                 <Treebeard
                     style={treeStyle}
                     animations={treeAnim}

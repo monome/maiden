@@ -8,6 +8,8 @@
     color: #e4e4e4;
     padding: 6px 8px;
     margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .explorer-tree {
@@ -37,6 +39,20 @@
 
 .explorer-list-item {
     display: flex;
+}
+
+.section-tools {
+    -webkit-transition: opacity .1s ease-in-out;
+    -moz-transition: opacity .1s ease-in-out;
+     -ms-transition: opacity .1s ease-in-out;
+      -o-transition: opacity .1s ease-in-out;
+         transition: opacity .1s ease-in-out;
+
+    opacity: 0;
+}
+
+.opaque {
+    opacity: 1;
 }
 
 .noselect {

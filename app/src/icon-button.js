@@ -8,8 +8,13 @@ import './icon-button.css';
 
 class IconButton extends Component {
     render() {
+        let style = { padding: this.props.padding || 6 };
         return (
-            <button className="icon-button" onClick={() => this.props.action()}>
+            <button 
+                className="icon-button" 
+                onClick={() => this.props.action()}
+                style={style}
+            >
                 <Icon icon={this.props.icon} size={this.props.size} color={this.props.color}/>
             </button>
         );
