@@ -5,8 +5,8 @@ import treeStyle from './explorer-style';
 import treeAnim from './explorer-animation';
 import './explorer.css';
 
-const Header = (props) => {
-    let className = cx('explorer-entry', {'dirty': props.node.modified}, {'active': props.node.active});
+const TreeHeader = (props) => {
+    let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
     // console.log(props.node, className)
     return (
         <span className={className}>
@@ -15,7 +15,7 @@ const Header = (props) => {
     );
 };
 
-const Toggle = ({style}) => {
+const TreeToggle = ({style}) => {
     const {height, width} = style;
     const midHeight = height * 0.5;
     const points = `0,0 0,${height} ${width},${midHeight}`;
@@ -31,9 +31,18 @@ const Toggle = ({style}) => {
 
 const explorerDecorators = {
     ...decorators,
-    Header,
-    Toggle,
+    Header: TreeHeader,
+    Toggle: TreeToggle,
 };
+
+const SectionHeader = (props) => {
+    return (
+        <div className='explorer-header'>
+            <span className='section-name'>{props.name}</span>
+            {/* <span className='section-tools'>tools</span> */}
+        </div>
+    );
+}
 
 class Explorer extends Component {
     constructor(props) {
@@ -57,7 +66,7 @@ class Explorer extends Component {
         return (
             <div className={'explorer' + (this.props.hidden ? ' hidden' : '')}
                  style={{width, height}}>
-                <div className='explorer-header'>scripts</div>
+                <SectionHeader name='scripts' />
                 <Treebeard
                     style={treeStyle}
                     animations={treeAnim}
