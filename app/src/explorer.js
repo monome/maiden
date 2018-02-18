@@ -2,19 +2,36 @@ import React, { Component } from 'react';
 import { decorators, Treebeard } from 'react-treebeard';
 import cx from 'classname';
 import treeStyle from './explorer-style';
+import treeAnim from './explorer-animation';
 import './explorer.css';
 
+const Header = (props) => {
+    let className = cx('explorer-entry', {'dirty': props.node.modified});
+    return (
+        <span className={className}>
+        {props.node.name}
+        </span>
+    );
+};
+
+const Toggle = ({style}) => {
+    const {height, width} = style;
+    const midHeight = height * 0.5;
+    const points = `0,0 0,${height} ${width},${midHeight}`;
+
+    return (
+        <span style={style.base}>
+            <svg height={height} width={width}>
+                <polygon points={points} style={style.arrow} />
+            </svg>
+        </span>
+    );
+};
 
 const explorerDecorators = {
     ...decorators,
-    Header: (props) => {
-        let className = cx('explorer-entry', {'dirty': props.node.modified});
-        return (
-            <span className={className} style={props.style}>
-            {props.node.name}
-            </span>
-        );
-    },
+    Header,
+    Toggle,
 };
 
 class Explorer extends Component {
@@ -52,9 +69,10 @@ class Explorer extends Component {
                 <div className='explorer-header'>scripts</div>
                 <Treebeard
                     style={treeStyle}
+                    animations={treeAnim}
                     data={this.props.data}
                     onToggle={this.onToggle}
-                    decorators={explorerDecorators} 
+                    decorators={explorerDecorators}
                 />
             </div>
         );

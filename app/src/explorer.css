@@ -21,6 +21,7 @@
 .explorer-entry {
     padding: 0.1em;
     color: rgb(117, 117, 117);
+    margin-left: 3px;
 }
 .dirty {
     /* color: red; */
