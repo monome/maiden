@@ -6,6 +6,8 @@ export default {
             margin: 0,
             padding: 0,
             color: '#90',
+            // overflow: 'scroll',
+            // height: '100%',
         },
         node: {
             base: {
