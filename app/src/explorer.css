@@ -22,11 +22,17 @@
     padding: 0.1em;
     color: rgb(117, 117, 117);
     margin-left: 3px;
+    /* display: block; */
 }
+
 .dirty {
     /* color: red; */
     color: rgb(151, 80, 49);
     font-style: italic;
+}
+
+.active {
+    background-color: #e0e7f1;
 }
 
 .explorer-list-item {

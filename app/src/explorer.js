@@ -6,7 +6,8 @@ import treeAnim from './explorer-animation';
 import './explorer.css';
 
 const Header = (props) => {
-    let className = cx('explorer-entry', {'dirty': props.node.modified});
+    let className = cx('explorer-entry', {'dirty': props.node.modified}, {'active': props.node.active});
+    console.log(props.node, className)
     return (
         <span className={className}>
         {props.node.name}
@@ -41,24 +42,14 @@ class Explorer extends Component {
     }
 
     onToggle = (node, toggled) => {
-        console.log(node);
-        // if (this.state.cursor) {
-            // FIXME: use setState
-            // this.state.cursor.active = false;
-        // }
-        // node.active = true;
         if (node.children) {
-            // if (toggled !== node.toggled) {
-                this.props.explorerToggleNode(node, toggled)
-            // }
-            // node.toggled = toggled;
+            this.props.explorerToggleNode(node, toggled)
             if (toggled) {
                 this.props.scriptDirRead(this.props.api, node.url);
             }
         } else {
             this.props.scriptSelect(node.url);
         }
-        // this.setState({ cursor: node });
     }
 
     render() {

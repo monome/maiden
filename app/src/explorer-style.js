@@ -11,13 +11,22 @@ export default {
             base: {
                 position: 'relative'
             },
+            // link: {
+            //     cursor: 'pointer',
+            //     position: 'relative',
+            //     padding: '0px 5px',
+            //     display: 'block'
+            // },
+            // activeLink: {
+            //     background: '#E0E7F1'
+            // },
             container: {
                 marginLeft: '13px',
             },
             toggle: {
                 base: {
                     position: 'relative',
-                    display: 'inline-block',
+                    // display: 'inline-block',
                     verticalAlign: 'top',
                     marginLeft: '-8px',
                 },
@@ -30,6 +39,8 @@ export default {
             },
             header: {
                 base: {
+                    color: '#9DA5AB'
+
                 },
                 connector: {
                 },
