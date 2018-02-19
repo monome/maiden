@@ -2,6 +2,7 @@ import { Map, List, Set, fromJS } from 'immutable';
 
 import {
     keyPathForResource,
+    nodeForResource,
     spliceDirInfo, 
     spliceFileInfo, 
     generateNodeName,
@@ -142,7 +143,7 @@ const handleScriptNew = (action, state) => {
 
     let siblings = state.listing.getIn(siblingPath)
 
-    let newName = generateNodeName(siblings, "untitled.lua")
+    let newName = generateNodeName(siblings, action.name || "untitled.lua")
     let newResource = siblingScriptResourceForName(newName, action.siblingResource)
     let newBuffer = new Map({
         modified: true,
@@ -161,8 +162,21 @@ const handleScriptNew = (action, state) => {
 }
 
 const handleScriptDuplicate = (action, state) => {
-    // TODO: implement this
-    return state;
+    if (!action.resource) {
+        // can't duplicate without a resource
+        return state
+    }
+    
+    let sourceNode = nodeForResource(state.listing, action.resource)
+    if (!sourceNode) {
+        console.log('cannot find existing resource to duplicate')
+        return state
+    }
+
+    let sourceBuffer = state.buffers.get(action.resource)
+    let newAction = scriptNew(action.resource, sourceBuffer.get('value'), sourceNode.get('name'))
+    
+    return handleScriptNew(newAction, state)
 }
 
 export default scripts;

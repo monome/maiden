@@ -1,5 +1,5 @@
 import { Map, List, fromJS } from 'immutable';
-import { keyPathForResource } from './listing';
+import { keyPathForResource, nodeForResource } from './listing';
 
 // keyPath data
 const listing = fromJS([
@@ -47,6 +47,18 @@ it('level one child should be [index, "children", index]', () => {
 it('level two children should have five element path', () => {
     let expected = new List([1, 'children', 1, 'children', 0])
     expect(keyPathForResource(listing, '/d2/d4/f5')).toEqual(expected)
+})
+
+it('existing node is found', () => {
+    let r1 = nodeForResource(listing, '/d2/f3')
+    expect(r1).toEqual(new Map({ name: 'f3', url: '/d2/f3' }))
+
+    let r2 = nodeForResource(listing, '/d2/d4')
+    expect(r2.get('children').size).toEqual(1)
+})
+
+it('non-existant resource lookup should return undefined', () => {
+    expect(nodeForResource(listing, '*MISSING')).toEqual(undefined)
 })
 
 // TODO: add tests for spliceDirInfo

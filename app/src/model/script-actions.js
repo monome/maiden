@@ -87,8 +87,8 @@ export const scriptSelect = (resource) => {
     return { type: SCRIPT_SELECT, resource }
 }
 
-export const scriptNew = (siblingResource, value) => {
-    return { type: SCRIPT_NEW, siblingResource, value }
+export const scriptNew = (siblingResource, value, name) => {
+    return { type: SCRIPT_NEW, siblingResource, value, name }
 }
 
 export const scriptDuplicate = (resource) => {

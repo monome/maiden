@@ -29,6 +29,14 @@ export const keyPathForResource = (listing, resource) => {
     return walk(listing, undefined);
 }
 
+export const nodeForResource = (listing, resource) => {
+    let keyPath = keyPathForResource(listing, resource)
+    if (keyPath) {
+        return listing.getIn(keyPath)
+    }
+    return undefined
+}
+
 export const spliceDirInfo = (listing, target, info) => {
     let path = keyPathForResource(listing, target)
     if (path) {
