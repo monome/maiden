@@ -10,7 +10,10 @@ import {
     scriptSave,
     scriptChange,
     scriptSelect,
-    
+    scriptNew,
+    scriptDuplicate,
+    scriptDelete,
+
     toolInvoke,
 
     explorerActiveNode,
@@ -32,13 +35,11 @@ const getListing = (scriptState) => scriptState.listing;
 const getActiveNode = (scriptState) => scriptState.activeNode;
 const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
 
-// FIXME: this doesn't handle a tree
 const getScriptListing = createSelector(
     [getBuffers, getActiveBuffer, getListing, getActiveNode, getExpandedNodes],
     (buffers, activeBuffer, listing, activeNode, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
     
-    // return listing.toJS().map(l => {
     let enrich = (items) => {
         return items.map(l => {
             let item = {...l}
@@ -119,6 +120,15 @@ const mapDispatchToProps = (dispatch) => {
         explorerToggleNode: (node, toggled) => {
             dispatch(explorerToggleNode(node, toggled))
         },
+        explorerScriptNew: (sibling, value) => {
+            dispatch(scriptNew(sibling, value))
+        },
+        explorerScriptDuplicate: (source) => {
+            dispatch(scriptDuplicate(source))
+        },
+        explorerScriptDelete: (resource) => {
+            dispatch(scriptDelete(resource))
+        }
     }
 }
 

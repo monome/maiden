@@ -92,7 +92,6 @@ class Explorer extends Component {
     }
 
     componentDidMount() {
-        console.log(this.explorer)
         this.explorer.onmouseenter = (e) => {
             this.setState({
                 showTools: true,
@@ -118,6 +117,18 @@ class Explorer extends Component {
 
     onScriptToolClick = (name) => {
         console.log(name);
+        switch (name) {
+        case 'add':
+            this.props.scriptCreate(this.props.activeBuffer)
+            break;
+        
+        case 'duplicate':
+            this.props.scriptDuplicate(this.props.activeBuffer)
+            break;
+
+        default:
+            break;
+        }
     }
 
     render() {

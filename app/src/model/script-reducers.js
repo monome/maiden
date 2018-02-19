@@ -1,4 +1,13 @@
 import { Map, List, Set, fromJS } from 'immutable';
+
+import {
+    keyPathForResource,
+    spliceDirInfo, 
+    spliceFileInfo, 
+    generateNodeName,
+    listingNode,
+} from './listing';
+
 import {
     SCRIPT_LIST_SUCCESS,
     SCRIPT_READ_SUCCESS,
@@ -6,12 +15,18 @@ import {
     SCRIPT_SAVE_SUCCESS,
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
+    SCRIPT_NEW,
+    SCRIPT_DUPLICATE,
 
     TOOL_INVOKE,
 
     EXPLORER_ACTIVE_NODE,
     EXPLORER_TOGGLE_NODE,
+
+    scriptNew,
 } from './script-actions';
+
+import { siblingScriptResourceForName } from '../api';
 import { UNTITLED_SCRIPT } from '../constants';
 
 /*
@@ -28,13 +43,9 @@ scripts: {
     activeBuffer: <url>,
     buffers: Map({
         <url>: {
-            name: <string>
             url: <url>,
             modified: <bool>,
             value: <string>,
-            selection: ?,
-            scrollPosition: ?,
-            isFetching: <bool>
         }
     })
 }
@@ -81,22 +92,13 @@ const scripts = (state = initialScriptsState, action) => {
         return { ...state, activeBuffer: action.resource };
 
     case SCRIPT_CHANGE:
-        // console.log(action)
-        // console.log(state)
-        if (action.resource === UNTITLED_SCRIPT) {
-            // FIXME: need to implement script new some how
-            return state;
-        }
+        return handleScriptChange(action, state);
 
-        let buffer = state.buffers.get(action.resource);
-        // console.log(buffer)
-        // TODO: if buffer === nil then create a new "scratch buffer" with a proper resource
-        let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
-        let changes = new Map({
-            value: action.value,
-            modified: modified,
-        });
-        return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
+    case SCRIPT_NEW:
+        return handleScriptNew(action, state);
+
+    case SCRIPT_DUPLICATE:
+        return handleScriptDuplicate(action, state);
 
     case TOOL_INVOKE:
         console.log("tool invoke => ", action.name);
@@ -116,20 +118,51 @@ const scripts = (state = initialScriptsState, action) => {
     }
 };
 
-// FIXME: this seems horrifically inefficient, exhaustive brute force walking of the tree to find one
-const spliceDirInfo = (root, target, info) => {
-    return root.map(node => {
-        // console.log('node =>', node)
-        if (node.get('url') === target) {
-            // console.log('found node:', node)
-            return node.set('children', info)
-        } else if (node.get('children') !== undefined) {
-            // recurse
-            // console.log('recurse node:', node)
-            return node.set('children', spliceDirInfo(node.get('children'), target, info))
-        }
-        return node
-    })
+
+const handleScriptChange = (action, state) => {
+    if (action.resource === UNTITLED_SCRIPT) {
+        // FIXME: need to implement script new some how
+        return handleScriptNew(scriptNew(undefined, action.value), state);
+    }
+    let buffer = state.buffers.get(action.resource);
+    // console.log(buffer)
+    // TODO: if buffer === nil then create a new "scratch buffer" with a proper resource
+    let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
+    let changes = new Map({
+        value: action.value,
+        modified: modified,
+    });
+    return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
+}
+
+// IDEA: might be cool if this copied 'template.lua' as a starting point 
+const handleScriptNew = (action, state) => {
+    let childPath = keyPathForResource(state.listing, action.siblingResource)
+    let siblingPath = childPath.pop()
+
+    let siblings = state.listing.getIn(siblingPath)
+
+    let newName = generateNodeName(siblings, "untitled.lua")
+    let newResource = siblingScriptResourceForName(newName, action.siblingResource)
+    let newBuffer = new Map({
+        modified: true,
+        value: action.value || "",
+    });
+
+    let newNode = listingNode(newName, newResource)
+    let newListing = spliceFileInfo(state.listing, newNode, action.siblingResource)
+
+    return {
+        ...state,
+        listing: newListing,
+        activeBuffer: newResource,
+        buffers: state.buffers.set(newResource, newBuffer),
+    };
+}
+
+const handleScriptDuplicate = (action, state) => {
+    // TODO: implement this
+    return state;
 }
 
 export default scripts;

@@ -147,9 +147,13 @@ class EditActivity extends Component {
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                     scriptDirRead={this.props.scriptDirRead}
+                    scriptCreate={this.props.explorerScriptNew}
+                    scriptDuplicate={this.props.explorerScriptDuplicate}
+                    scriptDelete={this.props.explorerScriptDelete}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}
+                    activeBuffer={activeBuffer}
                 />
                 <Editor
                     className='editor-container'

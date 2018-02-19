@@ -43,7 +43,6 @@ export const scriptListFailure = (error) => {
     return { type: SCRIPT_LIST_FAILURE, error }
 }
 
-
 export const scriptReadRequest = (resource) => {
     return { type: SCRIPT_READ_REQUEST, resource }
 }
@@ -80,7 +79,6 @@ export const scriptSaveFailure = (resource, error) => {
     return { type: SCRIPT_SAVE_FAILURE, resource, error }
 }
 
-
 export const scriptChange = (resource, value) => {
     return { type: SCRIPT_CHANGE, resource, value }
 }
@@ -89,8 +87,16 @@ export const scriptSelect = (resource) => {
     return { type: SCRIPT_SELECT, resource }
 }
 
-export const scriptNew = (resource, value) => {
-    return { type: SCRIPT_NEW, resource, value }
+export const scriptNew = (siblingResource, value) => {
+    return { type: SCRIPT_NEW, siblingResource, value }
+}
+
+export const scriptDuplicate = (resource) => {
+    return { type: SCRIPT_DUPLICATE, resource }
+}
+
+export const scriptDelete = (resource) => {
+    return { type: SCRIPT_DELETE, resource }
 }
 
 export const toolInvoke = (name) => {
