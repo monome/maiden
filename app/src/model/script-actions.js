@@ -20,7 +20,10 @@ export const SCRIPT_SELECT = 'SCRIPT_SELECT'
 export const SCRIPT_NEW = 'SCRIPT_NEW'
 export const SCRIPT_DUPLICATE = 'SCRIPT_DUPLICATE'
 export const SCRIPT_RENAME = 'SCRIPT_RENAME'
-export const SCRIPT_DELETE = 'SCRIPT_DELETE'
+
+export const SCRIPT_DELETE_REQUEST = 'SCRIPT_DELETE_REQUEST'
+export const SCRIPT_DELETE_SUCCESS = 'SCRIPT_DELETE_SUCCESS'
+export const SCRIPT_DELETE_FAILURE = 'SCRIPT_DELETE_FAILURE'
 
 export const TOOL_INVOKE = 'TOOL_INVOKE'
 
@@ -95,9 +98,24 @@ export const scriptDuplicate = (resource) => {
     return { type: SCRIPT_DUPLICATE, resource }
 }
 
+/*
 export const scriptDelete = (resource) => {
     return { type: SCRIPT_DELETE, resource }
 }
+*/
+
+export const scriptDeleteRequest = (resource) => {
+    return { type: SCRIPT_DELETE_REQUEST, resource }
+}
+
+export const scriptDeleteSuccess = (resource) => {
+    return { type: SCRIPT_DELETE_SUCCESS, resource }
+}
+
+export const scriptDeleteFailure = (resource, error) => {
+    return { type: SCRIPT_DELETE_FAILURE, resource, error }
+}
+
 
 export const toolInvoke = (name) => {
     return { type: TOOL_INVOKE, name }
@@ -151,8 +169,18 @@ export const scriptSave = (api, resource, value, cb) => {
         return api.write_script(resource, value, (response) => {
             // FIXME: handle errors
             dispatch(scriptSaveSuccess(resource, response.entity))
-            cb()
+            cb && cb()
         })
     }
 }
 
+export const scriptDelete = (api, resource, cb) => {
+    return (dispatch) => {
+        dispatch(scriptDeleteRequest(resource))
+        return api.deleteScript(resource, (response) => {
+            // FIXME: handle errors
+            dispatch(scriptDeleteSuccess(resource, response.entity))
+            cb && cb()
+        })
+    }
+}

@@ -126,8 +126,8 @@ const mapDispatchToProps = (dispatch) => {
         explorerScriptDuplicate: (source) => {
             dispatch(scriptDuplicate(source))
         },
-        explorerScriptDelete: (resource) => {
-            dispatch(scriptDelete(resource))
+        explorerScriptDelete: (api, resource) => {
+            dispatch(scriptDelete(api, resource))
         }
     }
 }

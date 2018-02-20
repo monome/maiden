@@ -130,6 +130,20 @@ func main() {
 		app.Logger().Debugf("wrote %d bytes to %s", size, path)
 	})
 
+	api.Delete("/scripts/{name:path}", func(ctx iris.Context) {
+		name := ctx.Params().Get("name")
+		path := scriptPath(dataDir, &name)
+
+		app.Logger().Debug("going to delete: ", path)
+
+		err := os.Remove(path)
+		if err != nil {
+			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.JSON(errorInfo{err.Error()})
+			return
+		}
+	})
+
 	app.Run(iris.Addr(fmt.Sprintf(":%d", *port)), iris.WithoutVersionChecker)
 }
 

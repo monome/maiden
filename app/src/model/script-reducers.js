@@ -17,7 +17,7 @@ import {
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
     SCRIPT_NEW,
-    SCRIPT_DELETE,
+    SCRIPT_DELETE_SUCCESS,
     SCRIPT_DUPLICATE,
 
     TOOL_INVOKE,
@@ -99,8 +99,8 @@ const scripts = (state = initialScriptsState, action) => {
     case SCRIPT_NEW:
         return handleScriptNew(action, state);
 
-    case SCRIPT_DELETE:
-        return handleScriptDelete(action, state);
+    case SCRIPT_DELETE_SUCCESS:
+        return handleScriptDeleteSuccess(action, state);
 
     case SCRIPT_DUPLICATE:
         return handleScriptDuplicate(action, state);
@@ -125,13 +125,17 @@ const scripts = (state = initialScriptsState, action) => {
 
 
 const handleScriptChange = (action, state) => {
-    if (action.resource === UNTITLED_SCRIPT) {
+    if (action.resource === UNTITLED_SCRIPT || action.resource === undefined) {
         // FIXME: need to implement script new some how
         return handleScriptNew(scriptNew(undefined, action.value), state);
     }
+
     let buffer = state.buffers.get(action.resource);
-    // console.log(buffer)
-    // TODO: if buffer === nil then create a new "scratch buffer" with a proper resource
+    if (buffer === undefined) {
+        console.log('ignoring script change for missing buffer (possibly deleted):', action.resource)
+        return state
+    }
+    
     let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
     let changes = new Map({
         value: action.value,
@@ -142,10 +146,15 @@ const handleScriptChange = (action, state) => {
 
 // IDEA: might be cool if this copied 'template.lua' as a starting point 
 const handleScriptNew = (action, state) => {
-    let childPath = keyPathForResource(state.listing, action.siblingResource)
-    let siblingPath = childPath.pop()
+    // assume script will be placed at the top of the hierarchy
+    let siblings = state.listing;
 
-    let siblings = state.listing.getIn(siblingPath)
+    let childPath = keyPathForResource(state.listing, action.siblingResource)
+    if (childPath) {
+        // a sibling exists, use that level of hierarchy for name computation
+        let siblingPath = childPath.pop()
+        siblings = state.listing.getIn(siblingPath)
+    }
 
     let newName = generateNodeName(siblings, action.name || "untitled.lua")
     let newResource = siblingScriptResourceForName(newName, action.siblingResource)
@@ -165,9 +174,18 @@ const handleScriptNew = (action, state) => {
     };
 }
 
-const handleScriptDelete = (action, state) => {
+const handleScriptDeleteSuccess = (action, state) => {
     console.log('in handleScriptDelete()', action)
-    return state;
+    let childPath = keyPathForResource(state.listing, action.resource)
+    let newListing = state.listing.removeIn(childPath)
+    let newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
+
+    return {
+        ...state,
+        listing: newListing,
+        activeBuffer: newActiveBuffer,
+        buffers: state.buffers.delete(action.resource)
+    }
 }
 
 const handleScriptDuplicate = (action, state) => {

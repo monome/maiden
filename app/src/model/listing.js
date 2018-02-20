@@ -47,11 +47,16 @@ export const spliceDirInfo = (listing, target, info) => {
 }
 
 export const spliceFileInfo = (listing, node, siblingResource) => {
+    // by default if no sibling just insert at top of hierarchy
+    let siblingFamily = []
+    let newIndex = [0]
+
     let siblingPath = keyPathForResource(listing, siblingResource)
-    let siblingFamily = siblingPath.pop() // path to children of sibling parent
-    
-    // insert new node just after sibling
-    let newIndex = siblingPath.last() + 1;
+    if (siblingPath) {
+        siblingFamily = siblingPath.pop()      // path to children of sibling parent
+        newIndex = siblingPath.last() + 1;     // insert new node just after sibling
+    }
+
     let children = listing.getIn(siblingFamily).insert(newIndex, node)
 
     // for now we sort the children by name but in the future this will probably be broken out into a separate function so that the new node can be inserted into a specific position (with name still editable) then sort when the name is confirmed

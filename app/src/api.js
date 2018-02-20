@@ -46,6 +46,12 @@ class API {
             body: formData,
         }).then(cb)
     }
+
+    deleteScript(resource, cb) {
+        fetch(resource, {
+            method: 'DELETE'
+        }).then(cb)
+    }
     
     list_repl_endpoints(cb) {
         fetch('/repl-endpoints.json').then((response) => {

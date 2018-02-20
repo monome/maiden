@@ -144,7 +144,7 @@ class Explorer extends Component {
         let removeModalCompletion = (choice) => {
             console.log('remove:', choice)
             if (choice === 'ok') {
-                this.props.scriptDelete(this.props.activeBuffer)
+                this.props.scriptDelete(this.props.api, this.props.activeBuffer)
             }
             this.props.hideModal()
         }
