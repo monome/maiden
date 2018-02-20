@@ -1,0 +1,21 @@
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    font-family: monospace;
+    color: rgb(117, 117, 117);
+}
+
+.modal-content > .message-container > .message {
+    font-weight: bolder;
+}
+
+.modal-content > .message-container > .supporting {
+    font-style: italic;
+}
+
+.modal-content > .button-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}

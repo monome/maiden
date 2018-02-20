@@ -17,6 +17,7 @@ import {
     SCRIPT_SELECT,
     SCRIPT_CHANGE,
     SCRIPT_NEW,
+    SCRIPT_DELETE,
     SCRIPT_DUPLICATE,
 
     TOOL_INVOKE,
@@ -98,6 +99,9 @@ const scripts = (state = initialScriptsState, action) => {
     case SCRIPT_NEW:
         return handleScriptNew(action, state);
 
+    case SCRIPT_DELETE:
+        return handleScriptDelete(action, state);
+
     case SCRIPT_DUPLICATE:
         return handleScriptDuplicate(action, state);
 
@@ -159,6 +163,11 @@ const handleScriptNew = (action, state) => {
         activeBuffer: newResource,
         buffers: state.buffers.set(newResource, newBuffer),
     };
+}
+
+const handleScriptDelete = (action, state) => {
+    console.log('in handleScriptDelete()', action)
+    return state;
 }
 
 const handleScriptDuplicate = (action, state) => {

@@ -64,7 +64,7 @@ export const spliceFileInfo = (listing, node, siblingResource) => {
         if (na < nb) {
             return -1
         }
-        if (na > na) {
+        if (na > nb) {
             return 1
         }
         return 0;

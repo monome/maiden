@@ -5,6 +5,7 @@ import treeStyle from './explorer-style';
 import treeAnim from './explorer-animation';
 import './explorer.css';
 
+import ModalContent from './modal-content';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 
@@ -39,6 +40,7 @@ const explorerDecorators = {
     Toggle: TreeToggle,
 };
 
+// TODO: turn this in a containing component called Section so that individual sections can be collapsed and expanded
 const SectionHeader = (props) => {
     let tools = props.tools.map(tool => {
         return (
@@ -89,6 +91,7 @@ class Explorer extends Component {
         this.state = {
             showTools: false,
         };
+        this.activeNode = undefined;
     }
 
     componentDidMount() {
@@ -112,11 +115,12 @@ class Explorer extends Component {
             }
         } else {
             this.props.scriptSelect(node.url);
+            // FIXME: there is a risk that this gets out of sync if something else calls scriptSelect, ideally we should lookup the node associated w/ the url in the listing during reduction and pass that back in here via props
+            this.activeNode = node;
         }
     }
 
     onScriptToolClick = (name) => {
-        console.log(name);
         switch (name) {
         case 'add':
             this.props.scriptCreate(this.props.activeBuffer)
@@ -126,9 +130,34 @@ class Explorer extends Component {
             this.props.scriptDuplicate(this.props.activeBuffer)
             break;
 
+        case 'remove':
+            this.handleRemove()
+            break;
+
         default:
+            console.log(name)
             break;
         }
+    }
+
+    handleRemove = () => {
+        let removeModalCompletion = (choice) => {
+            console.log('remove:', choice)
+            if (choice === 'ok') {
+                this.props.scriptDelete(this.props.activeBuffer)
+            }
+            this.props.hideModal()
+        }
+
+        let content = (
+            <ModalContent
+                message={`Delete "${this.activeNode.name}"?`}
+                supporting={"This operation cannot be undone."}
+                buttonAction={removeModalCompletion}
+            />
+        )
+
+        this.props.showModal(content)
     }
 
     render() {
