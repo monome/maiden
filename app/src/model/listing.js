@@ -93,9 +93,18 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
 
     let num = 1;
     let parsed = parsePath(exemplar);
+    let nameRoot = parsed.name;
+
+    // refine starting point if possible
+    let match = nameRoot.split(/(\d+)$/)
+        if (match && match.length === 3) {
+        nameRoot = match[0]
+        num = parseInt(match[1], 10);
+    }
+
     var name;
     do {
-        name = parsed.name + num + parsed.ext;
+        name = nameRoot + num + parsed.ext;
         num += 1;
     } while (existing.has(name));
 

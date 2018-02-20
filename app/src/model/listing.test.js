@@ -1,5 +1,9 @@
 import { Map, List, fromJS } from 'immutable';
-import { keyPathForResource, nodeForResource } from './listing';
+import { 
+    keyPathForResource, 
+    nodeForResource,
+    generateNodeName,
+} from './listing';
 
 // keyPath data
 const listing = fromJS([
@@ -63,4 +67,37 @@ it('non-existant resource lookup should return undefined', () => {
 
 // TODO: add tests for spliceDirInfo
 // TODO: add tests for spliceFileInfo
-// TODO: add tests for generateNodeName
+
+let siblings = fromJS([
+    { name: "a.lua"},
+    { name: "a3.lua"},
+    { name: "a4.lua"},
+    { name: "b3123a.lua" },
+    { name: "c1234a9.lua" },
+    { name: "c1234-9.lua" },
+])
+
+it('generate should use name if no collision', () => {
+    let r = generateNodeName(siblings, "untitled.lua")
+    expect(r).toEqual("untitled.lua")
+})
+
+it('generate should pick next available hole', () => {
+    let r1 = generateNodeName(siblings, "a.lua")
+    expect(r1).toEqual("a1.lua")
+
+    let r2 = generateNodeName(siblings, "a3.lua")
+    expect(r2).toEqual("a5.lua")
+})
+
+it('generate should increment based on only the trailing digits', () => {
+    let r1 = generateNodeName(siblings, "b3123a.lua")
+    expect(r1).toEqual("b3123a1.lua")
+
+    let r2 = generateNodeName(siblings, "c1234a9.lua")
+    expect(r2).toEqual("c1234a10.lua")
+
+    let r3 = generateNodeName(siblings, "c1234-9.lua")
+    expect(r3).toEqual("c1234-10.lua")
+})
+
