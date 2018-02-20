@@ -136,6 +136,13 @@ func main() {
 
 		app.Logger().Debug("going to delete: ", path)
 
+		// issue 404 if it doesn't exist
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			ctx.StatusCode(iris.StatusNotFound)
+			ctx.JSON(errorInfo{err.Error()})
+			return
+		}
+
 		err := os.Remove(path)
 		if err != nil {
 			ctx.StatusCode(iris.StatusInternalServerError)
