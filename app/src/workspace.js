@@ -21,6 +21,9 @@ class Workspace extends Component {
                this.props.replConnect(component, endpoint)
            })
        })
+
+       // trigger initial read of top level scripts
+       this.props.scriptList(this.props.api)
     }
 
     activityBarSize() {

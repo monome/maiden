@@ -48,12 +48,6 @@ class EditActivity extends Component {
         }
     }
 
-    componentDidMount() {
-        // FIXME: this gets called everytime we switch to the edit activity
-        // get list of scripts
-        this.props.scriptList(this.props.api);
-    }
-
     componentWillReceiveProps(newProps) {
         // if the active buffer is dirty grab it out of the child prior to a potential re-render so that the current buffer state isn't lost
         let { activeBuffer, buffers } = this.props;
