@@ -91,7 +91,6 @@ class Explorer extends Component {
         this.state = {
             showTools: false,
         };
-        this.activeNode = undefined;
     }
 
     componentDidMount() {
@@ -115,8 +114,6 @@ class Explorer extends Component {
             }
         } else {
             this.props.scriptSelect(node.url);
-            // FIXME: there is a risk that this gets out of sync if something else calls scriptSelect, ideally we should lookup the node associated w/ the url in the listing during reduction and pass that back in here via props
-            this.activeNode = node;
         }
     }
 
@@ -149,9 +146,10 @@ class Explorer extends Component {
             this.props.hideModal()
         }
 
+        let scriptName = this.props.activeNode.get("name")
         let content = (
             <ModalContent
-                message={`Delete "${this.activeNode.name}"?`}
+                message={`Delete "${scriptName}"?`}
                 supporting={"This operation cannot be undone."}
                 buttonAction={removeModalCompletion}
             />

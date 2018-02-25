@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import EditActivity from './edit-activity';
 import { MATRON_COMPONENT } from './constants';
+import { nodeForResource } from './model/listing';
 
 import {
     scriptList,
@@ -32,12 +33,11 @@ import {
 const getBuffers = (scriptState) => scriptState.buffers;
 const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
 const getListing = (scriptState) => scriptState.listing;
-const getActiveNode = (scriptState) => scriptState.activeNode;
 const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
 
 const getScriptListing = createSelector(
-    [getBuffers, getActiveBuffer, getListing, getActiveNode, getExpandedNodes],
-    (buffers, activeBuffer, listing, activeNode, expandedNodes) => {
+    [getBuffers, getActiveBuffer, getListing, getExpandedNodes],
+    (buffers, activeBuffer, listing, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
     
     let enrich = (items) => {
@@ -63,10 +63,18 @@ const getScriptListing = createSelector(
     return enrich(listing.toJS())
 });
 
+const getActiveNode = createSelector(
+    [getActiveBuffer, getListing],
+    (activeBuffer, listing) => {
+        return nodeForResource(listing, activeBuffer)
+    }
+)
+
 const mapStateToProps = (state) => {
     let {activeBuffer, buffers} = state.scripts;
     return {
         activeBuffer, 
+        activeNode: getActiveNode(state.scripts),
         buffers,
         sidebar: state.sidebar,
         scriptListing: getScriptListing(state.scripts),

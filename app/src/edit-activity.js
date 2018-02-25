@@ -148,6 +148,7 @@ class EditActivity extends Component {
                     explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}
                     activeBuffer={activeBuffer}
+                    activeNode={this.props.activeNode}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
                 />
