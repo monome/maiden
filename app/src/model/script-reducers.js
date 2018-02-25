@@ -6,7 +6,9 @@ import {
     spliceDirInfo, 
     spliceFileInfo, 
     generateNodeName,
-    listingNode,
+    virtualNode,
+    collectVirtualNodes,
+    spliceNodes,
 } from './listing';
 
 import {
@@ -65,7 +67,8 @@ const initialScriptsState = {
 const scripts = (state = initialScriptsState, action) => {
     switch (action.type) {
     case SCRIPT_LIST_SUCCESS:
-        return { ...state, listing: fromJS(action.value.entries) };
+        return handleScriptList(action, state);
+        // return { ...state, listing: fromJS(action.value.entries) };
 
     case SCRIPT_READ_SUCCESS:
         return {
@@ -144,6 +147,14 @@ const handleScriptChange = (action, state) => {
     return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
 }
 
+const handleScriptList = (action, state) => {
+    // retain existing virtual nodes
+    let virtuals = collectVirtualNodes(state.listing);
+    console.log(virtuals.toJS())
+    let listing = spliceNodes(fromJS(action.value.entries), virtuals)
+    return { ...state, listing };
+}
+
 // IDEA: might be cool if this copied 'template.lua' as a starting point 
 const handleScriptNew = (action, state) => {
     // assume script will be placed at the top of the hierarchy
@@ -163,7 +174,7 @@ const handleScriptNew = (action, state) => {
         value: action.value || "",
     });
 
-    let newNode = listingNode(newName, newResource)
+    let newNode = virtualNode(newName, newResource)
     let newListing = spliceFileInfo(state.listing, newNode, action.siblingResource)
 
     return {

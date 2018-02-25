@@ -3,6 +3,9 @@ import {
     keyPathForResource, 
     nodeForResource,
     generateNodeName,
+    appendNodes,
+    collectVirtualNodes,
+    spliceNodes,
 } from './listing';
 
 // keyPath data
@@ -41,11 +44,13 @@ it('root matches should return path with single index', () => {
     expect(keyPathForResource(listing, '/f1')).toEqual(new List([0]))
     expect(keyPathForResource(listing, '/d2')).toEqual(new List([1]))
     expect(keyPathForResource(listing, '/f6')).toEqual(new List([2]))
+    expect(keyPathForResource(listing, '/missing')).toEqual(undefined)
 })
 
 it('level one child should be [index, "children", index]', () => {
     expect(keyPathForResource(listing, '/d2/d4')).toEqual(new List([1, 'children', 1]))
     expect(keyPathForResource(listing, '/d2/f3')).toEqual(new List([1, 'children', 0]))
+    expect(keyPathForResource(listing, '/d2/missing')).toEqual(undefined)
 })
 
 it('level two children should have five element path', () => {
@@ -99,5 +104,92 @@ it('generate should increment based on only the trailing digits', () => {
 
     let r3 = generateNodeName(siblings, "c1234-9.lua")
     expect(r3).toEqual("c1234-10.lua")
+})
+
+
+let existing = fromJS([
+    { name: "a.lua", url: "/a.lua" },
+    { name: "untitled.lua", url: "/untitled.lua", },
+])
+
+let adds = fromJS([
+    { name: "b.lua", url: "/b.lua" },
+    { name: "a.lua", url: "/a.lua" },
+])
+
+it('append of empty list should be a no-op', () => {
+    expect(appendNodes(existing, new List())).toEqual(existing);
+})
+
+it('append of existing should be a no-op', () => {
+    let n1 = fromJS([{ name: "a.lua", url: "/a.lua" }])
+    expect(appendNodes(existing, n1)).toEqual(existing)
+
+    let n2 = fromJS([{ name: "untitled.lua", url: "/untitled.lua" }])
+    expect(appendNodes(existing, n2)).toEqual(existing)
+})
+
+it('append should just add only new', () => {
+    let r1 = fromJS([
+        { name: "a.lua", url: "/a.lua" },
+        { name: "untitled.lua", url: "/untitled.lua" },
+        { name: "b.lua", url: "/b.lua" },
+    ])
+    expect(appendNodes(existing, adds)).toEqual(r1)
+})
+
+
+let virtListing = fromJS([
+    { name: "a.lua", url: "/a.lua" },
+    { name: "untitled.lua", url: "/untitled.lua", virtual: true },
+    { name: "foo", url: "/foo", children: [
+        { name: "bar", url: "/foo/bar", children: [
+            { name: "baz.lua", url: "/foo/bar/baz.lua", virtual: true },
+        ]},
+    ]}
+])
+
+it('collect virtual does not return non virutal', () => {
+    expect(collectVirtualNodes(listing)).toEqual(new List())
+    expect(collectVirtualNodes(siblings)).toEqual(new List())
+})
+
+it('collect virtual finds top and children', () => {
+    let r = fromJS([
+        { name: "untitled.lua", url: "/untitled.lua", virtual: true },
+        { name: "baz.lua", url: "/foo/bar/baz.lua", virtual: true },
+    ])
+    expect(collectVirtualNodes(virtListing)).toEqual(r)
+})
+
+it('splice nodes works on all levels', () => {
+    let n0 = fromJS({ name: "n0.lua", url: "/n0.lua" });
+    let n1 = fromJS({ name: "n1.lua", url: "/foo/n1.lua" });
+    let n2 = fromJS({ name: "n2.lua", url: "/foo/bar/n2.lua" });
+
+    let listing = fromJS([
+        { name: "a.lua", url: "/a.lua" },
+        { name: "foo", url: "/foo", children: [
+            { name: "bar", url: "/foo/bar", children: [
+                { name: "baz.lua", url: "/foo/bar/baz.lua", virtual: true },
+            ]},
+        ]},
+        // commenting this out since it complicates producing the r0 result since insertIn isn't a provided method and splicing sorts the listing
+        // { name: "untitled.lua", url: "/untitled.lua", virtual: true },
+    ])
+
+    expect(spliceNodes(new List(), new List([n0]))).toEqual(new List([n0]))
+
+    let r0 = listing.setIn([2], n0)
+    expect(spliceNodes(listing, new List([n0]))).toEqual(r0)
+
+    // splice in existing is a no-op
+    expect(spliceNodes(listing, fromJS([{ name: "bar", url: "/foo/bar" }]))).toEqual(listing)
+
+    let r1 = listing.setIn([1, "children", 1], n1)
+    expect(spliceNodes(listing, new List([n1]))).toEqual(r1)
+
+    let r2 = listing.setIn([1, "children", 0, "children", 1], n2)
+    expect(spliceNodes(listing, new List([n2]))).toEqual(r2)
 })
 

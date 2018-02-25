@@ -1,4 +1,4 @@
-import { Map, List } from 'immutable';
+import { Map, List, fromJS } from 'immutable';
 import parsePath from 'parse-filepath';
 
 export const keyPathForResource = (listing, resource) => {
@@ -37,10 +37,24 @@ export const nodeForResource = (listing, resource) => {
     return undefined
 }
 
+export const listingReduce = (listing, reduceFn, initial = undefined) => {
+    const walk = (nodes, acc) => {
+        if (!nodes) {
+            return acc;
+        }
+        return nodes.reduce((acc, node, key) => {
+            return reduceFn(walk(node.get("children"), acc), node);
+        }, acc);
+    }
+    return walk(listing, initial);
+}
+
 export const spliceDirInfo = (listing, target, info) => {
     let path = keyPathForResource(listing, target)
     if (path) {
-        return listing.setIn(path.push('children'), info)
+        path = path.push('children');
+        info = muxInVirtualNodes(listing.getIn(path), info).sort(orderByName)
+        return listing.setIn(path, info)
     }
     console.log("unable to find resource in listing, ")
     return listing
@@ -60,22 +74,55 @@ export const spliceFileInfo = (listing, node, siblingResource) => {
     let children = listing.getIn(siblingFamily).insert(newIndex, node)
 
     // for now we sort the children by name but in the future this will probably be broken out into a separate function so that the new node can be inserted into a specific position (with name still editable) then sort when the name is confirmed
-    
-    // FIXME: this isn't working for some reason
-    let sorted = children.sort((a, b) => {
-        let na = a.get('name')
-        let nb = b.get('name')
-
-        if (na < nb) {
-            return -1
-        }
-        if (na > nb) {
-            return 1
-        }
-        return 0;
-    })
+    let sorted = children.sort(orderByName);
 
     return listing.setIn(siblingFamily, sorted)
+}
+
+export const spliceNodes = (listing, nodes) => {
+    if (!nodes) {
+        return listing;
+    }
+
+    let root = virtualRoot(listing);
+    let result = nodes.reduce((acc, node, key) => {
+        let url = node.get("url");
+        let parsed = parsePath(url);
+        let keyPath = keyPathForResource(acc, parsed.dir);
+        if (keyPath) {
+            let siblingPath = keyPath.push("children")
+            let children = acc.getIn(siblingPath)
+            let matches = children.find((c) => {
+                return (url === c.get("url"))
+            });
+            if (matches === undefined) {
+                // this node isn't in the listing, add
+                return acc.setIn(siblingPath, children.push(node).sort(orderByName));    
+            }
+        }
+        else {
+            console.log("danger will robinson, node parent path cannot be found", node)
+        }
+
+        // nothing inserted
+        return acc;
+    }, root)
+
+    // remove virtual root
+    return result.getIn([0, "children"])
+}
+
+export const orderByName = (a, b) => {
+    let na = a.get('name')
+    let nb = b.get('name')
+
+    if (na < nb) {
+        return -1;
+    }
+    if (na > nb) {
+        return 1;
+    }
+    return 0;
 }
 
 // take a list of nodes (script/dir info objects) and return a set containing all the names used at that top level
@@ -111,6 +158,33 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
     return name;
 }
 
-export const listingNode = (name, resource) => {
-    return new Map({ name, url: resource })
+export const virtualNode = (name, resource) => {
+    return new Map({ name, url: resource, virtual: true })
+}
+
+export const virtualRoot = (children) => {
+    return fromJS([{ name: "ROOT", url: "/", virtual: true, children: children }])
+}
+
+export const collectVirtualNodes = (listing) => {
+    const reducer = (acc, node) => {
+        if (node.get("virtual")) {
+            return acc.push(node);
+        }
+        return acc;
+    }
+    return listingReduce(listing, reducer, new List());
+}
+
+// append new nodes into base list if they are new (no sorting)
+export const appendNodes = (base, additions) => {
+    let keys = new Set(base.map(n => n.get("url")))
+    let adds = additions.filterNot(n => keys.has(n.get("url")))
+    return base.push(...adds)
+}
+
+export const muxInVirtualNodes = (base, incoming) => {
+    let keys = new Set(incoming.map(n => n.get("url")))
+    let virtuals = base.filter(n => n.get("virtual", false) && !keys.has(n.get("url")))
+    return incoming.push(...virtuals)
 }
