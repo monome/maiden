@@ -150,7 +150,6 @@ const handleScriptChange = (action, state) => {
 const handleScriptList = (action, state) => {
     // retain existing virtual nodes
     let virtuals = collectVirtualNodes(state.listing);
-    console.log(virtuals.toJS())
     let listing = spliceNodes(fromJS(action.value.entries), virtuals)
     return { ...state, listing };
 }
