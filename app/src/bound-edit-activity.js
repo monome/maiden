@@ -14,7 +14,8 @@ import {
     scriptNew,
     scriptDuplicate,
     scriptDelete,
-
+    scriptRename,
+    
     toolInvoke,
 
     explorerActiveNode,
@@ -136,7 +137,10 @@ const mapDispatchToProps = (dispatch) => {
         },
         explorerScriptDelete: (api, resource) => {
             dispatch(scriptDelete(api, resource))
-        }
+        },
+        explorerScriptRename: (api, activeNode, newName) => {
+            dispatch(scriptRename(api, activeNode, newName))
+        },
     }
 }
 

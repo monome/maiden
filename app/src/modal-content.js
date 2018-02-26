@@ -13,6 +13,7 @@ const ModalContent = (props) => {
                 <p/>
                 <p/>
             </div>
+            {props.children}
             <div className="button-container">
                 <IconButton
                     key='cancel'

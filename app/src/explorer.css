@@ -69,3 +69,16 @@
                                     supported by Chrome and Opera */
   }
   
+.rename-modal-text-area {
+    border: none;
+    border-bottom: 1px solid rgb(192, 192, 192);
+    resize: none;
+    overflow: auto;
+    outline: none;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    font-size: 16px;
+
+}

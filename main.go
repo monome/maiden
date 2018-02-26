@@ -130,6 +130,28 @@ func main() {
 		app.Logger().Debugf("wrote %d bytes to %s", size, path)
 	})
 
+	api.Patch("/scripts/{name:path}", func(ctx iris.Context) {
+		// FIXME: this logic basically assumes PATCH == rename operation at the moment
+		name := ctx.Params().Get("name")
+		path := scriptPath(dataDir, &name)
+
+		// compute new path
+		rename := filepath.Join(filepath.Dir(name), ctx.PostValue("name"))
+		renamePath := scriptPath(dataDir, &rename)
+
+		app.Logger().Debug("going to rename: ", path, " to: ", renamePath)
+
+		err := os.Rename(path, renamePath)
+		if err != nil {
+			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.JSON(errorInfo{err.Error()})
+			return
+		}
+
+		ctx.JSON(patchInfo{resourcePath(rename)})
+
+	})
+
 	api.Delete("/scripts/{name:path}", func(ctx iris.Context) {
 		name := ctx.Params().Get("name")
 		path := scriptPath(dataDir, &name)
@@ -188,6 +210,10 @@ type dirInfo struct {
 
 type errorInfo struct {
 	Error string `json:"error"`
+}
+
+type patchInfo struct {
+	URL string `json:"url"`
 }
 
 func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc) *dirInfo {

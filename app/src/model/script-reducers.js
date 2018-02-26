@@ -21,6 +21,8 @@ import {
     SCRIPT_NEW,
     SCRIPT_DELETE_SUCCESS,
     SCRIPT_DUPLICATE,
+    SCRIPT_NEW_FOLDER_SUCCESS,
+    SCRIPT_RENAME_SUCCESS,
 
     TOOL_INVOKE,
 
@@ -107,6 +109,12 @@ const scripts = (state = initialScriptsState, action) => {
 
     case SCRIPT_DUPLICATE:
         return handleScriptDuplicate(action, state);
+
+    case SCRIPT_NEW_FOLDER_SUCCESS:
+        return handleScriptNewFolderSuccess(action, state);
+
+    case SCRIPT_RENAME_SUCCESS:
+        return handleScriptRenameSuccess(action, state);
 
     case TOOL_INVOKE:
         console.log("tool invoke => ", action.name);
@@ -214,6 +222,15 @@ const handleScriptDuplicate = (action, state) => {
     let newAction = scriptNew(action.resource, sourceBuffer.get('value'), sourceNode.get('name'))
     
     return handleScriptNew(newAction, state)
+}
+
+const handleScriptNewFolderSuccess = (action, state) => {
+    return state;
+}
+
+const handleScriptRenameSuccess = (action, state) => {
+    console.log("rename success: ", action)
+    return state;
 }
 
 export default scripts;

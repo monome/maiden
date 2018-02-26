@@ -19,11 +19,18 @@ export const SCRIPT_SAVE_FAILURE = 'SCRIPT_SAVE_FAILURE'
 export const SCRIPT_SELECT = 'SCRIPT_SELECT'
 export const SCRIPT_NEW = 'SCRIPT_NEW'
 export const SCRIPT_DUPLICATE = 'SCRIPT_DUPLICATE'
-export const SCRIPT_RENAME = 'SCRIPT_RENAME'
+
+export const SCRIPT_RENAME_REQUEST = 'SCRIPT_RENAME_REQUEST'
+export const SCRIPT_RENAME_SUCCESS = 'SCRIPT_RENAME_SUCCESS'
+export const SCRIPT_RENAME_FAILURE = 'SCRIPT_RENAME_FAILURE'
 
 export const SCRIPT_DELETE_REQUEST = 'SCRIPT_DELETE_REQUEST'
 export const SCRIPT_DELETE_SUCCESS = 'SCRIPT_DELETE_SUCCESS'
 export const SCRIPT_DELETE_FAILURE = 'SCRIPT_DELETE_FAILURE'
+
+export const SCRIPT_NEW_FOLDER_REQUEST = 'SCRIPT_NEW_FOLDER_REQUEST'
+export const SCRIPT_NEW_FOLDER_SUCCESS = 'SCRIPT_NEW_FOLDER_SUCCESS'
+export const SCRIPT_NEW_FOLDER_FAILURE = 'SCRIPT_NEW_FOLDER_FAILURE'
 
 export const TOOL_INVOKE = 'TOOL_INVOKE'
 
@@ -98,11 +105,29 @@ export const scriptDuplicate = (resource) => {
     return { type: SCRIPT_DUPLICATE, resource }
 }
 
-/*
-export const scriptDelete = (resource) => {
-    return { type: SCRIPT_DELETE, resource }
+export const scriptRenameRequest = (resource, name) => {
+    return { type: SCRIPT_RENAME_REQUEST, resource, name }
 }
-*/
+
+export const scriptRenameSuccess = (resource, newResource) => {
+    return { type: SCRIPT_RENAME_SUCCESS, resource, newResource }
+}
+
+export const scriptRenameFailure = (resource, name, error) => {
+    return { type: SCRIPT_RENAME_FAILURE, resource, name, error }
+}
+
+export const scriptNewFolderRequest = (siblingResource, name) => {
+    return { type: SCRIPT_NEW_FOLDER_REQUEST, siblingResource, name }
+}
+
+export const scriptNewFolderSuccess = (resource) => {
+    return { type: SCRIPT_NEW_FOLDER_SUCCESS, resource }
+}
+
+export const scriptNewFolderFailure = (resource, error) => {
+    return { type: SCRIPT_NEW_FOLDER_FAILURE, resource, error }
+}
 
 export const scriptDeleteRequest = (resource) => {
     return { type: SCRIPT_DELETE_REQUEST, resource }
@@ -180,6 +205,30 @@ export const scriptDelete = (api, resource, cb) => {
         return api.deleteScript(resource, (response) => {
             // FIXME: handle errors
             dispatch(scriptDeleteSuccess(resource, response.entity))
+            cb && cb()
+        })
+    }
+}
+
+export const scriptRename = (api, resource, name, ) => {
+    return (dispatch) => {
+        dispatch(scriptRenameRequest(resource, name))
+        return api.renameScript(resource, name, (response) => {
+            // handle errors
+            response.json().then(data => {
+                dispatch(scriptRenameSuccess(resource, data.url))
+            })
+        })
+    }
+}
+
+export const scriptNewFolder = (api, sibling, name, cb) => {
+    return (dispatch) => {
+        dispatch(scriptNewFolderRequest(sibling, name))
+        // this is wrong
+        return api.createFolder(sibling, name, (response) => {
+            // handle errors?
+            dispatch(scriptNewFolderSuccess(response.entity))
             cb && cb()
         })
     }

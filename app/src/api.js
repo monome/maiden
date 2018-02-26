@@ -52,6 +52,19 @@ class API {
             method: 'DELETE'
         }).then(cb)
     }
+
+    renameScript(resource, name, cb) {
+        const formData = new FormData();
+        formData.append('name', name)
+        fetch(resource, {
+            method: 'PATCH',
+            body: formData,
+        }).then(cb)
+    }
+
+    createFolder() {
+        console.log("api.createFolder() not implemented")
+    }
     
     list_repl_endpoints(cb) {
         fetch('/repl-endpoints.json').then((response) => {

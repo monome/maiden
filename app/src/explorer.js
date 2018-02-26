@@ -6,16 +6,16 @@ import treeAnim from './explorer-animation';
 import './explorer.css';
 
 import ModalContent from './modal-content';
+import ModalRename from './modal-rename';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 
 
 const TreeHeader = (props) => {
     let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
-    // console.log(props.node, className)
     return (
         <span className={className}>
-        {props.node.name}
+            {props.node.name}
         </span>
     );
 };
@@ -83,7 +83,12 @@ const scriptTools = [
     {
         name: "new-folder",
         icon: ICONS["folder-plus"],
-    }
+    },
+    {
+        name: "rename",
+        icon: ICONS["pencil"],
+    },
+
 ]
 class Explorer extends Component {
     constructor(props) {
@@ -131,6 +136,10 @@ class Explorer extends Component {
             this.handleRemove()
             break;
 
+        case 'rename':
+            this.handleRename()
+            break;
+
         default:
             console.log(name)
             break;
@@ -153,6 +162,23 @@ class Explorer extends Component {
                 supporting={"This operation cannot be undone."}
                 buttonAction={removeModalCompletion}
             />
+        )
+
+        this.props.showModal(content)
+    }
+
+    handleRename = () => {
+        let complete = (choice, name) => {
+            console.log('rename:', choice, name)
+            if (name && choice === "ok") {
+                this.props.scriptRename(this.props.api, this.props.activeNode.get("url"), name)
+            }
+            this.props.hideModal()
+        }
+
+        let initialName = this.props.activeNode.get("name");
+        let content = (
+            <ModalRename message="Rename" buttonAction={complete} initialName={initialName} />
         )
 
         this.props.showModal(content)

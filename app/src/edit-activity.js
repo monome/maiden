@@ -144,6 +144,7 @@ class EditActivity extends Component {
                     scriptCreate={this.props.explorerScriptNew}
                     scriptDuplicate={this.props.explorerScriptDuplicate}
                     scriptDelete={this.props.explorerScriptDelete}
+                    scriptRename={this.props.explorerScriptRename}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}
