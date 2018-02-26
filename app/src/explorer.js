@@ -26,7 +26,7 @@ const TreeToggle = ({style}) => {
     const points = `0,0 0,${height} ${width},${midHeight}`;
 
     return (
-        <span style={style.base}>
+        <span className="explorer-tree-toggle" style={style.base}>
             <svg height={height} width={width}>
                 <polygon points={points} style={style.arrow} />
             </svg>

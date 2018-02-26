@@ -20,6 +20,10 @@
     display: none;
 }
 
+.explorer-tree-toggle {
+    display: inline-block;
+}
+
 .explorer-entry {
     padding: 0.1em;
     color: rgb(117, 117, 117);
