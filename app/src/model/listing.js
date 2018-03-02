@@ -29,12 +29,51 @@ export const keyPathForResource = (listing, resource) => {
     return walk(listing, undefined);
 }
 
-export const nodeForResource = (listing, resource) => {
-    let keyPath = keyPathForResource(listing, resource)
+export const keyPathForResourceOld = (rootNode, resource) => {
+    const walk = (node) => {
+        // // // if (!node) {
+        // //     return undefined;
+        // }
+
+        if (node.get("url") === resource) {
+            return new List();
+        }
+
+        let children = node.get("children");
+        console.log("children of: ", node, children)
+        children && children.forEach((child, key) => {
+            let childKey = walk(child);
+            if (childKey) {
+                return childKey.unshift(key, "children");
+            }
+        })
+
+        return undefined;
+    }
+    return walk(rootNode);
+}
+
+export const nodeForResource = (rootNode, resource) => {
+    let keyPath = keyPathForResource(rootNode, resource)
     if (keyPath) {
-        return listing.getIn(keyPath)
+        return rootNode.getIn(keyPath)
     }
     return undefined
+}
+
+export const keyPathParent = (keyPath) => {
+    if (keyPath && keyPath.size > 2) {
+        return keyPath.pop().pop();
+    }
+    return undefined;
+}
+
+export const parentNodeForResource = (listing, resource) => {
+    let keyPath = keyPathForResource(listing, resource);
+    if (keyPath && keyPath.length > 2) {
+        return listing.getIn(keyPath.pop().pop());
+    }
+    return undefined;
 }
 
 export const listingReduce = (listing, reduceFn, initial = undefined) => {
@@ -79,6 +118,19 @@ export const spliceFileInfo = (listing, node, siblingResource) => {
     return listing.setIn(siblingFamily, sorted)
 }
 
+// MAINT: this assumes a listing with a rootNode node
+export const sortDir = (rootNode, dirPath) => {
+    // let dirPath = keyPathForResource(rootNode, resource);
+    if (dirPath) {
+        let dirNode = rootNode.getIn(dirPath);
+        let children = dirNode.get("children");
+        let sorted = children.sort(orderByName)
+        return rootNode.setIn(dirPath.push("children"), sorted)
+    }
+    return rootNode;
+}
+
+/*
 export const spliceNodes = (listing, nodes) => {
     if (!nodes) {
         return listing;
@@ -110,6 +162,38 @@ export const spliceNodes = (listing, nodes) => {
 
     // remove virtual root
     return result.getIn([0, "children"])
+}
+*/
+
+export const spliceNodes = (rootNode, nodes) => {
+    if (!nodes) {
+        return rootNode;
+    }
+
+    return nodes.reduce((acc, node, key) => {
+        let url = node.get("url");
+        let parsed = parsePath(url);
+        let keyPath = keyPathForResource(acc, parsed.dir);
+        // console.log("url => keyPath //", url, parsed.dir, keyPath)
+        if (keyPath) {
+            let siblingPath = keyPath.push("children")
+            let children = acc.getIn(siblingPath)
+            let matches = children.find((c) => {
+                return (url === c.get("url"))
+            });
+            if (matches === undefined) {
+                // this node isn't in the listing, add
+                return acc.setIn(siblingPath, children.push(node).sort(orderByName));    
+            }
+        }
+        else {
+            //return acc.push(node)
+            console.log("danger will robinson, node parent path cannot be found", node)
+        }
+
+        // nothing inserted
+        return acc;
+    }, rootNode)
 }
 
 export const orderByName = (a, b) => {
@@ -162,8 +246,9 @@ export const virtualNode = (name, resource) => {
     return new Map({ name, url: resource, virtual: true })
 }
 
-export const virtualRoot = (children) => {
-    return fromJS([{ name: "ROOT", url: "/", virtual: true, children: children }])
+export const virtualRoot = (children, name = "ROOT") => {
+    let rootNode = fromJS([{ name, url: "/", virtual: true }])
+    return rootNode.setIn([0, "children"], children)
 }
 
 export const collectVirtualNodes = (listing) => {

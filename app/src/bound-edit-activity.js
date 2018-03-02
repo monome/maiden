@@ -33,12 +33,12 @@ import {
 
 const getBuffers = (scriptState) => scriptState.buffers;
 const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
-const getListing = (scriptState) => scriptState.listing;
+const getRootNode = (scriptState) => scriptState.rootNode;
 const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
 
 const getScriptListing = createSelector(
-    [getBuffers, getActiveBuffer, getListing, getExpandedNodes],
-    (buffers, activeBuffer, listing, expandedNodes) => {
+    [getBuffers, getActiveBuffer, getRootNode, getExpandedNodes],
+    (buffers, activeBuffer, rootNode, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
     
     let enrich = (items) => {
@@ -61,13 +61,19 @@ const getScriptListing = createSelector(
         })
     };
 
-    return enrich(listing.toJS())
+    // MAINT: this assumes the "scripts" root is the first node in the list
+    // console.log("rootNode= ", rootNode.toJS())
+    let scriptRoot = rootNode.getIn([0, "children"])
+    if (scriptRoot) {
+        return enrich(scriptRoot.toJS());
+    }
+    return [];
 });
 
 const getActiveNode = createSelector(
-    [getActiveBuffer, getListing],
-    (activeBuffer, listing) => {
-        return nodeForResource(listing, activeBuffer)
+    [getActiveBuffer, getRootNode],
+    (activeBuffer, rootNode) => {
+        return nodeForResource(rootNode, activeBuffer)
     }
 )
 

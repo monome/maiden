@@ -109,8 +109,8 @@ export const scriptRenameRequest = (resource, name) => {
     return { type: SCRIPT_RENAME_REQUEST, resource, name }
 }
 
-export const scriptRenameSuccess = (resource, newResource) => {
-    return { type: SCRIPT_RENAME_SUCCESS, resource, newResource }
+export const scriptRenameSuccess = (resource, newName, newResource) => {
+    return { type: SCRIPT_RENAME_SUCCESS, resource, newName, newResource }
 }
 
 export const scriptRenameFailure = (resource, name, error) => {
@@ -210,13 +210,13 @@ export const scriptDelete = (api, resource, cb) => {
     }
 }
 
-export const scriptRename = (api, resource, name, ) => {
+export const scriptRename = (api, resource, name) => {
     return (dispatch) => {
         dispatch(scriptRenameRequest(resource, name))
         return api.renameScript(resource, name, (response) => {
             // handle errors
             response.json().then(data => {
-                dispatch(scriptRenameSuccess(resource, data.url))
+                dispatch(scriptRenameSuccess(resource, name, data.url))
             })
         })
     }

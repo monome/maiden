@@ -2,6 +2,7 @@ import { Map, List, Set, fromJS } from 'immutable';
 
 import {
     keyPathForResource,
+    keyPathParent,
     nodeForResource,
     spliceDirInfo, 
     spliceFileInfo, 
@@ -9,6 +10,8 @@ import {
     virtualNode,
     collectVirtualNodes,
     spliceNodes,
+    virtualRoot,
+    sortDir
 } from './listing';
 
 import {
@@ -40,16 +43,16 @@ import { UNTITLED_SCRIPT } from '../constants';
 scripts: {
     activeNode: <url>,
     expandedNodes: Set(),
-    listing: [
+    rootNode: [
         { name: ..., url: ... },
         { name: ..., url:... , children: [
-            <more listings>
+            <more rootNodes>
         ]}
     ]
     activeBuffer: <url>,
     buffers: Map({
         <url>: {
-            url: <url>,
+            url: <url>,p
             modified: <bool>,
             value: <string>,
         }
@@ -60,7 +63,7 @@ scripts: {
 
 const initialScriptsState = {
     activeBuffer: undefined,
-    listing: new List(),
+    rootNode: virtualRoot(new List()),
     buffers: new Map(),
     activeNode: undefined,
     expandedNodes: new Set(),
@@ -70,7 +73,7 @@ const scripts = (state = initialScriptsState, action) => {
     switch (action.type) {
     case SCRIPT_LIST_SUCCESS:
         return handleScriptList(action, state);
-        // return { ...state, listing: fromJS(action.value.entries) };
+        // return { ...state, rootNode: fromJS(action.value.entries) };
 
     case SCRIPT_READ_SUCCESS:
         return {
@@ -82,10 +85,10 @@ const scripts = (state = initialScriptsState, action) => {
         };
 
     case SCRIPT_DIR_SUCCESS:
-        // console.log("splice", state.listing, action.resource, action.value)
+        // console.log("splice", state.rootNode, action.resource, action.value)
         return {
             ...state,
-            listing: spliceDirInfo(state.listing, action.resource, fromJS(action.value.entries))
+            rootNode: spliceDirInfo(state.rootNode, action.resource, fromJS(action.value.entries))
         };
 
     case SCRIPT_SAVE_SUCCESS:
@@ -156,22 +159,22 @@ const handleScriptChange = (action, state) => {
 }
 
 const handleScriptList = (action, state) => {
-    // retain existing virtual nodes
-    let virtuals = collectVirtualNodes(state.listing);
-    let listing = spliceNodes(fromJS(action.value.entries), virtuals)
-    return { ...state, listing };
+    // retain existing virtual nodes (!!! except root node)
+    let virtuals = collectVirtualNodes(state.rootNode).filter(n => n.get("name") === state.rootNode.get("name"))
+    let rootNode = spliceNodes(virtualRoot(fromJS(action.value.entries)), virtuals)
+    return { ...state, rootNode };
 }
 
 // IDEA: might be cool if this copied 'template.lua' as a starting point 
 const handleScriptNew = (action, state) => {
     // assume script will be placed at the top of the hierarchy
-    let siblings = state.listing;
+    let siblings = state.rootNode;
 
-    let childPath = keyPathForResource(state.listing, action.siblingResource)
+    let childPath = keyPathForResource(state.rootNode, action.siblingResource)
     if (childPath) {
         // a sibling exists, use that level of hierarchy for name computation
         let siblingPath = childPath.pop()
-        siblings = state.listing.getIn(siblingPath)
+        siblings = state.rootNode.getIn(siblingPath)
     }
 
     let newName = generateNodeName(siblings, action.name || "untitled.lua")
@@ -182,11 +185,11 @@ const handleScriptNew = (action, state) => {
     });
 
     let newNode = virtualNode(newName, newResource)
-    let newListing = spliceFileInfo(state.listing, newNode, action.siblingResource)
+    let newRootNode = spliceFileInfo(state.rootNode, newNode, action.siblingResource)
 
     return {
         ...state,
-        listing: newListing,
+        rootNode: newRootNode,
         activeBuffer: newResource,
         buffers: state.buffers.set(newResource, newBuffer),
     };
@@ -194,13 +197,13 @@ const handleScriptNew = (action, state) => {
 
 const handleScriptDeleteSuccess = (action, state) => {
     console.log('in handleScriptDelete()', action)
-    let childPath = keyPathForResource(state.listing, action.resource)
-    let newListing = state.listing.removeIn(childPath)
+    let childPath = keyPathForResource(state.rootNode, action.resource)
+    let newRootNode = state.rootNode.removeIn(childPath)
     let newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
 
     return {
         ...state,
-        listing: newListing,
+        rootNode: newRootNode,
         activeBuffer: newActiveBuffer,
         buffers: state.buffers.delete(action.resource)
     }
@@ -212,7 +215,7 @@ const handleScriptDuplicate = (action, state) => {
         return state
     }
     
-    let sourceNode = nodeForResource(state.listing, action.resource)
+    let sourceNode = nodeForResource(state.rootNode, action.resource)
     if (!sourceNode) {
         console.log('cannot find existing resource to duplicate')
         return state
@@ -230,7 +233,27 @@ const handleScriptNewFolderSuccess = (action, state) => {
 
 const handleScriptRenameSuccess = (action, state) => {
     console.log("rename success: ", action)
-    return state;
+    // ...should work from rooted tree
+
+    let oldNode = nodeForResource(state.rootNode, action.resource)
+    let newNode = oldNode.set("url", action.newResource).set("name", action.newName)
+
+    let keyPath = keyPathForResource(state.rootNode, action.resource);
+    let rootNode = state.rootNode.setIn(keyPath, newNode);
+    
+    // sort parent dir of node
+    let dirPath = keyPathParent(keyPath)
+    
+    rootNode = sortDir(rootNode, dirPath)
+
+    // update active buffer if pointing at the renamed resource
+    let activeBuffer = state.activeBuffer === action.resource ? action.newResource : state.activeBuffer;
+
+    return {
+        ...state,
+        activeBuffer,
+        rootNode,
+    };
 }
 
 export default scripts;

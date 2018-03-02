@@ -1,15 +1,17 @@
 import { Map, List, fromJS } from 'immutable';
 import { 
-    keyPathForResource, 
+    keyPathForResource,
     nodeForResource,
     generateNodeName,
     appendNodes,
     collectVirtualNodes,
     spliceNodes,
+    keyPathParent,
+    virtualRoot,
 } from './listing';
 
 // keyPath data
-const listing = fromJS([
+let listing = fromJS([
   {
       name: 'f1',
       url: '/f1',
@@ -40,35 +42,48 @@ const listing = fromJS([
   },
 ])
 
+let root = virtualRoot(listing)
+
 it('root matches should return path with single index', () => {
-    expect(keyPathForResource(listing, '/f1')).toEqual(new List([0]))
-    expect(keyPathForResource(listing, '/d2')).toEqual(new List([1]))
-    expect(keyPathForResource(listing, '/f6')).toEqual(new List([2]))
-    expect(keyPathForResource(listing, '/missing')).toEqual(undefined)
+    expect(keyPathForResource(root, '/f1')).toEqual(new List([0, "children", 0]))
+    expect(keyPathForResource(root, '/d2')).toEqual(new List([0, "children", 1]))
+    expect(keyPathForResource(root, '/f6')).toEqual(new List([0, "children", 2]))
+    expect(keyPathForResource(root, '/missing')).toEqual(undefined)
 })
 
 it('level one child should be [index, "children", index]', () => {
-    expect(keyPathForResource(listing, '/d2/d4')).toEqual(new List([1, 'children', 1]))
-    expect(keyPathForResource(listing, '/d2/f3')).toEqual(new List([1, 'children', 0]))
-    expect(keyPathForResource(listing, '/d2/missing')).toEqual(undefined)
+    expect(keyPathForResource(root, '/d2/d4')).toEqual(new List([0, "children", 1, 'children', 1]))
+    expect(keyPathForResource(root, '/d2/f3')).toEqual(new List([0, "children", 1, 'children', 0]))
+    expect(keyPathForResource(root, '/d2/missing')).toEqual(undefined)
 })
 
 it('level two children should have five element path', () => {
-    let expected = new List([1, 'children', 1, 'children', 0])
-    expect(keyPathForResource(listing, '/d2/d4/f5')).toEqual(expected)
+    let expected = new List([0, "children", 1, 'children', 1, 'children', 0])
+    expect(keyPathForResource(root, '/d2/d4/f5')).toEqual(expected)
 })
 
 it('existing node is found', () => {
-    let r1 = nodeForResource(listing, '/d2/f3')
+    let r1 = nodeForResource(root, '/d2/f3')
     expect(r1).toEqual(new Map({ name: 'f3', url: '/d2/f3' }))
 
-    let r2 = nodeForResource(listing, '/d2/d4')
+    let r2 = nodeForResource(root, '/d2/d4')
     expect(r2.get('children').size).toEqual(1)
 })
 
 it('non-existant resource lookup should return undefined', () => {
-    expect(nodeForResource(listing, '*MISSING')).toEqual(undefined)
+    expect(nodeForResource(root, '*MISSING')).toEqual(undefined)
 })
+
+it('parent path of top level is undefined', () => {
+    let kp = keyPathForResource(root, '/f1')
+    expect(keyPathParent(kp)).toEqual(undefined)
+})
+
+it('parent path of undefined is undefined', () => {
+    expect(keyPathParent(undefined)).toEqual(undefined)
+})
+
+
 
 // TODO: add tests for spliceDirInfo
 // TODO: add tests for spliceFileInfo
@@ -167,7 +182,7 @@ it('splice nodes works on all levels', () => {
     let n1 = fromJS({ name: "n1.lua", url: "/foo/n1.lua" });
     let n2 = fromJS({ name: "n2.lua", url: "/foo/bar/n2.lua" });
 
-    let listing = fromJS([
+    let root = virtualRoot(fromJS([
         { name: "a.lua", url: "/a.lua" },
         { name: "foo", url: "/foo", children: [
             { name: "bar", url: "/foo/bar", children: [
@@ -176,20 +191,20 @@ it('splice nodes works on all levels', () => {
         ]},
         // commenting this out since it complicates producing the r0 result since insertIn isn't a provided method and splicing sorts the listing
         // { name: "untitled.lua", url: "/untitled.lua", virtual: true },
-    ])
+    ]))
 
-    expect(spliceNodes(new List(), new List([n0]))).toEqual(new List([n0]))
+    // expect(spliceNodes(new List(), new List([n0]))).toEqual(new List([n0]))
 
-    let r0 = listing.setIn([2], n0)
-    expect(spliceNodes(listing, new List([n0]))).toEqual(r0)
+    let r0 = root.setIn([0, "children", 2], n0)
+    expect(spliceNodes(root, new List([n0]))).toEqual(r0)
 
     // splice in existing is a no-op
-    expect(spliceNodes(listing, fromJS([{ name: "bar", url: "/foo/bar" }]))).toEqual(listing)
+    expect(spliceNodes(root, fromJS([{ name: "bar", url: "/foo/bar" }]))).toEqual(root)
 
-    let r1 = listing.setIn([1, "children", 1], n1)
-    expect(spliceNodes(listing, new List([n1]))).toEqual(r1)
+    let r1 = root.setIn([0, "children", 1, "children", 1], n1)
+    expect(spliceNodes(root, new List([n1]))).toEqual(r1)
 
-    let r2 = listing.setIn([1, "children", 0, "children", 1], n2)
-    expect(spliceNodes(listing, new List([n2]))).toEqual(r2)
+    let r2 = root.setIn([0, "children", 1, "children", 0, "children", 1], n2)
+    expect(spliceNodes(root, new List([n2]))).toEqual(r2)
 })
 
