@@ -1,5 +1,5 @@
 import { Map, List, fromJS } from 'immutable';
-import { 
+import {
     keyPathForResource,
     nodeForResource,
     generateNodeName,
@@ -76,7 +76,8 @@ it('non-existant resource lookup should return undefined', () => {
 
 it('parent path of top level is undefined', () => {
     let kp = keyPathForResource(root, '/f1')
-    expect(keyPathParent(kp)).toEqual(undefined)
+    expect(kp).toEqual(new List([0, "children", 0]))
+    expect(keyPathParent(kp)).toEqual(new List([0]))
 })
 
 it('parent path of undefined is undefined', () => {
