@@ -192,7 +192,7 @@ class Explorer extends Component {
     render() {
         const {width, height} = this.props;
         return (
-            <div className={'explorer' + (this.props.hidden ? ' hidden' : '')}
+            <div className={'explorer' + (this.props.hidden ? ' hidden' : '')} // FIXME: change this to use classname
                  style={{width, height}}
                  ref={(elem) => this.explorer = elem}
             >

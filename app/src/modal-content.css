@@ -19,3 +19,9 @@
     flex-direction: row;
     justify-content: flex-end;
 }
+
+.rename-modal-error-message {
+    font-style: italic;
+    color: rgb(151, 80, 49);
+    height: 1em;
+}

@@ -1,15 +1,36 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { siblingNamesForResource } from './model/listing';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-// import './modal-content.css';
+import { INVALID_NAME_CHARS } from './constants';
+
+const mapStateToProps = (state) => {
+    // renaming is relative to some active node; get sibling names to enable validation
+    let siblingNames = siblingNamesForResource(state.scripts.rootNodes, state.scripts.activeBuffer);
+    return {
+        siblingNames,
+    }
+}
 
 class ModalRename extends Component {
     constructor(props) {
         super(props)
         this.textArea = undefined
+        this.state = {
+            showError: false,
+            errorMessage: "",
+        }
     }
     
     handleKeyDown = (event) => {
+        // filter out chars we can't have in names
+        if (INVALID_NAME_CHARS.has(event.key)) {
+            console.log("character '", event.key, "' not allowed in names")
+            event.preventDefault()
+            return;
+        }
+
         switch (event.keyCode) {
          case 13:            // return
             event.preventDefault()
@@ -26,7 +47,29 @@ class ModalRename extends Component {
         }
     }
 
+    handleOnChange = (event) => {
+        if (this.props.siblingNames.has(this.textArea.value)) {
+            this.setState({
+                errorMessage: "name already in use",
+            })
+        } else {
+            this.setState({
+                errorMessage: "",
+            })
+        }
+    }
+
+    isValidName = (name) => {
+        return !this.props.siblingNames.has(name);
+    }
+
+
     complete = (choice) => {
+        let name = this.textArea.value;
+        if (choice === "ok" && !this.isValidName(name)) {
+            // prevent completion if name is bad
+            return
+        }
         this.props.buttonAction(choice, this.textArea.value)
     }
 
@@ -46,8 +89,11 @@ class ModalRename extends Component {
                     wrap="false"
                     autoFocus="true"
                     onKeyDown={this.handleKeyDown}
+                    onChange={this.handleOnChange}
                 />
-            <p/>
+            <div className="rename-modal-error-message">
+                {this.state.errorMessage}
+            </div>
             <div className="button-container">
                 <IconButton
                     key='cancel'
@@ -69,4 +115,5 @@ class ModalRename extends Component {
     }
 }
 
-export default ModalRename;
+// export default ModalRename;
+export default connect(mapStateToProps)(ModalRename);

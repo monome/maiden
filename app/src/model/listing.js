@@ -242,3 +242,13 @@ export const muxInVirtualNodes = (base, incoming) => {
 export const childrenOfRoot = (rootNodes, index = 0) => {
     return rootNodes.getIn([index, "children"]);
 }
+
+export const siblingNamesForResource = (rootNodes, resource) => {
+    let keyPath = keyPathForResource(rootNodes, resource);
+    if (!keyPath.has("children")) {
+        // this is a script/file itself, get sibling names by listing the parent node
+        keyPath = keyPathParent(keyPath)
+    }
+    let node = rootNodes.getIn(keyPath)
+    return new Set(node.get("children").map(node => node.get("name")))
+}
