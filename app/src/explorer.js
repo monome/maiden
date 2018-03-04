@@ -58,7 +58,7 @@ const SectionHeader = (props) => {
     return (
         <div className='explorer-header'>
             <span className='section-name'>{props.name}</span>
-            <span 
+            <span
                 className={cx('section-tools', {'opaque': props.showTools})}
             >
                 {tools}
@@ -127,7 +127,7 @@ class Explorer extends Component {
         case 'add':
             this.props.scriptCreate(this.props.activeBuffer)
             break;
-        
+
         case 'duplicate':
             this.props.scriptDuplicate(this.props.activeBuffer)
             break;
@@ -171,7 +171,12 @@ class Explorer extends Component {
         let complete = (choice, name) => {
             console.log('rename:', choice, name)
             if (name && choice === "ok") {
-                this.props.scriptRename(this.props.api, this.props.activeNode.get("url"), name)
+                this.props.scriptRename(
+                    this.props.api,
+                    this.props.activeNode.get("url"),
+                    name,
+                    this.props.activeNode.get("virtual", false)
+                )
             }
             this.props.hideModal()
         }
@@ -191,7 +196,7 @@ class Explorer extends Component {
                  style={{width, height}}
                  ref={(elem) => this.explorer = elem}
             >
-                <SectionHeader 
+                <SectionHeader
                     name='scripts'
                     tools={scriptTools}
                     buttonAction={this.onScriptToolClick}

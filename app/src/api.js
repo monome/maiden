@@ -33,10 +33,10 @@ class API {
         this.client(request).then(cb);
     }
 
-    read_script(url, cb) {
-        this.client(url).then(cb);
+    readScript(resource, cb) {
+        fetch(resource).then(cb)
     }
-    
+
     // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
     write_script(resource, code, cb) {
         const formData = new FormData();
@@ -65,7 +65,7 @@ class API {
     createFolder() {
         console.log("api.createFolder() not implemented")
     }
-    
+
     list_repl_endpoints(cb) {
         fetch('/repl-endpoints.json').then((response) => {
             // TODO: parse url and insert hostname if not specified

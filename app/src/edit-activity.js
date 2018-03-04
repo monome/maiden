@@ -55,7 +55,7 @@ class EditActivity extends Component {
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
             this.props.scriptChange(activeBuffer, this.editor.getValue());
         }
-        
+
         let newBuffers = newProps.buffers;
         if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
@@ -106,7 +106,7 @@ class EditActivity extends Component {
                     this.editor.bufferWasSaved(resource)
                  })
             }
-        } 
+        }
         else if (tool === 'play') {
             if (buffer.get('modified')) {
                 // save, then run
@@ -115,16 +115,25 @@ class EditActivity extends Component {
                     this.editor.bufferWasSaved(resource)
                     this.props.scriptRun(this.props.api, resource)
                 })
-            } 
+            }
             else {
                 // not modified, just run
                 this.props.scriptRun(this.props.api, resource)
             }
-        } 
+        }
         else {
             // fallthrough behavior
             this.props.toolInvoke(tool)
         }
+    }
+
+    handleScriptRename = (api, resource, name, virtual) => {
+        // MAINT: this annoying; rename changes names, urls, and active this/that which in turn causes a re-render. if the script being renamed is "virtual" then the editor buffer might contain changes which haven't been sync'd to the store. trigger a sync to ensure those changes aren't lost by the rename
+        if (virtual) {
+            console.log("syncing editor before rename just in case...")
+            this.props.scriptChange(this.props.activeBuffer, this.editor.getValue());
+        }
+        this.props.explorerScriptRename(api, resource, name, virtual);
     }
 
     render() {
@@ -144,7 +153,7 @@ class EditActivity extends Component {
                     scriptCreate={this.props.explorerScriptNew}
                     scriptDuplicate={this.props.explorerScriptDuplicate}
                     scriptDelete={this.props.explorerScriptDelete}
-                    scriptRename={this.props.explorerScriptRename}
+                    scriptRename={this.handleScriptRename}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}

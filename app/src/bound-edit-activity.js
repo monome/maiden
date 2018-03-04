@@ -15,7 +15,7 @@ import {
     scriptDuplicate,
     scriptDelete,
     scriptRename,
-    
+
     toolInvoke,
 
     explorerActiveNode,
@@ -40,7 +40,7 @@ const getScriptListing = createSelector(
     [getBuffers, getActiveBuffer, getRootNode, getExpandedNodes],
     (buffers, activeBuffer, rootNode, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
-    
+
     let enrich = (items) => {
         return items.map(l => {
             let item = {...l}
@@ -80,7 +80,7 @@ const getActiveNode = createSelector(
 const mapStateToProps = (state) => {
     let {activeBuffer, buffers} = state.scripts;
     return {
-        activeBuffer, 
+        activeBuffer,
         activeNode: getActiveNode(state.scripts),
         buffers,
         sidebar: state.sidebar,
@@ -144,8 +144,8 @@ const mapDispatchToProps = (dispatch) => {
         explorerScriptDelete: (api, resource) => {
             dispatch(scriptDelete(api, resource))
         },
-        explorerScriptRename: (api, activeNode, newName) => {
-            dispatch(scriptRename(api, activeNode, newName))
+        explorerScriptRename: (api, activeNode, newName, virtual) => {
+            dispatch(scriptRename(api, activeNode, newName, virtual))
         },
     }
 }

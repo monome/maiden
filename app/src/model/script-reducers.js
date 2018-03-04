@@ -4,8 +4,8 @@ import {
     keyPathForResource,
     keyPathParent,
     nodeForResource,
-    spliceDirInfo, 
-    spliceFileInfo, 
+    spliceDirInfo,
+    spliceFileInfo,
     generateNodeName,
     virtualNode,
     collectVirtualNodes,
@@ -149,7 +149,7 @@ const handleScriptChange = (action, state) => {
         console.log('ignoring script change for missing buffer (possibly deleted):', action.resource)
         return state
     }
-    
+
     let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
     let changes = new Map({
         value: action.value,
@@ -165,7 +165,7 @@ const handleScriptList = (action, state) => {
     return { ...state, rootNode };
 }
 
-// IDEA: might be cool if this copied 'template.lua' as a starting point 
+// IDEA: might be cool if this copied 'template.lua' as a starting point
 const handleScriptNew = (action, state) => {
     // assume script will be placed at the top of the hierarchy
     let siblings = state.rootNode;
@@ -214,7 +214,7 @@ const handleScriptDuplicate = (action, state) => {
         // can't duplicate without a resource
         return state
     }
-    
+
     let sourceNode = nodeForResource(state.rootNode, action.resource)
     if (!sourceNode) {
         console.log('cannot find existing resource to duplicate')
@@ -223,7 +223,7 @@ const handleScriptDuplicate = (action, state) => {
 
     let sourceBuffer = state.buffers.get(action.resource)
     let newAction = scriptNew(action.resource, sourceBuffer.get('value'), sourceNode.get('name'))
-    
+
     return handleScriptNew(newAction, state)
 }
 
@@ -233,26 +233,36 @@ const handleScriptNewFolderSuccess = (action, state) => {
 
 const handleScriptRenameSuccess = (action, state) => {
     console.log("rename success: ", action)
-    // ...should work from rooted tree
+
+    let newResource = action.newResource
+    if (!newResource) {
+        // assume this is virtual; fabricate new url
+        newResource = siblingScriptResourceForName(action.newName, action.resource)
+        console.log(action.resource, " => ", newResource)
+    }
 
     let oldNode = nodeForResource(state.rootNode, action.resource)
-    let newNode = oldNode.set("url", action.newResource).set("name", action.newName)
+    let newNode = oldNode.set("url", newResource).set("name", action.newName)
 
     let keyPath = keyPathForResource(state.rootNode, action.resource);
     let rootNode = state.rootNode.setIn(keyPath, newNode);
-    
+
     // sort parent dir of node
     let dirPath = keyPathParent(keyPath)
-    
+
     rootNode = sortDir(rootNode, dirPath)
 
     // update active buffer if pointing at the renamed resource
-    let activeBuffer = state.activeBuffer === action.resource ? action.newResource : state.activeBuffer;
+    let activeBuffer = state.activeBuffer === action.resource ? newResource : state.activeBuffer;
+
+    // buffers are keyed by resource, modify that too
+    let buffers = state.buffers.set(newResource, state.buffers.get(action.resource)).delete(action.resource);
 
     return {
         ...state,
         activeBuffer,
         rootNode,
+        buffers,
     };
 }
 

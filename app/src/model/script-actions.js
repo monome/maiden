@@ -171,9 +171,16 @@ export const scriptList = (api) => {
 export const scriptRead = (api, resource) => {
     return (dispatch) => {
         dispatch(scriptReadRequest(resource))
-        return api.read_script(resource, (response) => {
-            // FIXME: handle errors
-            dispatch(scriptReadSuccess(resource, response.entity))
+        fetch(resource).then((response) => {
+            if (response.ok) {
+                response.text().then(content => {
+                    dispatch(scriptReadSuccess(resource, content));
+                })
+            } else {
+                dispatch(scriptReadFailure(resource));
+            }
+        }).catch(error => {
+            dispatch(scriptReadFailure(resource, error));
         })
     }
 }
@@ -210,15 +217,22 @@ export const scriptDelete = (api, resource, cb) => {
     }
 }
 
-export const scriptRename = (api, resource, name) => {
+export const scriptRename = (api, resource, name, virtual) => {
     return (dispatch) => {
-        dispatch(scriptRenameRequest(resource, name))
-        return api.renameScript(resource, name, (response) => {
-            // handle errors
-            response.json().then(data => {
-                dispatch(scriptRenameSuccess(resource, name, data.url))
+        dispatch(scriptRenameRequest(resource, name));
+        if (virtual) {
+            dispatch(scriptRenameSuccess(resource, name, undefined))
+        } else {
+            api.renameScript(resource, name, (response) => {
+                if (response.ok) {
+                    response.json().then(data => {
+                        dispatch(scriptRenameSuccess(resource, name, data.url));
+                    });
+                } else {
+                    dispatch(scriptRenameFailure(resource, name, undefined));
+                }
             })
-        })
+        }
     }
 }
 
