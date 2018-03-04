@@ -43,7 +43,7 @@ import { siblingScriptResourceForName } from '../api';
 scripts: {
     activeNode: <url>,
     expandedNodes: Set(),
-    rootNode: [
+    rootNodes: [
         { name: ..., url: ... },
         { name: ..., url:... , children: [
             <more rootNodes>
@@ -63,7 +63,7 @@ scripts: {
 
 const initialScriptsState = {
     activeBuffer: undefined,
-    rootNode: virtualRoot(new List()),
+    rootNodes: virtualRoot(new List()),
     buffers: new Map(),
     activeNode: undefined,
     expandedNodes: new Set(),
@@ -85,10 +85,10 @@ const scripts = (state = initialScriptsState, action) => {
         };
 
     case SCRIPT_DIR_SUCCESS:
-        // console.log("splice", state.rootNode, action.resource, action.value)
+        // console.log("splice", state.rootNodes, action.resource, action.value)
         return {
             ...state,
-            rootNode: spliceDirInfo(state.rootNode, action.resource, fromJS(action.value.entries))
+            rootNodes: spliceDirInfo(state.rootNodes, action.resource, fromJS(action.value.entries))
         };
 
     case SCRIPT_SAVE_SUCCESS:
@@ -163,21 +163,21 @@ const handleScriptChange = (action, state) => {
 
 const handleScriptList = (action, state) => {
     // retain existing virtual nodes (!!! except root node)
-    let virtuals = collectVirtualNodes(state.rootNode).filter(n => n.get("name") === state.rootNode.get("name"))
-    let rootNode = spliceNodes(virtualRoot(fromJS(action.value.entries)), virtuals)
-    return { ...state, rootNode };
+    let virtuals = collectVirtualNodes(state.rootNodes).filter(n => n.get("name") === state.rootNodes.get("name"))
+    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries)), virtuals)
+    return { ...state, rootNodes };
 }
 
 // IDEA: might be cool if this copied 'template.lua' as a starting point
 const handleScriptNew = (action, state) => {
     // assume script will be placed at the top of the hierarchy
-    let siblings = childrenOfRoot(state.rootNode);
+    let siblings = childrenOfRoot(state.rootNodes);
 
-    let childPath = keyPathForResource(state.rootNode, action.siblingResource)
+    let childPath = keyPathForResource(state.rootNodes, action.siblingResource)
     if (childPath) {
         // a sibling exists, use that level of hierarchy for name computation
         let siblingPath = childPath.pop()
-        siblings = state.rootNode.getIn(siblingPath)
+        siblings = state.rootNodes.getIn(siblingPath)
     }
 
     let newName = generateNodeName(siblings, action.name || "untitled.lua")
@@ -188,11 +188,11 @@ const handleScriptNew = (action, state) => {
     });
 
     let newNode = virtualNode(newName, newResource)
-    let newRootNode = spliceFileInfo(state.rootNode, newNode, action.siblingResource)
+    let newRootNodes = spliceFileInfo(state.rootNodes, newNode, action.siblingResource)
 
     return {
         ...state,
-        rootNode: newRootNode,
+        rootNodes: newRootNodes,
         activeBuffer: newResource,
         buffers: state.buffers.set(newResource, newBuffer),
     };
@@ -200,13 +200,13 @@ const handleScriptNew = (action, state) => {
 
 const handleScriptDeleteSuccess = (action, state) => {
     console.log('in handleScriptDelete()', action)
-    let childPath = keyPathForResource(state.rootNode, action.resource)
-    let newRootNode = state.rootNode.removeIn(childPath)
+    let childPath = keyPathForResource(state.rootNodes, action.resource)
+    let newRootNodes = state.rootNodes.removeIn(childPath)
     let newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
 
     return {
         ...state,
-        rootNode: newRootNode,
+        rootNodes: newRootNodes,
         activeBuffer: newActiveBuffer,
         buffers: state.buffers.delete(action.resource)
     }
@@ -218,7 +218,7 @@ const handleScriptDuplicate = (action, state) => {
         return state
     }
 
-    let sourceNode = nodeForResource(state.rootNode, action.resource)
+    let sourceNode = nodeForResource(state.rootNodes, action.resource)
     if (!sourceNode) {
         console.log('cannot find existing resource to duplicate')
         return state
@@ -244,16 +244,16 @@ const handleScriptRenameSuccess = (action, state) => {
         console.log(action.resource, " => ", newResource)
     }
 
-    let oldNode = nodeForResource(state.rootNode, action.resource)
+    let oldNode = nodeForResource(state.rootNodes, action.resource)
     let newNode = oldNode.set("url", newResource).set("name", action.newName)
 
-    let keyPath = keyPathForResource(state.rootNode, action.resource);
-    let rootNode = state.rootNode.setIn(keyPath, newNode);
+    let keyPath = keyPathForResource(state.rootNodes, action.resource);
+    let rootNodes = state.rootNodes.setIn(keyPath, newNode);
 
     // sort parent dir of node
     let dirPath = keyPathParent(keyPath)
 
-    rootNode = sortDir(rootNode, dirPath)
+    rootNodes = sortDir(rootNodes, dirPath)
 
     // update active buffer if pointing at the renamed resource
     let activeBuffer = state.activeBuffer === action.resource ? newResource : state.activeBuffer;
@@ -264,7 +264,7 @@ const handleScriptRenameSuccess = (action, state) => {
     return {
         ...state,
         activeBuffer,
-        rootNode,
+        rootNodes,
         buffers,
     };
 }

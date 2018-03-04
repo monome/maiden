@@ -29,7 +29,7 @@ export const keyPathForResource = (listing, resource) => {
     return walk(listing, undefined);
 }
 
-export const keyPathForResourceOld = (rootNode, resource) => {
+export const keyPathForResourceOld = (rootNodes, resource) => {
     const walk = (node) => {
         // // // if (!node) {
         // //     return undefined;
@@ -50,13 +50,13 @@ export const keyPathForResourceOld = (rootNode, resource) => {
 
         return undefined;
     }
-    return walk(rootNode);
+    return walk(rootNodes);
 }
 
-export const nodeForResource = (rootNode, resource) => {
-    let keyPath = keyPathForResource(rootNode, resource)
+export const nodeForResource = (rootNodes, resource) => {
+    let keyPath = keyPathForResource(rootNodes, resource)
     if (keyPath) {
-        return rootNode.getIn(keyPath)
+        return rootNodes.getIn(keyPath)
     }
     return undefined
 }
@@ -119,20 +119,20 @@ export const spliceFileInfo = (listing, node, siblingResource) => {
 }
 
 // MAINT: this assumes a listing with a rootNode node
-export const sortDir = (rootNode, dirPath) => {
-    // let dirPath = keyPathForResource(rootNode, resource);
+export const sortDir = (rootNodes, dirPath) => {
+    // let dirPath = keyPathForResource(rootNodes, resource);
     if (dirPath) {
-        let dirNode = rootNode.getIn(dirPath);
+        let dirNode = rootNodes.getIn(dirPath);
         let children = dirNode.get("children");
         let sorted = children.sort(orderByName)
-        return rootNode.setIn(dirPath.push("children"), sorted)
+        return rootNodes.setIn(dirPath.push("children"), sorted)
     }
-    return rootNode;
+    return rootNodes;
 }
 
-export const spliceNodes = (rootNode, nodes) => {
+export const spliceNodes = (rootNodes, nodes) => {
     if (!nodes) {
-        return rootNode;
+        return rootNodes;
     }
 
     return nodes.reduce((acc, node, key) => {
@@ -158,7 +158,7 @@ export const spliceNodes = (rootNode, nodes) => {
 
         // nothing inserted
         return acc;
-    }, rootNode)
+    }, rootNodes)
 }
 
 export const orderByName = (a, b) => {
@@ -212,8 +212,8 @@ export const virtualNode = (name, resource) => {
 }
 
 export const virtualRoot = (children, name = "ROOT") => {
-    let rootNode = fromJS([{ name, url: "/", virtual: true }])
-    return rootNode.setIn([0, "children"], children)
+    let rootNodes = fromJS([{ name, url: "/", virtual: true }])
+    return rootNodes.setIn([0, "children"], children)
 }
 
 export const collectVirtualNodes = (listing) => {
@@ -239,6 +239,6 @@ export const muxInVirtualNodes = (base, incoming) => {
     return incoming.push(...virtuals)
 }
 
-export const childrenOfRoot = (rootNodeList, index = 0) => {
-    return rootNodeList.getIn([index, "children"]);
+export const childrenOfRoot = (rootNodes, index = 0) => {
+    return rootNodes.getIn([index, "children"]);
 }
