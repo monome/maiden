@@ -8,6 +8,8 @@
     color: #e4e4e4;
     padding: 6px 8px;
     margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .explorer-tree {
@@ -18,16 +20,65 @@
     display: none;
 }
 
+.explorer-tree-toggle {
+    display: inline-block;
+}
+
 .explorer-entry {
     padding: 0.1em;
     color: rgb(117, 117, 117);
+    margin-left: 3px;
+    /* display: block; */
 }
+
 .dirty {
     /* color: red; */
     color: rgb(151, 80, 49);
     font-style: italic;
 }
 
+.active {
+    background-color: #e0e7f1;
+}
+
 .explorer-list-item {
     display: flex;
+}
+
+.section-tools {
+    -webkit-transition: opacity .1s ease-in-out;
+    -moz-transition: opacity .1s ease-in-out;
+     -ms-transition: opacity .1s ease-in-out;
+      -o-transition: opacity .1s ease-in-out;
+         transition: opacity .1s ease-in-out;
+
+    opacity: 0;
+}
+
+.opaque {
+    opacity: 1;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+      -webkit-user-select: none; /* Safari */
+       -khtml-user-select: none; /* Konqueror HTML */
+         -moz-user-select: none; /* Firefox */
+          -ms-user-select: none; /* Internet Explorer/Edge */
+              user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+  }
+  
+.rename-modal-text-area {
+    border: none;
+    border-bottom: 1px solid rgb(192, 192, 192);
+    resize: none;
+    overflow: auto;
+    outline: none;
+
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    font-size: 16px;
+
 }

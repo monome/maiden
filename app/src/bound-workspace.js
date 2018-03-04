@@ -14,6 +14,10 @@ import {
     replConnect,
 } from './model/repl-actions';
 
+import {
+    scriptList,
+} from './model/script-actions';
+
 const mapStateToProps = (state) => {
     const selected = state.activity.selected;
     const endpoints = state.repl.endpoints;
@@ -33,6 +37,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         replConnect: (component, endpoint) => {
             dispatch(replConnect(component, endpoint))
+        },
+        scriptList: (api) => {
+            dispatch(scriptList(api))
         },
     }
 }

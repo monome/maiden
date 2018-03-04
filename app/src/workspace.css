@@ -8,12 +8,29 @@
     background-color: rgb(230, 230, 230);
 }
 
-.side-bar {
-    flex: 0 0 auto;
-    background-color: red;
+.workspace-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;  /* modal must block ace editor which uses z-index: 1 */
+    background-color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.editor {
-    flex-grow: 1;
-    background-color: green;
+.workspace-modal {
+    width: 70%;
+    margin: 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+    padding: 20px;
+    outline: none;    
+
+    /* are these needed? */
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
 }

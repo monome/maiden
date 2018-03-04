@@ -4,7 +4,6 @@ import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-import { UNTITLED_SCRIPT } from './constants';
 
 import './edit-activity.css';
 
@@ -48,12 +47,6 @@ class EditActivity extends Component {
         }
     }
 
-    componentDidMount() {
-        // FIXME: this gets called everytime we switch to the edit activity
-        // get list of scripts
-        this.props.scriptList(this.props.api);
-    }
-
     componentWillReceiveProps(newProps) {
         // if the active buffer is dirty grab it out of the child prior to a potential re-render so that the current buffer state isn't lost
         let { activeBuffer, buffers } = this.props;
@@ -61,7 +54,7 @@ class EditActivity extends Component {
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
             this.props.scriptChange(activeBuffer, this.editor.getValue());
         }
-        
+
         let newBuffers = newProps.buffers;
         if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
@@ -112,7 +105,7 @@ class EditActivity extends Component {
                     this.editor.bufferWasSaved(resource)
                  })
             }
-        } 
+        }
         else if (tool === 'play') {
             if (buffer.get('modified')) {
                 // save, then run
@@ -121,20 +114,29 @@ class EditActivity extends Component {
                     this.editor.bufferWasSaved(resource)
                     this.props.scriptRun(this.props.api, resource)
                 })
-            } 
+            }
             else {
                 // not modified, just run
                 this.props.scriptRun(this.props.api, resource)
             }
-        } 
+        }
         else {
             // fallthrough behavior
             this.props.toolInvoke(tool)
         }
     }
 
+    handleScriptRename = (api, resource, name, virtual) => {
+        // MAINT: this annoying; rename changes names, urls, and active this/that which in turn causes a re-render. if the script being renamed is "virtual" then the editor buffer might contain changes which haven't been sync'd to the store. trigger a sync to ensure those changes aren't lost by the rename
+        if (virtual) {
+            console.log("syncing editor before rename just in case...")
+            this.props.scriptChange(this.props.activeBuffer, this.editor.getValue());
+        }
+        this.props.explorerScriptRename(api, resource, name, virtual);
+    }
+
     render() {
-        const activeBuffer = this.props.activeBuffer ? this.props.activeBuffer : UNTITLED_SCRIPT;
+        const activeBuffer = this.props.activeBuffer;
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
@@ -146,6 +148,18 @@ class EditActivity extends Component {
                     hidden={this.props.sidebar.hidden}
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
+                    scriptDirRead={this.props.scriptDirRead}
+                    scriptCreate={this.props.explorerScriptNew}
+                    scriptDuplicate={this.props.explorerScriptDuplicate}
+                    scriptDelete={this.props.explorerScriptDelete}
+                    scriptRename={this.handleScriptRename}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
+                    api={this.props.api}
+                    activeBuffer={activeBuffer}
+                    activeNode={this.props.activeNode}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
                 />
                 <Editor
                     className='editor-container'

@@ -2,15 +2,24 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import EditActivity from './edit-activity';
 import { MATRON_COMPONENT } from './constants';
+import { nodeForResource } from './model/listing';
 
 import {
     scriptList,
     scriptRead,
+    scriptDirRead,
     scriptSave,
     scriptChange,
     scriptSelect,
-    
+    scriptNew,
+    scriptDuplicate,
+    scriptDelete,
+    scriptRename,
+
     toolInvoke,
+
+    explorerActiveNode,
+    explorerToggleNode,
 } from './model/script-actions';
 
 import {
@@ -24,30 +33,55 @@ import {
 
 const getBuffers = (scriptState) => scriptState.buffers;
 const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
-const getListing = (scriptState) => scriptState.listing;
+const getRootNodes = (scriptState) => scriptState.rootNodes;
+const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
 
 const getScriptListing = createSelector(
-    [getBuffers, getActiveBuffer, getListing],
-    (buffers, activeBuffer, listing) => {
+    [getBuffers, getActiveBuffer, getRootNodes, getExpandedNodes],
+    (buffers, activeBuffer, rootNodes, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
-    return listing.toJS().map(l => {
-        let item = Object.assign({}, l);
-        item.active = l.url === activeBuffer;
 
-        let buffer = buffers.get(l.url);
-        if (buffer) {
-            item.loaded = true;
-            item.modified = buffer.get('modified') || false;
-        }
+    let enrich = (items) => {
+        return items.map(l => {
+            let item = {...l}
+            item.active = l.url === activeBuffer;
+            item.toggled = expandedNodes.has(l.url);
 
-        return item;
-    });
+            let buffer = buffers.get(l.url);
+            if (buffer) {
+                item.loaded = true;
+                item.modified = buffer.get('modified') || false;
+            }
+
+            if (item.children) {
+                item.children = enrich(item.children)
+            }
+
+            return item;
+        })
+    };
+
+    // MAINT: this assumes the "scripts" root is the first node in the list
+    // console.log("rootNode= ", rootNodes.toJS())
+    let scriptRoot = rootNodes.getIn([0, "children"])
+    if (scriptRoot) {
+        return enrich(scriptRoot.toJS());
+    }
+    return [];
 });
+
+const getActiveNode = createSelector(
+    [getActiveBuffer, getRootNodes],
+    (activeBuffer, rootNodes) => {
+        return nodeForResource(rootNodes, activeBuffer)
+    }
+)
 
 const mapStateToProps = (state) => {
     let {activeBuffer, buffers} = state.scripts;
     return {
-        activeBuffer, 
+        activeBuffer,
+        activeNode: getActiveNode(state.scripts),
         buffers,
         sidebar: state.sidebar,
         scriptListing: getScriptListing(state.scripts),
@@ -62,6 +96,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         scriptRead: (api, resource) => {
             dispatch(scriptRead(api, resource))
+        },
+        scriptDirRead: (api, resource) => {
+            dispatch(scriptDirRead(api, resource))
         },
         scriptChange: (resource, value) => {
             dispatch(scriptChange(resource, value))
@@ -89,6 +126,26 @@ const mapDispatchToProps = (dispatch) => {
         // tools
         toolInvoke: (name) => {
             dispatch(toolInvoke(name))
+        },
+
+        // explorer
+        explorerActiveNode: (node) => {
+            dispatch(explorerActiveNode(node))
+        },
+        explorerToggleNode: (node, toggled) => {
+            dispatch(explorerToggleNode(node, toggled))
+        },
+        explorerScriptNew: (sibling, value) => {
+            dispatch(scriptNew(sibling, value))
+        },
+        explorerScriptDuplicate: (source) => {
+            dispatch(scriptDuplicate(source))
+        },
+        explorerScriptDelete: (api, resource) => {
+            dispatch(scriptDelete(api, resource))
+        },
+        explorerScriptRename: (api, activeNode, newName, virtual) => {
+            dispatch(scriptRename(api, activeNode, newName, virtual))
         },
     }
 }

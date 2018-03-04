@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
+import ReactModal from 'react-modal';
 import ActivityBar from './activity-bar';
 import './workspace.css';
+
+ReactModal.setAppElement('#root')
 
 class Workspace extends Component {
     constructor(props) {
         super(props);
         this.state = {
             activityBarWidth: 50,
+            showModal: false,
         };
     }
 
@@ -17,6 +21,9 @@ class Workspace extends Component {
                this.props.replConnect(component, endpoint)
            })
        })
+
+       // trigger initial read of top level scripts
+       this.props.scriptList(this.props.api)
     }
 
     activityBarSize() {
@@ -42,6 +49,20 @@ class Workspace extends Component {
         }
     }
 
+    handleShowModal = (content) => {
+        this.setState({
+            showModal: true,
+            modalContent: content,
+        })
+    }
+
+    handleHideModal = () => {
+        this.setState({
+            showModal: false,
+            modalContent: undefined,
+        })
+    }
+
     render() {
         const selectedActivity = this.props.activities.find(a => {
             return this.props.selected === a.selector
@@ -57,8 +78,18 @@ class Workspace extends Component {
                     buttonAction={this.handleActivitySelection} />
                 <ActivityView
                     {...this.activityViewSize()}
+                    showModal={this.handleShowModal}
+                    hideModal={this.handleHideModal}
                     api={this.props.api}
                 />
+                <ReactModal
+                    isOpen={this.state.showModal}
+                    contentLabel={"something"}
+                    className="workspace-modal"
+                    overlayClassName="workspace-modal-overlay"
+                >
+                    {this.state.modalContent}
+                </ReactModal>
             </div>
         )
     }
