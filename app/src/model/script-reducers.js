@@ -11,7 +11,8 @@ import {
     collectVirtualNodes,
     spliceNodes,
     virtualRoot,
-    sortDir
+    sortDir,
+    childrenOfRoot,
 } from './listing';
 
 import {
@@ -170,7 +171,7 @@ const handleScriptList = (action, state) => {
 // IDEA: might be cool if this copied 'template.lua' as a starting point
 const handleScriptNew = (action, state) => {
     // assume script will be placed at the top of the hierarchy
-    let siblings = state.rootNode;
+    let siblings = childrenOfRoot(state.rootNode);
 
     let childPath = keyPathForResource(state.rootNode, action.siblingResource)
     if (childPath) {

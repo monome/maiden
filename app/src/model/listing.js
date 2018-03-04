@@ -130,41 +130,6 @@ export const sortDir = (rootNode, dirPath) => {
     return rootNode;
 }
 
-/*
-export const spliceNodes = (listing, nodes) => {
-    if (!nodes) {
-        return listing;
-    }
-
-    let root = virtualRoot(listing);
-    let result = nodes.reduce((acc, node, key) => {
-        let url = node.get("url");
-        let parsed = parsePath(url);
-        let keyPath = keyPathForResource(acc, parsed.dir);
-        if (keyPath) {
-            let siblingPath = keyPath.push("children")
-            let children = acc.getIn(siblingPath)
-            let matches = children.find((c) => {
-                return (url === c.get("url"))
-            });
-            if (matches === undefined) {
-                // this node isn't in the listing, add
-                return acc.setIn(siblingPath, children.push(node).sort(orderByName));
-            }
-        }
-        else {
-            console.log("danger will robinson, node parent path cannot be found", node)
-        }
-
-        // nothing inserted
-        return acc;
-    }, root)
-
-    // remove virtual root
-    return result.getIn([0, "children"])
-}
-*/
-
 export const spliceNodes = (rootNode, nodes) => {
     if (!nodes) {
         return rootNode;
@@ -272,4 +237,8 @@ export const muxInVirtualNodes = (base, incoming) => {
     let keys = new Set(incoming.map(n => n.get("url")))
     let virtuals = base.filter(n => n.get("virtual", false) && !keys.has(n.get("url")))
     return incoming.push(...virtuals)
+}
+
+export const childrenOfRoot = (rootNodeList, index = 0) => {
+    return rootNodeList.getIn([index, "children"]);
 }
