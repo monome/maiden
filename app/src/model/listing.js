@@ -101,7 +101,7 @@ export const spliceDirInfo = (listing, target, info) => {
 
 export const spliceFileInfo = (listing, node, siblingResource) => {
     // by default if no sibling just insert at top of hierarchy
-    let siblingFamily = []
+    let siblingFamily = new List([0, "children"]) // assumes virtual root node
     let newIndex = [0]
 
     let siblingPath = keyPathForResource(listing, siblingResource)
@@ -149,7 +149,7 @@ export const spliceNodes = (listing, nodes) => {
             });
             if (matches === undefined) {
                 // this node isn't in the listing, add
-                return acc.setIn(siblingPath, children.push(node).sort(orderByName));    
+                return acc.setIn(siblingPath, children.push(node).sort(orderByName));
             }
         }
         else {
@@ -183,7 +183,7 @@ export const spliceNodes = (rootNode, nodes) => {
             });
             if (matches === undefined) {
                 // this node isn't in the listing, add
-                return acc.setIn(siblingPath, children.push(node).sort(orderByName));    
+                return acc.setIn(siblingPath, children.push(node).sort(orderByName));
             }
         }
         else {
@@ -214,7 +214,7 @@ export const getNodeNames = (nodes) => {
     return new Set(nodes.map(node => node.get('name')));
 }
 
-// given a set of existing names and [optionally] an exemplar generate a new name which isn't taken by adding a number at the end of the name 
+// given a set of existing names and [optionally] an exemplar generate a new name which isn't taken by adding a number at the end of the name
 export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
     let existing = getNodeNames(siblingNodes)
 

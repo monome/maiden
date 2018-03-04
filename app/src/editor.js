@@ -56,10 +56,14 @@ class Editor extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if ((nextProps.bufferName !== this.props.bufferName || 
+        if ((nextProps.bufferName !== this.props.bufferName ||
              this.willChangeSize(nextProps)) && this.modified) {
             // active buffer is being changed, sync current value to parent view before the editor is re-rendered
-            this.props.scriptChange(this.props.bufferName, this.getValue())
+
+            if (this.props.bufferName) {
+                // only sync buffer if there is an actual name/resource
+                this.props.scriptChange(this.props.bufferName, this.getValue())
+            }
 
             // reset dirty flag so that any change will mark (or remark) the buffer as dirty
             this.modified = false;

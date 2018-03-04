@@ -36,7 +36,6 @@ import {
 } from './script-actions';
 
 import { siblingScriptResourceForName } from '../api';
-import { UNTITLED_SCRIPT } from '../constants';
 
 /*
 
@@ -142,8 +141,8 @@ const scripts = (state = initialScriptsState, action) => {
 
 
 const handleScriptChange = (action, state) => {
-    if (action.resource === UNTITLED_SCRIPT || action.resource === undefined) {
-        // FIXME: need to implement script new some how
+    if (action.resource === undefined) {
+        console.log("implicitly creating new script");
         return handleScriptNew(scriptNew(undefined, action.value), state);
     }
 

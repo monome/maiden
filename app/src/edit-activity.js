@@ -4,7 +4,6 @@ import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-import { UNTITLED_SCRIPT } from './constants';
 
 import './edit-activity.css';
 
@@ -137,7 +136,7 @@ class EditActivity extends Component {
     }
 
     render() {
-        const activeBuffer = this.props.activeBuffer ? this.props.activeBuffer : UNTITLED_SCRIPT;
+        const activeBuffer = this.props.activeBuffer;
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
