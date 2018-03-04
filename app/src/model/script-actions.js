@@ -188,9 +188,17 @@ export const scriptRead = (api, resource) => {
 export const scriptDirRead = (api, resource) => {
     return (dispatch) => {
         dispatch(scriptDirRequest(resource))
-        return api.read_script(resource, (response) => {
-            // FIXME: handle errors
-            dispatch(scriptDirSuccess(resource, response.entity))
+        fetch(resource).then(response => {
+            if (response.ok) {
+                response.json().then(data => {
+                    dispatch(scriptDirSuccess(resource, data));
+                })
+            } else {
+                dispatch(scriptDirFailure(resource));
+            }
+        })
+        .catch(error => {
+            dispatch(scriptDirFailure(resource, error));
         })
     }
 }
