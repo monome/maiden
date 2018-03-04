@@ -93,6 +93,9 @@ const scripts = (state = initialScriptsState, action) => {
 
     case SCRIPT_SAVE_SUCCESS:
         let savedBuffer = state.buffers.get(action.resource).set("modified", false)
+        if (savedBuffer.has("virtual")) {
+            savedBuffer = savedBuffer.delete("virtual")
+        }
         return {
             ...state,
             buffers: state.buffers.set(action.resource, savedBuffer)
