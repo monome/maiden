@@ -58,7 +58,6 @@ func main() {
 	api.Get("/scripts", func(ctx iris.Context) {
 		entries, err := ioutil.ReadDir(filepath.Join(*dataDir, "scripts"))
 		if err != nil {
-			ctx.Writef("%v", err)
 			ctx.StatusCode(iris.StatusBadRequest)
 			return
 		}
@@ -74,7 +73,7 @@ func main() {
 		// figure out if this is a file or not
 		info, err := os.Stat(path)
 		if err != nil {
-			ctx.Writef("%v", err)
+			ctx.Values().Set("message", err.Error())
 			ctx.StatusCode(iris.StatusNotFound)
 			return
 		}
@@ -83,7 +82,7 @@ func main() {
 			entries, err := ioutil.ReadDir(path)
 			if err != nil {
 				// not sure why this would fail given that we just stat()'d the dir
-				ctx.Writef("%v", err)
+				ctx.Values().Set("message", err.Error())
 				ctx.StatusCode(iris.StatusBadRequest)
 				return
 			}
@@ -98,7 +97,7 @@ func main() {
 		ctx.ContentType("text/utf-8") // FIXME: is this needed? is it bad?
 		err = ctx.ServeFile(path, false)
 		if err != nil {
-			ctx.StatusCode(iris.StatusNotFound)
+			ctx.NotFound()
 		}
 	})
 
@@ -117,14 +116,14 @@ func main() {
 
 		if err != nil {
 			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.JSON(errorInfo{err.Error()})
+			ctx.Values().Set("message", err.Error())
 			return
 		}
 
 		size, err := io.WriteString(out, script)
 		if err != nil {
 			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.JSON(errorInfo{err.Error()})
+			ctx.Values().Set("message", err.Error())
 			return
 		}
 		app.Logger().Debugf("wrote %d bytes to %s", size, path)
@@ -135,16 +134,24 @@ func main() {
 		name := ctx.Params().Get("name")
 		path := scriptPath(dataDir, &name)
 
+		// figure out if this exists or not
+		_, err := os.Stat(path)
+		if err != nil {
+			ctx.Values().Set("message", err.Error())
+			ctx.NotFound()
+			return
+		}
+
 		// compute new path
 		rename := filepath.Join(filepath.Dir(name), ctx.PostValue("name"))
 		renamePath := scriptPath(dataDir, &rename)
 
 		app.Logger().Debug("going to rename: ", path, " to: ", renamePath)
 
-		err := os.Rename(path, renamePath)
+		err = os.Rename(path, renamePath)
 		if err != nil {
+			ctx.Values().Set("message", err.Error())
 			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.JSON(errorInfo{err.Error()})
 			return
 		}
 
@@ -160,15 +167,15 @@ func main() {
 
 		// issue 404 if it doesn't exist
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			ctx.StatusCode(iris.StatusNotFound)
-			ctx.JSON(errorInfo{err.Error()})
+			ctx.Values().Set("message", err.Error())
+			ctx.NotFound()
 			return
 		}
 
 		err := os.Remove(path)
 		if err != nil {
 			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.JSON(errorInfo{err.Error()})
+			ctx.Values().Set("message", err.Error())
 			return
 		}
 	})
