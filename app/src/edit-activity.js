@@ -6,6 +6,8 @@ import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 
+import ReplActivity from './bound-repl-activity'
+
 import './edit-activity.css';
 
 const tools = [
@@ -46,6 +48,7 @@ class EditActivity extends Component {
         this.state = {
             toolbarWidth: 50,
             sidebarWidth: props.sidebar.width,
+            editorHeight: props.height - 20,
         }
     }
 
@@ -64,7 +67,7 @@ class EditActivity extends Component {
         }
     }
 
-    sidebarSizing() {
+    sidebarSplitSizing() {
         return {
             size: this.props.sidebar.hidden ? 1 : this.state.sidebarWidth,
             minSize: this.props.sidebar.minWidth,
@@ -73,24 +76,44 @@ class EditActivity extends Component {
         }
     }
 
+    editorSplitSizing() {
+        return {
+            size: this.state.editorHeight,
+            minSize: 1,
+            maxSize: this.props.height - 20,
+        }
+    }
+
+    getSidebarWidth() {
+        return this.props.sidebar.hidden ? 1 : this.state.sidebarWidth;
+    }
+
     editorSize() {
-        const sidebarWidth = this.props.sidebar.hidden ? 1 : this.state.sidebarWidth;
+        const sidebarWidth = this.getSidebarWidth()
         const toolbarWidth = this.state.toolbarWidth;
         const width = this.props.width - sidebarWidth - toolbarWidth;
         return {
             width,
-            height: this.props.height,
+            height: this.state.editorHeight,
         };
     }
 
     toolsSize() {
         return {
             width: this.state.toolbarWidth,
-            height: this.props.height,
+            // height: this.props.height,
+            height: this.state.editorHeight,
         };
     }
 
-    handleSplitChange = (size) => {
+    replSize() {
+        return {
+            width: this.props.width - this.getSidebarWidth(),
+            height: this.props.height - this.state.editorHeight - 1,
+        }
+    }
+
+    handleSidebarSplitChange = (size) => {
         if (size <= this.props.sidebar.minWidth && this.props.sidebar.hidden) {
             // it is hidden so allow resize to reveal
             this.props.sidebarToggle();
@@ -98,6 +121,12 @@ class EditActivity extends Component {
         this.setState({
             sidebarWidth: size,
         });
+    }
+
+    handleEditorSplitChange = (size) => {
+        this.setState({
+            editorHeight: size
+        })
     }
 
     getActiveBuffer = () => {
@@ -154,7 +183,7 @@ class EditActivity extends Component {
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
-        const splitStyle = {
+        const sidebarSplitStyle = {
             height: this.props.height,
             width: this.props.width,
             position: "relative",   // must be inline to override library behavior
@@ -163,9 +192,9 @@ class EditActivity extends Component {
         return (
             <SplitPane 
                 split='vertical'
-                style={splitStyle} 
-                { ...this.sidebarSizing() }
-                onChange={this.handleSplitChange}
+                style={sidebarSplitStyle} 
+                { ...this.sidebarSplitSizing() }
+                onChange={this.handleSidebarSplitChange}
                 paneClassName='editor-pane-common'
             >
                 <Explorer
@@ -186,24 +215,31 @@ class EditActivity extends Component {
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
                 />
-                <div
-                    className='editor-pane'
+                <SplitPane
+                    split='horizontal'
+                    { ...this.editorSplitSizing() }
+                    onChange={this.handleEditorSplitChange}
                 >
-                    <Editor
-                        className='editor-container'
-                        ref={(component) => {this.editor = component;}}
-                        {...this.editorSize()}
-                        bufferName={activeBuffer}
-                        value={code}
-                        scriptChange={this.props.scriptChange}
+                    <div className='editor-pane'>
+                        <Editor
+                            className='editor-container'
+                            ref={(component) => {this.editor = component;}}
+                            { ...this.editorSize() }
+                            bufferName={activeBuffer}
+                            value={code}
+                            scriptChange={this.props.scriptChange}
+                        />
+                        <EditTools
+                            className='edit-tools'
+                            { ...this.toolsSize() }
+                            tools={tools}
+                            buttonAction={this.handleToolInvoke}
+                        />
+                    </div>
+                    <ReplActivity 
+                        { ...this.replSize() }
                     />
-                    <EditTools
-                        className='edit-tools'
-                        {...this.toolsSize()}
-                        tools={tools}
-                        buttonAction={this.handleToolInvoke}
-                    />
-                </div>
+                </SplitPane>
             </SplitPane>
         );
     }

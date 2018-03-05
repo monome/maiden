@@ -17,6 +17,11 @@
     background-color: #F9F9F9;
 }
 
+
+.repl-pane {
+    display: flex;
+}
+
 /* sytling for react-split-pane */
 
 .Resizer {
