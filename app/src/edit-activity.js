@@ -47,7 +47,7 @@ class EditActivity extends Component {
         super(props)
         this.state = {
             toolbarWidth: 50,
-            sidebarWidth: props.ui.width,
+            sidebarWidth: props.ui.sidebarWidth,
             editorHeight: props.height - 20,
         }
     }
@@ -69,10 +69,10 @@ class EditActivity extends Component {
 
     sidebarSplitSizing() {
         return {
-            size: this.props.ui.hidden ? 1 : this.state.sidebarWidth,
-            minSize: this.props.ui.minWidth,
-            defaultSize: this.props.ui.width,
-            maxSize: this.props.ui.maxWidth,
+            size: this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth,
+            minSize: this.props.ui.sidebarMinWidth,
+            defaultSize: this.props.ui.sidebarWidth,
+            maxSize: this.props.ui.sidebarMaxWidth,
         }
     }
 
@@ -85,7 +85,7 @@ class EditActivity extends Component {
     }
 
     getSidebarWidth() {
-        return this.props.ui.hidden ? 1 : this.state.sidebarWidth;
+        return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
     }
 
     editorSize() {
@@ -114,7 +114,7 @@ class EditActivity extends Component {
     }
 
     handleSidebarSplitChange = (size) => {
-        if (size <= this.props.ui.minWidth && this.props.ui.hidden) {
+        if (size <= this.props.ui.sidebarMinWidth && this.props.ui.sidebarHidden) {
             // it is hidden so allow resize to reveal
             this.props.uiToggle();
         }
@@ -199,7 +199,7 @@ class EditActivity extends Component {
             >
                 <Explorer
                     className='explorer-container'
-                    hidden={this.props.ui.hidden}
+                    hidden={this.props.ui.sidebarHidden}
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                     scriptDirRead={this.props.scriptDirRead}

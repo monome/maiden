@@ -13,19 +13,19 @@ ui: {
 */
 
 const initialState = {
-    hidden: false,
-    width: 250,
-    minWidth: 210,
-    maxWidth: 500,
+    sidebarHidden: false,
+    sidebarWidth: 250,
+    sidebarMinWidth: 210,
+    sidebarMaxWidth: 500,
 }
 
 const ui = (state = initialState, action) => {
     switch (action.type) {
     case SIDEBAR_TOGGLE:
-        return {...state, hidden: !state.hidden};
+        return {...state, sidebarHidden: !state.sidebarHidden};
 
     case SIDEBAR_SIZE:
-        return {...state, width: action.width};
+        return {...state, sidebarWidth: action.width};
 
     default:
         return state;
