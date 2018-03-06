@@ -7,7 +7,7 @@ import {
 
 import {
     sidebarToggle,
-} from './model/sidebar-actions';
+} from './model/ui-actions';
 
 import {
     replEndpoints,

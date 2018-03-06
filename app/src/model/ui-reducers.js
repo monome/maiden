@@ -1,25 +1,25 @@
 import {
     SIDEBAR_TOGGLE,
     SIDEBAR_SIZE,
-} from './sidebar-actions';
+} from './ui-actions';
 
 /*
 
-sidebar: {
+ui: {
     hidden: <bool>,
     width: <int>,
 }
 
 */
 
-const initialSidebarState = {
+const initialState = {
     hidden: false,
     width: 250,
     minWidth: 210,
     maxWidth: 500,
 }
 
-const sidebar = (state = initialSidebarState, action) => {
+const ui = (state = initialState, action) => {
     switch (action.type) {
     case SIDEBAR_TOGGLE:
         return {...state, hidden: !state.hidden};
@@ -32,4 +32,4 @@ const sidebar = (state = initialSidebarState, action) => {
     }
 }
 
-export default sidebar;
+export default ui;

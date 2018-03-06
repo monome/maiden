@@ -25,7 +25,7 @@ import {
 import {
     sidebarToggle,
     sidebarSize,
-} from './model/sidebar-actions';
+} from './model/ui-actions';
 
 import {
     replSend,
@@ -83,7 +83,7 @@ const mapStateToProps = (state) => {
         activeBuffer,
         activeNode: getActiveNode(state.scripts),
         buffers,
-        sidebar: state.sidebar,
+        ui: state.ui,
         scriptListing: getScriptListing(state.scripts),
     }
 }

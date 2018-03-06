@@ -47,7 +47,7 @@ class EditActivity extends Component {
         super(props)
         this.state = {
             toolbarWidth: 50,
-            sidebarWidth: props.sidebar.width,
+            sidebarWidth: props.ui.width,
             editorHeight: props.height - 20,
         }
     }
@@ -69,10 +69,10 @@ class EditActivity extends Component {
 
     sidebarSplitSizing() {
         return {
-            size: this.props.sidebar.hidden ? 1 : this.state.sidebarWidth,
-            minSize: this.props.sidebar.minWidth,
-            defaultSize: this.props.sidebar.width,
-            maxSize: this.props.sidebar.maxWidth,
+            size: this.props.ui.hidden ? 1 : this.state.sidebarWidth,
+            minSize: this.props.ui.minWidth,
+            defaultSize: this.props.ui.width,
+            maxSize: this.props.ui.maxWidth,
         }
     }
 
@@ -85,13 +85,13 @@ class EditActivity extends Component {
     }
 
     getSidebarWidth() {
-        return this.props.sidebar.hidden ? 1 : this.state.sidebarWidth;
+        return this.props.ui.hidden ? 1 : this.state.sidebarWidth;
     }
 
     editorSize() {
         const sidebarWidth = this.getSidebarWidth()
         const toolbarWidth = this.state.toolbarWidth;
-        const width = this.props.width - sidebarWidth - toolbarWidth;
+        const width = this.props.width - sidebarWidth - toolbarWidth - 1;
         return {
             width,
             height: this.state.editorHeight,
@@ -114,9 +114,9 @@ class EditActivity extends Component {
     }
 
     handleSidebarSplitChange = (size) => {
-        if (size <= this.props.sidebar.minWidth && this.props.sidebar.hidden) {
+        if (size <= this.props.ui.minWidth && this.props.ui.hidden) {
             // it is hidden so allow resize to reveal
-            this.props.sidebarToggle();
+            this.props.uiToggle();
         }
         this.setState({
             sidebarWidth: size,
@@ -190,16 +190,16 @@ class EditActivity extends Component {
         };
 
         return (
-            <SplitPane 
+            <SplitPane
                 split='vertical'
-                style={sidebarSplitStyle} 
+                style={sidebarSplitStyle}
                 { ...this.sidebarSplitSizing() }
                 onChange={this.handleSidebarSplitChange}
                 paneClassName='editor-pane-common'
             >
                 <Explorer
                     className='explorer-container'
-                    hidden={this.props.sidebar.hidden}
+                    hidden={this.props.ui.hidden}
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                     scriptDirRead={this.props.scriptDirRead}
@@ -236,7 +236,7 @@ class EditActivity extends Component {
                             buttonAction={this.handleToolInvoke}
                         />
                     </div>
-                    <ReplActivity 
+                    <ReplActivity
                         { ...this.replSize() }
                     />
                 </SplitPane>
