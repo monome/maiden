@@ -48,7 +48,7 @@ class EditActivity extends Component {
         this.state = {
             toolbarWidth: 50,
             sidebarWidth: props.ui.sidebarWidth,
-            editorHeight: props.height - 20,
+            editorHeight: props.height - props.ui.replHeight,
         }
     }
 
@@ -76,16 +76,21 @@ class EditActivity extends Component {
         }
     }
 
+    getSidebarWidth() {
+        return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
+    }
+
     editorSplitSizing() {
         return {
-            size: this.state.editorHeight,
+            size: this.getEditorHeight(),
+            defaultSize: this.getEditorHeight(),
             minSize: 1,
-            maxSize: this.props.height - 20,
+            maxSize: this.props.height - this.props.ui.replMinHeight,
         }
     }
 
-    getSidebarWidth() {
-        return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
+    getEditorHeight() {
+        return this.props.ui.replHidden ? this.props.height - 1 : this.state.editorHeight;
     }
 
     editorSize() {
@@ -98,35 +103,46 @@ class EditActivity extends Component {
         };
     }
 
-    toolsSize() {
+    editorToolsSize() {
         return {
             width: this.state.toolbarWidth,
-            // height: this.props.height,
             height: this.state.editorHeight,
         };
+    }
+
+    getReplHeight() {
+        return this.props.height - this.getEditorHeight() - 1;
     }
 
     replSize() {
         return {
             width: this.props.width - this.getSidebarWidth(),
-            height: this.props.height - this.state.editorHeight - 1,
+            height: this.getReplHeight(),
         }
     }
 
     handleSidebarSplitChange = (size) => {
         if (size <= this.props.ui.sidebarMinWidth && this.props.ui.sidebarHidden) {
             // it is hidden so allow resize to reveal
-            this.props.uiToggle();
+            this.props.sidebarToggle();
         }
         this.setState({
             sidebarWidth: size,
         });
     }
 
+    handleSidebarSplitDragFinish = () => {
+        this.props.sidebarSize(this.state.sidebarWidth)
+    }
+
     handleEditorSplitChange = (size) => {
         this.setState({
             editorHeight: size
         })
+    }
+
+    handleEditorSplitDragFinish = () => {
+        this.props.replSize(this.getReplHeight());
     }
 
     getActiveBuffer = () => {
@@ -195,6 +211,7 @@ class EditActivity extends Component {
                 style={sidebarSplitStyle}
                 { ...this.sidebarSplitSizing() }
                 onChange={this.handleSidebarSplitChange}
+                onDragFinished={this.handleSidebarSplitDragFinish}
                 paneClassName='editor-pane-common'
             >
                 <Explorer
@@ -219,6 +236,7 @@ class EditActivity extends Component {
                     split='horizontal'
                     { ...this.editorSplitSizing() }
                     onChange={this.handleEditorSplitChange}
+                    onDragFinished={this.handleEditorSplitDragFinish}
                 >
                     <div className='editor-pane'>
                         <Editor
@@ -231,7 +249,7 @@ class EditActivity extends Component {
                         />
                         <EditTools
                             className='edit-tools'
-                            { ...this.toolsSize() }
+                            { ...this.editorToolsSize() }
                             tools={tools}
                             buttonAction={this.handleToolInvoke}
                         />

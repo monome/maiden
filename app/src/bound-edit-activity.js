@@ -25,6 +25,8 @@ import {
 import {
     sidebarToggle,
     sidebarSize,
+    replToggle,
+    replSize,
 } from './model/ui-actions';
 
 import {
@@ -115,13 +117,20 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(replSend(MATRON_COMPONENT, cmd))
         },
 
-        // sidebar
+        // ui
         sidebarToggle: () => {
             dispatch(sidebarToggle())
         },
         sidebarSize: (width) => {
             dispatch(sidebarSize(width))
         },
+        replToggle: () => {
+            dispatch(replToggle())
+        },
+        replSize: (height) => {
+            dispatch(replSize(height))
+        },
+
 
         // tools
         toolInvoke: (name) => {
