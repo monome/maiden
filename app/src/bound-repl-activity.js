@@ -7,7 +7,6 @@ import {
     replConnect,
 } from './model/repl-actions';
 
-
 const isConnected = (state) => {
     return (component) => {
         let conn = state.repl.connections.get(component);
@@ -24,11 +23,12 @@ const isConnected = (state) => {
 const mapStateToProps = (state) => {
     // TODO: pull out the buffer and history for the active repl to avoid re-renders if output to no-active repl is received.
     let { activeRepl, endpoints, buffers, history } = state.repl;
-    return { 
+    return {
         activeRepl,
         endpoints,
-        buffers, 
+        buffers,
         history,
+        hidden: state.ui.replHidden,
         isConnected: isConnected(state),
      };
 }

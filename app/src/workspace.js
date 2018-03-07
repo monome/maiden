@@ -40,12 +40,12 @@ class Workspace extends Component {
         };
     }
 
-    handleActivitySelection = (name) => {
-        if (name === this.props.selected) {
-            this.props.sidebarToggle()
+    handleActivitySelection = (activity) => {
+        if (activity.selector === this.props.selected) {
+            this.props.toggleComponent(activity.toggle)
         }
         else {
-            this.props.activitySelect(name)
+            this.props.activitySelect(activity.selector)
         }
     }
 

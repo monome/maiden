@@ -6,8 +6,8 @@ import {
 } from './model/activity-actions';
 
 import {
-    sidebarToggle,
-} from './model/sidebar-actions';
+    toggleComponent,
+} from './model/ui-actions';
 
 import {
     replEndpoints,
@@ -29,8 +29,8 @@ const mapDispatchToProps = (dispatch) => {
         activitySelect: (name) => {
             dispatch(activitySelect(name))
         },
-        sidebarToggle: () => {
-            dispatch(sidebarToggle())
+        toggleComponent: (name) => {
+            dispatch(toggleComponent(name))
         },
         replEndpoints: (api, cb) => {
             dispatch(replEndpoints(api, cb))

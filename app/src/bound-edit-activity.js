@@ -25,7 +25,9 @@ import {
 import {
     sidebarToggle,
     sidebarSize,
-} from './model/sidebar-actions';
+    replToggle,
+    replSize,
+} from './model/ui-actions';
 
 import {
     replSend,
@@ -83,7 +85,7 @@ const mapStateToProps = (state) => {
         activeBuffer,
         activeNode: getActiveNode(state.scripts),
         buffers,
-        sidebar: state.sidebar,
+        ui: state.ui,
         scriptListing: getScriptListing(state.scripts),
     }
 }
@@ -115,13 +117,20 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(replSend(MATRON_COMPONENT, cmd))
         },
 
-        // sidebar
+        // ui
         sidebarToggle: () => {
             dispatch(sidebarToggle())
         },
         sidebarSize: (width) => {
             dispatch(sidebarSize(width))
         },
+        replToggle: () => {
+            dispatch(replToggle())
+        },
+        replSize: (height) => {
+            dispatch(replSize(height))
+        },
+
 
         // tools
         toolInvoke: (name) => {

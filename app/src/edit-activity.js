@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import SplitPane from 'react-split-pane';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+
+import ReplActivity from './bound-repl-activity'
 
 import './edit-activity.css';
 
@@ -44,6 +47,8 @@ class EditActivity extends Component {
         super(props)
         this.state = {
             toolbarWidth: 50,
+            sidebarWidth: props.ui.sidebarWidth,
+            editorHeight: props.height - props.ui.replHeight,
         }
     }
 
@@ -62,28 +67,82 @@ class EditActivity extends Component {
         }
     }
 
-    sidebarSize() {
+    sidebarSplitSizing() {
         return {
-            width: this.props.sidebar.width,
-            height: this.props.height,
-        };
+            size: this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth,
+            minSize: this.props.ui.sidebarMinWidth,
+            defaultSize: this.props.ui.sidebarWidth,
+            maxSize: this.props.ui.sidebarMaxWidth,
+        }
+    }
+
+    getSidebarWidth() {
+        return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
+    }
+
+    editorSplitSizing() {
+        return {
+            size: this.getEditorHeight(),
+            defaultSize: this.getEditorHeight(),
+            minSize: 1,
+            maxSize: this.props.height - this.props.ui.replMinHeight,
+        }
+    }
+
+    getEditorHeight() {
+        return this.props.ui.replHidden ? this.props.height : this.state.editorHeight;
     }
 
     editorSize() {
-        const sidebarWidth = this.props.sidebar.hidden ? 0 : this.props.sidebar.width;
+        const sidebarWidth = this.getSidebarWidth()
         const toolbarWidth = this.state.toolbarWidth;
-        const width = this.props.width - sidebarWidth - toolbarWidth;
+        const width = this.props.width - sidebarWidth - toolbarWidth - 1;
         return {
             width,
-            height: this.props.height,
+            height: this.getEditorHeight(),
         };
     }
 
-    toolsSize() {
+    editorToolsSize() {
         return {
             width: this.state.toolbarWidth,
-            height: this.props.height,
+            height: this.getEditorHeight(),
         };
+    }
+
+    getReplHeight() {
+        return this.props.height - this.getEditorHeight() - 1;
+    }
+
+    replSize() {
+        return {
+            width: this.props.width - this.getSidebarWidth(),
+            height: this.getReplHeight(),
+        }
+    }
+
+    handleSidebarSplitChange = (size) => {
+        if (size <= this.props.ui.sidebarMinWidth && this.props.ui.sidebarHidden) {
+            // it is hidden so allow resize to reveal
+            this.props.sidebarToggle();
+        }
+        this.setState({
+            sidebarWidth: size,
+        });
+    }
+
+    handleSidebarSplitDragFinish = () => {
+        this.props.sidebarSize(this.state.sidebarWidth)
+    }
+
+    handleEditorSplitChange = (size) => {
+        this.setState({
+            editorHeight: size
+        })
+    }
+
+    handleEditorSplitDragFinish = () => {
+        this.props.replSize(this.getReplHeight());
     }
 
     getActiveBuffer = () => {
@@ -140,12 +199,24 @@ class EditActivity extends Component {
         const buffer = this.getActiveBuffer();
         const code = buffer ? buffer.get('value') : '';
 
+        const sidebarSplitStyle = {
+            height: this.props.height,
+            width: this.props.width,
+            position: "relative",   // must be inline to override library behavior
+        };
+
         return (
-            <div className='edit-activity'>
+            <SplitPane
+                split='vertical'
+                style={sidebarSplitStyle}
+                { ...this.sidebarSplitSizing() }
+                onChange={this.handleSidebarSplitChange}
+                onDragFinished={this.handleSidebarSplitDragFinish}
+                paneClassName='editor-pane-common'
+            >
                 <Explorer
                     className='explorer-container'
-                    {...this.sidebarSize()}
-                    hidden={this.props.sidebar.hidden}
+                    hidden={this.props.ui.sidebarHidden}
                     data={this.props.scriptListing}
                     scriptSelect={this.props.scriptSelect}
                     scriptDirRead={this.props.scriptDirRead}
@@ -161,21 +232,33 @@ class EditActivity extends Component {
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
                 />
-                <Editor
-                    className='editor-container'
-                    ref={(component) => {this.editor = component;}}
-                    {...this.editorSize()}
-                    bufferName={activeBuffer}
-                    value={code}
-                    scriptChange={this.props.scriptChange}
-                />
-                <EditTools
-                    className='edit-tools'
-                    {...this.toolsSize()}
-                    tools={tools}
-                    buttonAction={this.handleToolInvoke}
-                />
-            </div>
+                <SplitPane
+                    split='horizontal'
+                    { ...this.editorSplitSizing() }
+                    onChange={this.handleEditorSplitChange}
+                    onDragFinished={this.handleEditorSplitDragFinish}
+                >
+                    <div className='editor-pane'>
+                        <Editor
+                            className='editor-container'
+                            ref={(component) => {this.editor = component;}}
+                            { ...this.editorSize() }
+                            bufferName={activeBuffer}
+                            value={code}
+                            scriptChange={this.props.scriptChange}
+                        />
+                        <EditTools
+                            className='edit-tools'
+                            { ...this.editorToolsSize() }
+                            tools={tools}
+                            buttonAction={this.handleToolInvoke}
+                        />
+                    </div>
+                    <ReplActivity
+                        { ...this.replSize() }
+                    />
+                </SplitPane>
+            </SplitPane>
         );
     }
 }
