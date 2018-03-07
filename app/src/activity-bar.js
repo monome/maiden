@@ -6,13 +6,11 @@ import './activity-bar.css'
 class ActivityBar extends Component {
     render() {
         const items = this.props.activities.map(activity => {
-            const name = activity.selector;
-            const icon = activity.icon;
             return (
                 <IconButton
-                    key={name}
-                    action={() => this.props.buttonAction(name)}
-                    icon={icon}
+                    key={activity.selector + activity.toggle}
+                    action={() => this.props.buttonAction(activity)}
+                    icon={activity.icon}
                     color="#979797"   // FIXME: this should be styled
                     size="24"       // FIXME: this should be configurable?
                 />

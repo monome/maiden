@@ -1,17 +1,19 @@
 import BoundEditActivity from './bound-edit-activity';
-import BoundReplActivity from './bound-repl-activity';
 import { ICONS } from './svg-icons';
+import { SIDEBAR_COMPONENT, REPL_COMPONENT } from './constants';
 
 const activities = [
     {
         selector: 'editor',
         icon: ICONS['file-text2'],
+        toggle: SIDEBAR_COMPONENT,
         view: BoundEditActivity,
     },
     {
-        selector: 'repl',
+        selector: 'editor',
         icon: ICONS['terminal'],
-        view: BoundReplActivity,
+        toggle: REPL_COMPONENT,
+        view: BoundEditActivity,
     }
 ];
 

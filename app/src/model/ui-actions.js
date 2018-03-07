@@ -1,15 +1,20 @@
-export const SIDEBAR_TOGGLE = 'SIDEBAR_TOGGLE'
-export const SIDEBAR_SIZE = 'SIDEBAR_SIZE'
+import { REPL_COMPONENT, SIDEBAR_COMPONENT } from '../constants';
 
-export const REPL_TOGGLE = 'REPL_TOGGEL'
+export const TOGGLE_COMPONENT = 'TOGGLE_COMPONENT'
+
+export const SIDEBAR_SIZE = 'SIDEBAR_SIZE'
 export const REPL_SIZE = 'REPL_SIZE'
 
 //
 // sync actions
 //
 
+export const toggleComponent = (name) => {
+    return { type: TOGGLE_COMPONENT, name }
+}
+
 export const sidebarToggle = () => {
-    return { type: SIDEBAR_TOGGLE }
+    return { type: TOGGLE_COMPONENT, name: SIDEBAR_COMPONENT }
 }
 
 export const sidebarSize = (width) => {
@@ -17,7 +22,7 @@ export const sidebarSize = (width) => {
 }
 
 export const replToggle = () => {
-    return { type: REPL_TOGGLE }
+    return { type: TOGGLE_COMPONENT, name: REPL_COMPONENT }
 }
 
 export const replSize = (height) => {

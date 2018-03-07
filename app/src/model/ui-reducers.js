@@ -1,9 +1,9 @@
 import {
-    SIDEBAR_TOGGLE,
     SIDEBAR_SIZE,
-    REPL_TOGGLE,
     REPL_SIZE,
+    TOGGLE_COMPONENT,
 } from './ui-actions';
+import { SIDEBAR_COMPONENT, REPL_COMPONENT } from '../constants';
 
 /*
 
@@ -26,17 +26,27 @@ const initialState = {
 
 const ui = (state = initialState, action) => {
     switch (action.type) {
-    case SIDEBAR_TOGGLE:
-        return {...state, sidebarHidden: !state.sidebarHidden};
+    case TOGGLE_COMPONENT:
+        return handleToggleComponent(state, action);
 
     case SIDEBAR_SIZE:
         return {...state, sidebarWidth: action.width};
 
-    case REPL_TOGGLE:
-        return {...state, replHidden: !state.replHidden};
-
     case REPL_SIZE:
         return {...state, replHeight: action.height};
+
+    default:
+        return state;
+    }
+}
+
+const handleToggleComponent = (state, action) => {
+    switch (action.name) {
+    case SIDEBAR_COMPONENT:
+        return {...state, sidebarHidden: !state.sidebarHidden};
+
+    case REPL_COMPONENT:
+        return {...state, replHidden: !state.replHidden};
 
     default:
         return state;

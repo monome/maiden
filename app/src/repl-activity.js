@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import cx from 'classname';
 import Repl from './repl';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
@@ -49,7 +50,7 @@ const ReplConnect = (props) => {
                     action={() => props.connectAction(props.activeRepl)}
                     icon={ICONS['loop2']}
                     color="#979797"       // FIXME:
-                    size="24"           // FIXME:    
+                    size="24"           // FIXME:
                 />
             </div>
         </div>
@@ -84,13 +85,13 @@ class ReplActivity extends Component {
         let endpoint = this.props.endpoints.get(component)
         this.props.replConnect(component, endpoint)
     }
-    
+
     render() {
         let { activeRepl, buffers, history } = this.props;
 
         var replView;
         if (this.props.isConnected(activeRepl)) {
-            replView = <Repl 
+            replView = <Repl
                             className="repl-container"
                             {...this.replSize()}
                             activeRepl={activeRepl}
@@ -99,30 +100,26 @@ class ReplActivity extends Component {
                             replSend={this.props.replSend}
                         />
         } else {
-            replView = <ReplConnect 
-                            {...this.replSize()} 
+            replView = <ReplConnect
+                            {...this.replSize()}
                             activeRepl={activeRepl}
                             connectAction={this.handleConnect}
                         />
         }
 
+        let containerClassName = cx("repl-activity-container", {"hidden": this.props.hidden},);
+
         return (
-            <div className="repl-activity">
-                {/* <Repl 
-                    className="repl-container"
-                    {...this.replSize()}
-                    activeRepl={activeRepl}
-                    buffers={buffers}
-                    history={history}
-                    replSend={this.props.replSend}
-                /> */}
-                {replView}
-                <ReplTools
-                    className="repl-tools"
-                    {...this.toolsSize()}
-                    tools={tools}
-                    buttonAction={this.handleToolInvoke}
-                />
+            <div className={containerClassName}>
+                <div className="repl-activity">
+                    {replView}
+                    <ReplTools
+                        className="repl-tools"
+                        {...this.toolsSize()}
+                        tools={tools}
+                        buttonAction={this.handleToolInvoke}
+                    />
+                </div>
             </div>
         );
     }

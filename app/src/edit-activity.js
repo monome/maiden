@@ -90,7 +90,7 @@ class EditActivity extends Component {
     }
 
     getEditorHeight() {
-        return this.props.ui.replHidden ? this.props.height - 1 : this.state.editorHeight;
+        return this.props.ui.replHidden ? this.props.height : this.state.editorHeight;
     }
 
     editorSize() {
@@ -99,14 +99,14 @@ class EditActivity extends Component {
         const width = this.props.width - sidebarWidth - toolbarWidth - 1;
         return {
             width,
-            height: this.state.editorHeight,
+            height: this.getEditorHeight(),
         };
     }
 
     editorToolsSize() {
         return {
             width: this.state.toolbarWidth,
-            height: this.state.editorHeight,
+            height: this.getEditorHeight(),
         };
     }
 
