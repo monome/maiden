@@ -43,7 +43,7 @@ const initialReplState = {
 
 const repl = (state = initialReplState, action) => {
     let conn = state.connections.get(action.component);
-    var changes, history;
+    var changes, history, buffer;
 
     switch (action.type) {
 
@@ -88,20 +88,10 @@ const repl = (state = initialReplState, action) => {
         };
 
     case REPL_RECEIVE:
-        // console.log(action.component, action.data);
-        var buffer = state.buffers.get(action.component)
+        buffer = state.buffers.get(action.component)
         action.data.split("\n").forEach(line => {
-            buffer = buffer.push(line);
-            if (buffer.size > state.scrollbackLimit) {
-                buffer = buffer.shift();
-            }
+            buffer = outputAppend(buffer, state.scrollbackLimit, line);
         });
-        /*
-        var lines = state.buffers.get(action.component).push(action.data);
-        if (lines.size > state.scrollbackLimit) {
-            lines = lines.shift();
-        }
-        */
         return { 
             ...state, 
             buffers: state.buffers.set(action.component, buffer),
@@ -114,10 +104,15 @@ const repl = (state = initialReplState, action) => {
             return state
         }
         socket.send(action.value + "\n");
+        // add command to history list
         history = state.history.get(action.component).unshift(action.value)
+        // echo command to output buffer
+        buffer = state.buffers.get(action.component)
+        buffer = outputAppend(buffer, state.scrollbackLimit, action.value)
         return {
             ...state,
-            history: state.history.set(action.component, history)
+            history: state.history.set(action.component, history),
+            buffers: state.buffers.set(action.component, buffer),
         };
 
     case REPL_SELECT:
@@ -133,5 +128,13 @@ const repl = (state = initialReplState, action) => {
         return state;
     }
 };
+
+const outputAppend = (buffer, limit, line) => {
+    buffer = buffer.push(line);
+    if (buffer.size > limit) {
+        buffer = buffer.shift();
+    }
+    return buffer;
+}
 
 export default repl;
