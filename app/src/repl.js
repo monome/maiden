@@ -31,6 +31,13 @@ class ReplOutput extends Component {
     }
     */
 
+    componentDidUpdate() {
+        // FIXME: this always forces scrolling to the bottom
+        if (this.output) {
+            this.output.scrollTo(0, this.output.scrollHeight)
+        }
+    }
+
     isScrolledBottom() {
         if (!this.output) {
             return false;
