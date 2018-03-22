@@ -71,7 +71,7 @@ export const replClear = (component) => {
 export const replEndpoints = (api, cb) => {
     return (dispatch) => {
         dispatch(replEndpointsRequest());
-        return api.list_repl_endpoints((endpoints) => {
+        return api.getReplEndpoints((endpoints) => {
             // FIXME: handle errors
             dispatch(replEndpointsSuccess(endpoints))
             if (cb) {

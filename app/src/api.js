@@ -66,10 +66,23 @@ class API {
         console.log("api.createFolder() not implemented")
     }
 
-    list_repl_endpoints(cb) {
+    getReplEndpoints(cb) {
+        let origin = document.location.hostname;
         fetch('/repl-endpoints.json').then((response) => {
-            // TODO: parse url and insert hostname if not specified
-            response.json().then(cb)
+            response.json().then(data => {
+                // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
+                let parser = document.createElement("a");
+                let config = new Map();
+                let template = new Map(Object.entries(data));
+                template.forEach((value, key) => {
+                    parser.href = value;
+                    if (parser.hostname === undefined || parser.hostname === "") {
+                        parser.hostname = origin;
+                    }
+                    config.set(key, parser.href);
+                });
+                cb(config);
+            })
         })
     }
 
