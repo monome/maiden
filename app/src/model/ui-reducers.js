@@ -20,7 +20,7 @@ const initialState = {
     sidebarMinWidth: 210,
     sidebarMaxWidth: 500,
     replHidden: false,
-    replHeight: 120,
+    replHeight: 160,
     replMinHeight: 100,
 }
 

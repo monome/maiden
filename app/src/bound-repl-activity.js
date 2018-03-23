@@ -5,6 +5,7 @@ import {
     replSend,
     replClear,
     replConnect,
+    replSelect,
 } from './model/repl-actions';
 
 const isConnected = (state) => {
@@ -43,6 +44,9 @@ const mapDispatchToProps = (dispatch) => {
         },
         replConnect: (component, endpoint) => {
             dispatch(replConnect(component, endpoint))
+        },
+        replSelect: (component) => {
+            dispatch(replSelect(component))
         },
     }
 }

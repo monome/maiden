@@ -57,6 +57,73 @@ const ReplConnect = (props) => {
     )
 }
 
+const ReplSwitcherTab = (props) => {
+    let className = cx("repl-switcher-tab", {"noselect": true}, {"repl-active-tab": props.isActive});
+    return (
+        <button 
+            className={className}
+            key={props.name}
+            onClick={props.onClick}
+        >
+            {props.name}
+        </button>
+    );
+}
+
+const ReplSwitcher = (props) => {
+    let { activeRepl, height, width } = props;
+
+    let switcherSize = {
+        width,
+        height: 25,
+    };
+
+    let tabs = props.endpoints.keySeq().map(k => {
+        let isActive = props.activeRepl === k;
+        return (
+            <ReplSwitcherTab 
+                name={k} 
+                isActive={isActive}
+                key={k}
+                onClick={() => { props.replSelect(k) }}
+            />
+        );
+    })
+
+
+    let contentSize = {
+        width,
+        height: height - switcherSize.height,
+    };
+
+    var replView;
+    if (props.isConnected(activeRepl)) {
+        replView = <Repl
+                        className="repl-container"
+                        {...contentSize}
+                        activeRepl={activeRepl}
+                        buffers={props.buffers}
+                        history={props.history}
+                        replSend={props.replSend}
+                    />
+    } else {
+        replView = <ReplConnect
+                        {...contentSize}
+                        activeRepl={activeRepl}
+                        connectAction={props.handleConnect}
+                    />
+    }
+
+    return (
+        <div>
+            <div className="repl-switcher-tabs" style={switcherSize}>
+                {tabs}
+            </div>
+            {replView}
+        </div>
+    );
+}
+
 
 class ReplActivity extends Component {
     TOOLBAR_WIDTH = 50;
@@ -87,32 +154,16 @@ class ReplActivity extends Component {
     }
 
     render() {
-        let { activeRepl, buffers, history } = this.props;
-
-        var replView;
-        if (this.props.isConnected(activeRepl)) {
-            replView = <Repl
-                            className="repl-container"
-                            {...this.replSize()}
-                            activeRepl={activeRepl}
-                            buffers={buffers}
-                            history={history}
-                            replSend={this.props.replSend}
-                        />
-        } else {
-            replView = <ReplConnect
-                            {...this.replSize()}
-                            activeRepl={activeRepl}
-                            connectAction={this.handleConnect}
-                        />
-        }
-
         let containerClassName = cx("repl-activity-container", {"hidden": this.props.hidden},);
 
         return (
             <div className={containerClassName}>
                 <div className="repl-activity">
-                    {replView}
+                    <ReplSwitcher 
+                        {...this.props}
+                        {...this.replSize()}
+                        handleConnect={this.handleConnect}
+                    />
                     <ReplTools
                         className="repl-tools"
                         {...this.toolsSize()}
