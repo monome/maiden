@@ -75,7 +75,7 @@ const ReplSwitcher = (props) => {
 
     let switcherSize = {
         width,
-        height: 25,
+        height: 30,
     };
 
     let tabs = props.endpoints.keySeq().map(k => {
@@ -136,7 +136,7 @@ class ReplActivity extends Component {
 
     replSize() {
         return {
-            width: this.props.width - this.TOOLBAR_WIDTH,
+            width: this.props.width - this.TOOLBAR_WIDTH - 1,
             height: this.props.height,
         }
     }
