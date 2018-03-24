@@ -1,1 +1,1 @@
-./maiden.arm -site ./app/build -data ~/norns/lua > /dev/null &
+./maiden.arm -site ./app/build -data ~/dust > /dev/null &
