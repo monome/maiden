@@ -3,6 +3,10 @@ vendor/
 
 # executables
 maiden
+maiden.arm
+
+# releases
+maiden-v*.tgz
 
 # misc stuff
 .DS_Store
