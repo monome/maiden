@@ -19,6 +19,13 @@ var (
 	version = "0.0.1"
 )
 
+const (
+	SCRIPT_DIR = "lua"
+	AUDIO_DIR  = "audio"
+	DATA_DIR   = "data"
+	SCLANG_DIR = "sc"
+)
+
 func main() {
 	var port = flag.Int("port", 5000, "http port")
 	var dataDir = flag.String("data", "data/", "path to user data directory")
@@ -56,7 +63,7 @@ func main() {
 	})
 
 	api.Get("/scripts", func(ctx iris.Context) {
-		entries, err := ioutil.ReadDir(filepath.Join(*dataDir, "scripts"))
+		entries, err := ioutil.ReadDir(filepath.Join(*dataDir, SCRIPT_DIR))
 		if err != nil {
 			ctx.StatusCode(iris.StatusBadRequest)
 			return
@@ -184,7 +191,7 @@ func main() {
 }
 
 func scriptPath(dataDir *string, name *string) string {
-	return filepath.Join(*dataDir, "scripts", *name)
+	return filepath.Join(*dataDir, SCRIPT_DIR, *name)
 }
 
 type prefixFunc func(...string) string

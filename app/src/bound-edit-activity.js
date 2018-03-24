@@ -113,7 +113,7 @@ const mapDispatchToProps = (dispatch) => {
         },
         scriptRun: (api, resource) => {
             let file = api.fileFromResource(resource)
-            let cmd = `sys.run("${file}")`
+            let cmd = `norns.script.load("${file}")`
             dispatch(replSend(MATRON_COMPONENT, cmd))
         },
 
