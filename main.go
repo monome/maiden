@@ -111,11 +111,17 @@ func main() {
 	api.Put("/scripts/{name:path}", func(ctx iris.Context) {
 		name := ctx.Params().Get("name")
 		path := scriptPath(dataDir, &name)
-		script := ctx.PostValue("value")
+
+		// get code (file) blob
+		file, _, err := ctx.FormFile("value")
+		if err != nil {
+			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.Values().Set("message", err.Error())
+			return
+		}
 
 		app.Logger().Debug("save path: ", path)
 		app.Logger().Debug("content type: ", ctx.GetContentType())
-		app.Logger().Debug("content: ", script)
 
 		// open destination stream
 		out, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
@@ -127,7 +133,7 @@ func main() {
 			return
 		}
 
-		size, err := io.WriteString(out, script)
+		size, err := io.Copy(out, file)
 		if err != nil {
 			ctx.StatusCode(iris.StatusInternalServerError)
 			ctx.Values().Set("message", err.Error())

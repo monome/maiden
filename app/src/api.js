@@ -40,7 +40,8 @@ class API {
     // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
     write_script(resource, code, cb) {
         const formData = new FormData();
-        formData.append('value', code)
+        const codeBlob = new Blob([code], {type: 'text/utf-8'})
+        formData.append('value', codeBlob)
         fetch(resource, {
             method: 'PUT',
             body: formData,

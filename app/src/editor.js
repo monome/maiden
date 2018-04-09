@@ -15,6 +15,9 @@ class Editor extends Component {
     onLoad = (editor) => {
         // grab reference to ace editor
         this.editor = editor;
+
+        this.editor.getSession().setNewLineMode("unix");
+
         /*
         if (this.refs.ace) {
             window.setTimeout(() => {
@@ -73,6 +76,8 @@ class Editor extends Component {
 
             // MAINT: really lame, undo stack is global to the single wrapped editor so it extends across buffer switching. call undo repeatly will result in buffer switch (confusingly)
             this.editor.getSession().getUndoManager().reset();
+
+            this.editor.getSession().setNewLineMode("unix");
         }
     }
 
@@ -108,7 +113,8 @@ class Editor extends Component {
                 onLoad={this.onLoad}
                 onChange={this.onChange}
                 editorProps={{
-                    $blockScrolling: Infinity
+                    $blockScrolling: Infinity,
+                    $newLineMode: "unix",
                 }}
             />
         );
