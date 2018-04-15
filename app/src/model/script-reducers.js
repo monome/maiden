@@ -63,7 +63,7 @@ scripts: {
 
 const initialScriptsState = {
     activeBuffer: undefined,
-    rootNodes: virtualRoot(new List()),
+    rootNodes: virtualRoot(new List(), "SCRIPTS"),
     buffers: new Map(),
     activeNode: undefined,
     expandedNodes: new Set(),
@@ -164,7 +164,7 @@ const handleScriptChange = (action, state) => {
 const handleScriptList = (action, state) => {
     // retain existing virtual nodes (!!! except root node)
     let virtuals = collectVirtualNodes(state.rootNodes).filter(n => n.get("name") === state.rootNodes.get("name"))
-    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries)), virtuals)
+    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries), "SCRIPTS"), virtuals)
     return { ...state, rootNodes };
 }
 

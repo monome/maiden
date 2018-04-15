@@ -6,30 +6,30 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/middleware/logger"
-	"github.com/kataras/iris/middleware/recover"
+	"github.com/gin-gonic/gin"
 )
 
 var (
-	version = "0.0.1"
+	version = "0.0.2"
 )
 
 const (
-	SCRIPT_DIR = "lua"
-	AUDIO_DIR  = "audio"
-	DATA_DIR   = "data"
-	SCLANG_DIR = "sc"
+	ScriptDir = "lua"
+	AudioDir  = "audio"
+	DataDir   = "data"
+	SCLangDir = "sc"
 )
 
 func main() {
 	var port = flag.Int("port", 5000, "http port")
 	var dataDir = flag.String("data", "data/", "path to user data directory")
-	var siteDir = flag.String("site", "site/", "path to static site directory")
+	var appDir = flag.String("app", "app/", "path to maiden app directory")
+	var docDir = flag.String("doc", "doc/", "path to matron lua docs")
 	var debug = flag.Bool("debug", false, "enable debug logging")
 
 	flag.Parse()
@@ -37,51 +37,98 @@ func main() {
 	// FIXME: pull in git version
 	log.Printf("maiden (%s)", version)
 	log.Printf("  port: %d", *port)
-	log.Printf("  site: %s", *siteDir)
+	log.Printf("   app: %s", *appDir)
 	log.Printf("  data: %s", *dataDir)
-
-	app := iris.New()
+	log.Printf("   doc: %s", *docDir)
 
 	if *debug {
-		app.Logger().SetLevel("debug")
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.ReleaseMode)
 	}
-	// add two built'n handlers
-	// that can recover from any http-relative panics
-	// and log the requests to the terminal.
-	app.Use(recover.New())
-	app.Use(logger.New())
 
-	// expose site
-	app.StaticWeb("/", *siteDir)
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	r.GET("", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusFound, "/maiden")
+	})
+
+	// expose app
+	r.Static("/maiden", *appDir)
+
+	// expose docs
+	r.Static("/doc", *docDir)
 
 	// api
 	apiRoot := "/api/v1"
-	resourcePath := makeResourcePath(filepath.Join(apiRoot, "scripts"))
-	api := app.Party(apiRoot)
-	api.Get("/", func(ctx iris.Context) {
-		ctx.JSON(apiInfo{"maiden", version})
+	api := r.Group(apiRoot)
+
+	api.GET("", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, apiInfo{"maiden", version})
 	})
 
-	api.Get("/scripts", func(ctx iris.Context) {
-		entries, err := ioutil.ReadDir(filepath.Join(*dataDir, SCRIPT_DIR))
+	logger := os.Stderr
+
+	// scripts api
+	apiPrefix := filepath.Join(apiRoot, "scripts")
+	devicePath := makeDevicePath(filepath.Join(*dataDir, ScriptDir))
+	api.GET("/scripts", rootListingHandler(logger, apiPrefix, devicePath))
+	api.GET("/scripts/*name", listingHandler(logger, apiPrefix, devicePath))
+	api.PUT("/scripts/*name", writeHandler(logger, apiPrefix, devicePath))
+	api.PATCH("/scripts/*name", renameHandler(logger, apiPrefix, devicePath))
+	api.DELETE("/scripts/*name", deleteHandler(logger, apiPrefix, devicePath))
+
+	// data api
+	apiPrefix = filepath.Join(apiRoot, "data")
+	devicePath = makeDevicePath(filepath.Join(*dataDir, DataDir))
+	api.GET("/data", rootListingHandler(logger, apiPrefix, devicePath))
+	api.GET("/data/*name", listingHandler(logger, apiPrefix, devicePath))
+	api.PUT("/data/*name", writeHandler(logger, apiPrefix, devicePath))
+	api.PATCH("/data/*name", renameHandler(logger, apiPrefix, devicePath))
+	api.DELETE("/data/*name", deleteHandler(logger, apiPrefix, devicePath))
+
+	// audio api
+	apiPrefix = filepath.Join(apiRoot, "audio")
+	devicePath = makeDevicePath(filepath.Join(*dataDir, AudioDir))
+	api.GET("/audio", rootListingHandler(logger, apiPrefix, devicePath))
+	api.GET("/audio/*name", listingHandler(logger, apiPrefix, devicePath))
+	api.PUT("/audio/*name", writeHandler(logger, apiPrefix, devicePath))
+	api.PATCH("/audio/*name", renameHandler(logger, apiPrefix, devicePath))
+	api.DELETE("/audio/*name", deleteHandler(logger, apiPrefix, devicePath))
+
+	r.Run(fmt.Sprintf(":%d", *port))
+}
+
+func rootListingHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
+	resourcePath := makeResourcePath(apiPrefix)
+
+	return func(ctx *gin.Context) {
+		top := "" // MAINT: get rid of this
+		entries, err := ioutil.ReadDir(devicePath(&top))
 		if err != nil {
-			ctx.StatusCode(iris.StatusBadRequest)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		dir := handleDirRead("", &entries, resourcePath)
-		ctx.JSON(dir)
-	})
+		ctx.JSON(http.StatusOK, dir)
+	}
+}
 
-	api.Get("/scripts/{name:path}", func(ctx iris.Context) {
-		name := ctx.Params().Get("name")
-		path := scriptPath(dataDir, &name)
+func listingHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+		path := devicePath(&name)
+
+		fmt.Fprintln(logger, "get of name: ", name)
+		fmt.Fprintln(logger, "device path: ", path)
 
 		// figure out if this is a file or not
 		info, err := os.Stat(path)
 		if err != nil {
-			ctx.Values().Set("message", err.Error())
-			ctx.StatusCode(iris.StatusNotFound)
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
@@ -89,115 +136,111 @@ func main() {
 			entries, err := ioutil.ReadDir(path)
 			if err != nil {
 				// not sure why this would fail given that we just stat()'d the dir
-				ctx.Values().Set("message", err.Error())
-				ctx.StatusCode(iris.StatusBadRequest)
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
 
-			prefix := filepath.Join(apiRoot, "scripts", name)
+			prefix := filepath.Join(apiPrefix, name)
 			subResourcePath := makeResourcePath(prefix)
 			dir := handleDirRead(name, &entries, subResourcePath)
-			ctx.JSON(dir)
+			ctx.JSON(http.StatusOK, dir)
 			return
 		}
 
-		ctx.ContentType("text/utf-8") // FIXME: is this needed? is it bad?
-		err = ctx.ServeFile(path, false)
-		if err != nil {
-			ctx.NotFound()
-		}
-	})
+		ctx.File(path)
+	}
+}
 
-	api.Put("/scripts/{name:path}", func(ctx iris.Context) {
-		name := ctx.Params().Get("name")
-		path := scriptPath(dataDir, &name)
+func writeHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+		path := devicePath(&name)
 
 		// get code (file) blob
-		file, _, err := ctx.FormFile("value")
+		file, err := ctx.FormFile("value")
 		if err != nil {
-			ctx.StatusCode(iris.StatusBadRequest)
-			ctx.Values().Set("message", err.Error())
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		app.Logger().Debug("save path: ", path)
-		app.Logger().Debug("content type: ", ctx.GetContentType())
+		fmt.Fprintf(logger, "save path: %s\n", path)
+		fmt.Fprintf(logger, "content type: %s\n", file.Header["Content-Type"])
 
-		// open destination stream
-		out, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-		defer out.Close()
-
-		if err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.Values().Set("message", err.Error())
+		// size, err := io.Copy(out, file)
+		if err := ctx.SaveUploadedFile(file, path); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		size, err := io.Copy(out, file)
-		if err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.Values().Set("message", err.Error())
-			return
-		}
-		app.Logger().Debugf("wrote %d bytes to %s", size, path)
-	})
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("uploaded %s (%s, %d) to %s", file.Filename, file.Header, file.Size, path)})
+	}
+}
 
-	api.Patch("/scripts/{name:path}", func(ctx iris.Context) {
+func renameHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
+	resourcePath := makeResourcePath(apiPrefix)
+
+	return func(ctx *gin.Context) {
 		// FIXME: this logic basically assumes PATCH == rename operation at the moment
-		name := ctx.Params().Get("name")
-		path := scriptPath(dataDir, &name)
+		name := ctx.Param("name")
+		path := devicePath(&name)
 
 		// figure out if this exists or not
 		_, err := os.Stat(path)
 		if err != nil {
-			ctx.Values().Set("message", err.Error())
-			ctx.NotFound()
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
 		// compute new path
-		rename := filepath.Join(filepath.Dir(name), ctx.PostValue("name"))
-		renamePath := scriptPath(dataDir, &rename)
+		newName, exists := ctx.GetPostForm("name")
+		if !exists {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "missing 'name' key in form"})
+			return
+		}
+		rename := filepath.Join(filepath.Dir(name), newName)
+		renamePath := devicePath(&rename)
 
-		app.Logger().Debug("going to rename: ", path, " to: ", renamePath)
+		fmt.Fprintf(logger, "going to rename: %s to: %s\n", path, renamePath)
 
 		err = os.Rename(path, renamePath)
 		if err != nil {
-			ctx.Values().Set("message", err.Error())
-			ctx.StatusCode(iris.StatusInternalServerError)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		ctx.JSON(patchInfo{resourcePath(rename)})
+		info := patchInfo{resourcePath(rename)}
+		ctx.JSON(http.StatusOK, info)
+	}
+}
 
-	})
+func deleteHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		name := ctx.Param("name")
+		path := devicePath(&name)
 
-	api.Delete("/scripts/{name:path}", func(ctx iris.Context) {
-		name := ctx.Params().Get("name")
-		path := scriptPath(dataDir, &name)
+		fmt.Fprintln(logger, "going to delete: ", path)
 
-		app.Logger().Debug("going to delete: ", path)
-
-		// issue 404 if it doesn't exist
 		if _, err := os.Stat(path); os.IsNotExist(err) {
-			ctx.Values().Set("message", err.Error())
-			ctx.NotFound()
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 			return
 		}
 
 		err := os.Remove(path)
 		if err != nil {
-			ctx.StatusCode(iris.StatusInternalServerError)
-			ctx.Values().Set("message", err.Error())
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-	})
 
-	app.Run(iris.Addr(fmt.Sprintf(":%d", *port)), iris.WithoutVersionChecker)
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("deleted %s", path)})
+	}
 }
 
-func scriptPath(dataDir *string, name *string) string {
-	return filepath.Join(*dataDir, SCRIPT_DIR, *name)
+type devicePathFunc func(name *string) string
+
+func makeDevicePath(prefix string) devicePathFunc {
+	return func(name *string) string {
+		return filepath.Join(prefix, *name)
+	}
 }
 
 type prefixFunc func(...string) string
@@ -217,15 +260,15 @@ type apiInfo struct {
 	Version string `json:"version"`
 }
 
-type scriptInfo struct {
-	Name     string        `json:"name"`
-	URL      string        `json:"url"`
-	Children *[]scriptInfo `json:"children,omitempty"`
+type fileInfo struct {
+	Name     string      `json:"name"`
+	URL      string      `json:"url"`
+	Children *[]fileInfo `json:"children,omitempty"`
 }
 
 type dirInfo struct {
-	Path    string       `json:"path"`
-	Entries []scriptInfo `json:"entries"`
+	Path    string     `json:"path"`
+	Entries []fileInfo `json:"entries"`
 }
 
 type errorInfo struct {
@@ -237,13 +280,13 @@ type patchInfo struct {
 }
 
 func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc) *dirInfo {
-	var scripts = []scriptInfo{}
+	var files = []fileInfo{}
 	for _, entry := range *entries {
-		var children *[]scriptInfo
+		var children *[]fileInfo
 		if entry.IsDir() {
-			children = &[]scriptInfo{}
+			children = &[]fileInfo{}
 		}
-		scripts = append(scripts, scriptInfo{
+		files = append(files, fileInfo{
 			entry.Name(),
 			resourcePath(entry.Name()),
 			children,
@@ -251,6 +294,6 @@ func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc)
 	}
 	return &dirInfo{
 		path,
-		scripts,
+		files,
 	}
 }
