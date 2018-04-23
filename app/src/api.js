@@ -69,18 +69,17 @@ class API {
 
     getReplEndpoints(cb) {
         let origin = document.location.hostname;
-        fetch('/repl-endpoints.json').then((response) => {
+        fetch('repl-endpoints.json').then((response) => {
             response.json().then(data => {
                 // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
-                let parser = document.createElement("a");
                 let config = new Map();
                 let template = new Map(Object.entries(data));
                 template.forEach((value, key) => {
-                    parser.href = value;
-                    if (parser.hostname === undefined || parser.hostname === "") {
-                        parser.hostname = origin;
+                    let url = new URL(value)
+                    if (url.hostname === undefined || url.hostname === "maiden_app_location") {
+                        url.hostname = origin;
                     }
-                    config.set(key, parser.href);
+                    config.set(key, url.href);
                 });
                 cb(config);
             })
