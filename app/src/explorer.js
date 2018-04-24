@@ -97,7 +97,7 @@ class Section extends Component {
                 <SectionHeader
                     name={this.props.name}
                     tools={this.props.tools}
-                    buttonAction={this.props.onToolClick}
+                    buttonAction={this.props.buttonAction}
                     showTools={this.state.showTools}
                 />
                 <Treebeard
