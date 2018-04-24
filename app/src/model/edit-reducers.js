@@ -34,13 +34,13 @@ import {
     EXPLORER_TOGGLE_NODE,
 
     scriptNew,
-} from './script-actions';
+} from './edit-actions';
 
 import { siblingScriptResourceForName } from '../api';
 
 /*
 
-scripts: {
+edit: {
     activeNode: <url>,
     expandedNodes: Set(),
     rootNodes: [
@@ -69,7 +69,7 @@ const initialScriptsState = {
     expandedNodes: new Set(),
 };
 
-const scripts = (state = initialScriptsState, action) => {
+const edit = (state = initialScriptsState, action) => {
     switch (action.type) {
     case SCRIPT_LIST_SUCCESS:
         return handleScriptList(action, state);
@@ -268,4 +268,4 @@ const handleResourceRenameSuccess = (action, state) => {
     };
 }
 
-export default scripts;
+export default edit;

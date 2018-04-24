@@ -16,7 +16,7 @@ import {
 
 import {
     scriptList,
-} from './model/script-actions';
+} from './model/edit-actions';
 
 const mapStateToProps = (state) => {
     const selected = state.activity.selected;

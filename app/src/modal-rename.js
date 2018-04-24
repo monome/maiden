@@ -7,7 +7,7 @@ import { INVALID_NAME_CHARS } from './constants';
 
 const mapStateToProps = (state) => {
     // renaming is relative to some active node; get sibling names to enable validation
-    let siblingNames = siblingNamesForResource(state.scripts.rootNodes, state.scripts.activeBuffer);
+    let siblingNames = siblingNamesForResource(state.edit.rootNodes, state.edit.activeBuffer);
     return {
         siblingNames,
     }

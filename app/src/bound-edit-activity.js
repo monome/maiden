@@ -20,7 +20,7 @@ import {
 
     explorerActiveNode,
     explorerToggleNode,
-} from './model/script-actions';
+} from './model/edit-actions';
 
 import {
     sidebarToggle,
@@ -80,13 +80,13 @@ const getActiveNode = createSelector(
 )
 
 const mapStateToProps = (state) => {
-    let {activeBuffer, buffers} = state.scripts;
+    let {activeBuffer, buffers} = state.edit;
     return {
         activeBuffer,
-        activeNode: getActiveNode(state.scripts),
+        activeNode: getActiveNode(state.edit),
         buffers,
         ui: state.ui,
-        scriptListing: getScriptListing(state.scripts),
+        scriptListing: getScriptListing(state.edit),
     }
 }
 

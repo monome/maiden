@@ -1,5 +1,5 @@
 // import rewire from 'rewire';
-import scripts from './script-reducers';
+import scripts from './edit-reducers';
 import { virtualRoot } from './listing';
 
 import { List, Map, Set } from 'immutable';
