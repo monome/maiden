@@ -23,12 +23,13 @@ class API {
         fetch(apiPath('/scripts')).then(cb)
     }
 
-    readScript(resource, cb) {
+    // MAINT: unused? delete?
+    readTextResource(resource, cb) {
         fetch(resource).then(cb)
     }
 
     // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
-    writeScript(resource, code, cb) {
+    writeTextResource(resource, code, cb) {
         const formData = new FormData();
         const codeBlob = new Blob([code], {type: 'text/utf-8'})
         formData.append('value', codeBlob)
@@ -38,13 +39,13 @@ class API {
         }).then(cb)
     }
 
-    deleteScript(resource, cb) {
+    deleteResource(resource, cb) {
         fetch(resource, {
             method: 'DELETE'
         }).then(cb)
     }
 
-    renameScript(resource, name, cb) {
+    renameResource(resource, name, cb) {
         const formData = new FormData();
         formData.append('name', name)
         fetch(resource, {

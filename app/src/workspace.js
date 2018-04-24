@@ -24,6 +24,8 @@ class Workspace extends Component {
 
        // trigger initial read of top level scripts
        this.props.scriptList(this.props.api)
+       this.props.dataList(this.props.api)
+       this.props.audioList(this.props.api)
     }
 
     activityBarSize() {

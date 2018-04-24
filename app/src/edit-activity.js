@@ -57,13 +57,13 @@ class EditActivity extends Component {
         let { activeBuffer, buffers } = this.props;
         let newActiveBuffer = newProps.activeBuffer;
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
-            this.props.scriptChange(activeBuffer, this.editor.getValue());
+            this.props.bufferChange(activeBuffer, this.editor.getValue());
         }
 
         let newBuffers = newProps.buffers;
         if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
-            this.props.scriptRead(this.props.api, newActiveBuffer);
+            this.props.bufferRead(this.props.api, newActiveBuffer);
         }
     }
 
@@ -160,7 +160,7 @@ class EditActivity extends Component {
         if (tool === 'save') {
             if (buffer.get('modified')) {
                 this.editor.bufferWillSave(resource)
-                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                this.props.bufferSave(this.props.api, resource, this.editor.getValue(), () => {
                     this.editor.bufferWasSaved(resource)
                  })
             }
@@ -169,7 +169,7 @@ class EditActivity extends Component {
             if (buffer.get('modified')) {
                 // save, then run
                 this.editor.bufferWillSave(resource)
-                this.props.scriptSave(this.props.api, resource, this.editor.getValue(), () => {
+                this.props.bufferSave(this.props.api, resource, this.editor.getValue(), () => {
                     this.editor.bufferWasSaved(resource)
                     this.props.scriptRun(this.props.api, resource)
                 })
@@ -185,13 +185,13 @@ class EditActivity extends Component {
         }
     }
 
-    handleScriptRename = (api, resource, name, virtual) => {
+    handleResourceRename = (api, resource, name, virtual) => {
         // MAINT: this annoying; rename changes names, urls, and active this/that which in turn causes a re-render. if the script being renamed is "virtual" then the editor buffer might contain changes which haven't been sync'd to the store. trigger a sync to ensure those changes aren't lost by the rename
         if (virtual) {
             console.log("syncing editor before rename just in case...")
-            this.props.scriptChange(this.props.activeBuffer, this.editor.getValue());
+            this.props.bufferChange(this.props.activeBuffer, this.editor.getValue());
         }
-        this.props.explorerScriptRename(api, resource, name, virtual);
+        this.props.explorerResourceRename(api, resource, name, virtual);
     }
 
     render() {
@@ -218,12 +218,12 @@ class EditActivity extends Component {
                     className='explorer-container'
                     hidden={this.props.ui.sidebarHidden}
                     data={this.props.scriptListing}
-                    scriptSelect={this.props.scriptSelect}
-                    scriptDirRead={this.props.scriptDirRead}
+                    bufferSelect={this.props.bufferSelect}
+                    directoryRead={this.props.directoryRead}
                     scriptCreate={this.props.explorerScriptNew}
                     scriptDuplicate={this.props.explorerScriptDuplicate}
-                    scriptDelete={this.props.explorerScriptDelete}
-                    scriptRename={this.handleScriptRename}
+                    resourceDelete={this.props.explorerResourceDelete}
+                    resourceRename={this.handleResourceRename}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     api={this.props.api}
@@ -245,7 +245,7 @@ class EditActivity extends Component {
                             { ...this.editorSize() }
                             bufferName={activeBuffer}
                             value={code}
-                            scriptChange={this.props.scriptChange}
+                            bufferChange={this.props.bufferChange}
                         />
                         <EditTools
                             className='edit-tools'

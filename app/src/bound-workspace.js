@@ -41,6 +41,12 @@ const mapDispatchToProps = (dispatch) => {
         scriptList: (api) => {
             dispatch(scriptList(api))
         },
+        dataList: (api) => {
+            // dispatch(dataList(api))
+        },
+        audioList: (api) => {
+            // dispatch(audioList(api))
+        },
     }
 }
 

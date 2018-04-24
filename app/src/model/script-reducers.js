@@ -17,16 +17,16 @@ import {
 
 import {
     SCRIPT_LIST_SUCCESS,
-    SCRIPT_READ_SUCCESS,
-    SCRIPT_DIR_SUCCESS,
-    SCRIPT_SAVE_SUCCESS,
-    SCRIPT_SELECT,
-    SCRIPT_CHANGE,
+    BUFFER_READ_SUCCESS,
+    DIRECTORY_READ_SUCCESS,
+    BUFFER_SAVE_SUCCESS,
+    BUFFER_SELECT,
+    BUFFER_CHANGE,
     SCRIPT_NEW,
-    SCRIPT_DELETE_SUCCESS,
+    RESOURCE_DELETE_SUCCESS,
     SCRIPT_DUPLICATE,
-    SCRIPT_NEW_FOLDER_SUCCESS,
-    SCRIPT_RENAME_SUCCESS,
+    DIRECTORY_CREATE_SUCCESS,
+    RESOURCE_RENAME_SUCCESS,
 
     TOOL_INVOKE,
 
@@ -73,9 +73,8 @@ const scripts = (state = initialScriptsState, action) => {
     switch (action.type) {
     case SCRIPT_LIST_SUCCESS:
         return handleScriptList(action, state);
-        // return { ...state, rootNode: fromJS(action.value.entries) };
 
-    case SCRIPT_READ_SUCCESS:
+    case BUFFER_READ_SUCCESS:
         return {
             ...state,
             buffers: state.buffers.set(action.resource, new Map({
@@ -84,14 +83,14 @@ const scripts = (state = initialScriptsState, action) => {
             })),
         };
 
-    case SCRIPT_DIR_SUCCESS:
+    case DIRECTORY_READ_SUCCESS:
         // console.log("splice", state.rootNodes, action.resource, action.value)
         return {
             ...state,
             rootNodes: spliceDirInfo(state.rootNodes, action.resource, fromJS(action.value.entries))
         };
 
-    case SCRIPT_SAVE_SUCCESS:
+    case BUFFER_SAVE_SUCCESS:
         let savedBuffer = state.buffers.get(action.resource).set("modified", false)
         if (savedBuffer.has("virtual")) {
             savedBuffer = savedBuffer.delete("virtual")
@@ -101,26 +100,26 @@ const scripts = (state = initialScriptsState, action) => {
             buffers: state.buffers.set(action.resource, savedBuffer)
         };
 
-    case SCRIPT_SELECT:
+    case BUFFER_SELECT:
         return { ...state, activeBuffer: action.resource };
 
-    case SCRIPT_CHANGE:
-        return handleScriptChange(action, state);
+    case BUFFER_CHANGE:
+        return handleBufferChange(action, state);
 
     case SCRIPT_NEW:
         return handleScriptNew(action, state);
-
-    case SCRIPT_DELETE_SUCCESS:
-        return handleScriptDeleteSuccess(action, state);
-
+    
     case SCRIPT_DUPLICATE:
         return handleScriptDuplicate(action, state);
 
-    case SCRIPT_NEW_FOLDER_SUCCESS:
-        return handleScriptNewFolderSuccess(action, state);
+    case RESOURCE_DELETE_SUCCESS:
+        return handleResourceDeleteSuccess(action, state);
 
-    case SCRIPT_RENAME_SUCCESS:
-        return handleScriptRenameSuccess(action, state);
+    case RESOURCE_RENAME_SUCCESS:
+        return handleResourceRenameSuccess(action, state);
+
+    case DIRECTORY_CREATE_SUCCESS:
+        return handleScriptNewFolderSuccess(action, state);
 
     case TOOL_INVOKE:
         console.log("tool invoke => ", action.name);
@@ -141,7 +140,7 @@ const scripts = (state = initialScriptsState, action) => {
 };
 
 
-const handleScriptChange = (action, state) => {
+const handleBufferChange = (action, state) => {
     if (action.resource === undefined) {
         console.log("implicitly creating new script");
         return handleScriptNew(scriptNew(undefined, action.value), state);
@@ -198,8 +197,8 @@ const handleScriptNew = (action, state) => {
     };
 }
 
-const handleScriptDeleteSuccess = (action, state) => {
-    console.log('in handleScriptDelete()', action)
+const handleResourceDeleteSuccess = (action, state) => {
+    console.log('in handleResourceDelete()', action)
     let childPath = keyPathForResource(state.rootNodes, action.resource)
     let newRootNodes = state.rootNodes.removeIn(childPath)
     let newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
@@ -234,7 +233,7 @@ const handleScriptNewFolderSuccess = (action, state) => {
     return state;
 }
 
-const handleScriptRenameSuccess = (action, state) => {
+const handleResourceRenameSuccess = (action, state) => {
     console.log("rename success: ", action)
 
     let newResource = action.newResource

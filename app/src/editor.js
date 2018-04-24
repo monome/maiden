@@ -32,7 +32,7 @@ class Editor extends Component {
         if (!this.modified) {
             this.modified = true;
             // we are consuming the first change, propagate the now modified buffer up
-            this.props.scriptChange(this.props.bufferName, event);
+            this.props.bufferChange(this.props.bufferName, event);
         }
     }
 
@@ -44,7 +44,7 @@ class Editor extends Component {
         if (bufferName !== this.props.bufferName) {
             console.log('buffer save mismatch ', bufferName, ' vs ', this.props.bufferName)
         }
-        this.props.scriptChange(this.props.bufferName, this.getValue())
+        this.props.bufferChange(this.props.bufferName, this.getValue())
     }
 
     bufferWasSaved = (bufferName) => {
@@ -65,7 +65,7 @@ class Editor extends Component {
 
             if (this.props.bufferName) {
                 // only sync buffer if there is an actual name/resource
-                this.props.scriptChange(this.props.bufferName, this.getValue())
+                this.props.bufferChange(this.props.bufferName, this.getValue())
             }
 
             // reset dirty flag so that any change will mark (or remark) the buffer as dirty
@@ -82,7 +82,7 @@ class Editor extends Component {
     }
 
     componentWillUnmount() {
-        this.props.scriptChange(this.props.bufferName, this.getValue())
+        this.props.bufferChange(this.props.bufferName, this.getValue())
     }
 
     /*

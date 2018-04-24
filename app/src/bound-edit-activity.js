@@ -6,15 +6,15 @@ import { nodeForResource } from './model/listing';
 
 import {
     scriptList,
-    scriptRead,
-    scriptDirRead,
-    scriptSave,
-    scriptChange,
-    scriptSelect,
+    bufferRead,
+    directoryRead,
+    bufferSave,
+    bufferChange,
+    bufferSelect,
     scriptNew,
     scriptDuplicate,
-    scriptDelete,
-    scriptRename,
+    resourceDelete,
+    resourceRename,
 
     toolInvoke,
 
@@ -96,20 +96,20 @@ const mapDispatchToProps = (dispatch) => {
         scriptList: (api) => {
             dispatch(scriptList(api))
         },
-        scriptRead: (api, resource) => {
-            dispatch(scriptRead(api, resource))
+        bufferRead: (api, resource) => {
+            dispatch(bufferRead(api, resource))
         },
-        scriptDirRead: (api, resource) => {
-            dispatch(scriptDirRead(api, resource))
+        directoryRead: (api, resource) => {
+            dispatch(directoryRead(api, resource))
         },
-        scriptChange: (resource, value) => {
-            dispatch(scriptChange(resource, value))
+        bufferChange: (resource, value) => {
+            dispatch(bufferChange(resource, value))
         },
-        scriptSelect: (resource) => {
-            dispatch(scriptSelect(resource))
+        bufferSelect: (resource) => {
+            dispatch(bufferSelect(resource))
         },
-        scriptSave: (api, resource, code, completionCB = () => {}) => {
-            dispatch(scriptSave(api, resource, code, completionCB))
+        bufferSave: (api, resource, code, completionCB = () => {}) => {
+            dispatch(bufferSave(api, resource, code, completionCB))
         },
         scriptRun: (api, resource) => {
             let file = api.fileFromResource(resource)
@@ -150,11 +150,11 @@ const mapDispatchToProps = (dispatch) => {
         explorerScriptDuplicate: (source) => {
             dispatch(scriptDuplicate(source))
         },
-        explorerScriptDelete: (api, resource) => {
-            dispatch(scriptDelete(api, resource))
+        explorerResourceDelete: (api, resource) => {
+            dispatch(resourceDelete(api, resource))
         },
-        explorerScriptRename: (api, activeNode, newName, virtual) => {
-            dispatch(scriptRename(api, activeNode, newName, virtual))
+        explorerResourceRename: (api, activeNode, newName, virtual) => {
+            dispatch(resourceRename(api, activeNode, newName, virtual))
         },
     }
 }

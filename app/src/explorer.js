@@ -143,10 +143,10 @@ class Explorer extends Component {
         if (node.children) {
             this.props.explorerToggleNode(node, toggled)
             if (toggled) {
-                this.props.scriptDirRead(this.props.api, node.url);
+                this.props.directoryRead(this.props.api, node.url);
             }
         } else {
-            this.props.scriptSelect(node.url);
+            this.props.bufferSelect(node.url);
         }
     }
 
@@ -178,7 +178,7 @@ class Explorer extends Component {
         let removeModalCompletion = (choice) => {
             console.log('remove:', choice)
             if (choice === 'ok') {
-                this.props.scriptDelete(this.props.api, this.props.activeBuffer)
+                this.props.resourceDelete(this.props.api, this.props.activeBuffer)
             }
             this.props.hideModal()
         }
@@ -199,7 +199,7 @@ class Explorer extends Component {
         let complete = (choice, name) => {
             console.log('rename:', choice, name)
             if (name && choice === "ok") {
-                this.props.scriptRename(
+                this.props.resourceRename(
                     this.props.api,
                     this.props.activeNode.get("url"),
                     name,
