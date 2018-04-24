@@ -67,6 +67,51 @@ const SectionHeader = (props) => {
     );
 }
 
+class Section extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            showTools: false,
+        }
+    }
+
+    componentDidMount() {
+        this.section.onmouseenter = (e) => {
+            this.setState({
+                showTools: true,
+            })
+        }
+        this.section.onmouseleave = (e) => {
+            this.setState({
+                showTools: false,
+            })
+        }
+    }
+
+    render() {
+        return (
+            <div 
+                className='explorer-section'
+                ref={(elem) => this.section = elem}
+            >
+                <SectionHeader
+                    name={this.props.name}
+                    tools={this.props.tools}
+                    buttonAction={this.props.onToolClick}
+                    showTools={this.state.showTools}
+                />
+                <Treebeard
+                    style={treeStyle}
+                    animations={treeAnim}
+                    data={this.props.data}
+                    onToggle={this.props.onToggle}
+                    decorators={explorerDecorators}
+                />
+            </div>
+        );
+    }
+}
+
 const scriptTools = [
     {
         name: "add",
@@ -88,29 +133,12 @@ const scriptTools = [
         name: "rename",
         icon: ICONS["pencil"],
     },
-
 ]
+
+const dataTools = scriptTools;
+const audioTools = scriptTools;
+
 class Explorer extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            showTools: false,
-        };
-    }
-
-    componentDidMount() {
-        this.explorer.onmouseenter = (e) => {
-            this.setState({
-                showTools: true,
-            })
-        }
-        this.explorer.onmouseleave = (e) => {
-            this.setState({
-                showTools: false,
-            })
-        }
-    }
-
     onToggle = (node, toggled) => {
         if (node.children) {
             this.props.explorerToggleNode(node, toggled)
@@ -196,18 +224,22 @@ class Explorer extends Component {
                  style={{width, height}}
                  ref={(elem) => this.explorer = elem}
             >
-                <SectionHeader
+                <Section
                     name='scripts'
                     tools={scriptTools}
                     buttonAction={this.onScriptToolClick}
-                    showTools={this.state.showTools}
-                />
-                <Treebeard
-                    style={treeStyle}
-                    animations={treeAnim}
                     data={this.props.data}
                     onToggle={this.onToggle}
-                    decorators={explorerDecorators}
+                />
+                <Section
+                    name='data'
+                    tools={dataTools}
+                    data={this.props.data}
+                />
+                <Section
+                    name='audio'
+                    tools={audioTools}
+                    data={[]}
                 />
             </div>
         );
