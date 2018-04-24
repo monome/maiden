@@ -5,7 +5,7 @@ import { MATRON_COMPONENT } from './constants';
 import { nodeForResource } from './model/listing';
 
 import {
-    scriptList,
+    rootList,
     bufferRead,
     directoryRead,
     bufferSave,
@@ -33,10 +33,10 @@ import {
     replSend,
 } from './model/repl-actions';
 
-const getBuffers = (scriptState) => scriptState.buffers;
-const getActiveBuffer = (scriptState) => scriptState.activeBuffer;
-const getRootNodes = (scriptState) => scriptState.rootNodes;
-const getExpandedNodes = (scriptState) => scriptState.expandedNodes;
+const getBuffers = (editState) => editState.buffers;
+const getActiveBuffer = (editState) => editState.activeBuffer;
+const getRootNodes = (editState) => editState.rootNodes;
+const getExpandedNodes = (editState) => editState.expandedNodes;
 
 const getScriptListing = createSelector(
     [getBuffers, getActiveBuffer, getRootNodes, getExpandedNodes],
@@ -86,7 +86,7 @@ const mapStateToProps = (state) => {
         activeNode: getActiveNode(state.edit),
         buffers,
         ui: state.ui,
-        scriptListing: getScriptListing(state.edit),
+        rootListing: getScriptListing(state.edit),  // FIXME: this was scriptListing, make generic for root
     }
 }
 
@@ -94,7 +94,13 @@ const mapDispatchToProps = (dispatch) => {
     return {
         // scripts
         scriptList: (api) => {
-            dispatch(scriptList(api))
+            dispatch(rootList('scripts', api))
+        },
+        dataList: (api) => {
+            dispatch(rootList('data', api))
+        },
+        audioList: (api) => {
+            dispatch(rootList('audio', api))
         },
         bufferRead: (api, resource) => {
             dispatch(bufferRead(api, resource))

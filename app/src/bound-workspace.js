@@ -15,7 +15,7 @@ import {
 } from './model/repl-actions';
 
 import {
-    scriptList,
+    rootList,
 } from './model/edit-actions';
 
 const mapStateToProps = (state) => {
@@ -39,13 +39,13 @@ const mapDispatchToProps = (dispatch) => {
             dispatch(replConnect(component, endpoint))
         },
         scriptList: (api) => {
-            dispatch(scriptList(api))
+            dispatch(rootList('scripts', api))
         },
         dataList: (api) => {
-            // dispatch(dataList(api))
+            dispatch(rootList('data', api))
         },
         audioList: (api) => {
-            // dispatch(audioList(api))
+            dispatch(rootList('audio', api))
         },
     }
 }

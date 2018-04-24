@@ -16,7 +16,7 @@ import {
 } from './listing';
 
 import {
-    SCRIPT_LIST_SUCCESS,
+    ROOT_LIST_SUCCESS,
     BUFFER_READ_SUCCESS,
     DIRECTORY_READ_SUCCESS,
     BUFFER_SAVE_SUCCESS,
@@ -71,8 +71,8 @@ const initialScriptsState = {
 
 const edit = (state = initialScriptsState, action) => {
     switch (action.type) {
-    case SCRIPT_LIST_SUCCESS:
-        return handleScriptList(action, state);
+    case ROOT_LIST_SUCCESS:
+        return handleRootList(action, state);
 
     case BUFFER_READ_SUCCESS:
         return {
@@ -160,7 +160,7 @@ const handleBufferChange = (action, state) => {
     return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
 }
 
-const handleScriptList = (action, state) => {
+const handleRootList = (action, state) => {
     // retain existing virtual nodes (!!! except root node)
     let virtuals = collectVirtualNodes(state.rootNodes).filter(n => n.get("name") === state.rootNodes.get("name"))
     let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries), "SCRIPTS"), virtuals)

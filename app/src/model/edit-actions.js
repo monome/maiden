@@ -1,6 +1,6 @@
-export const SCRIPT_LIST_REQUEST = 'SCRIPT_LIST_REQUEST'
-export const SCRIPT_LIST_SUCCESS = 'SCRIPT_LIST_SUCCESS'
-export const SCRIPT_LIST_FAILURE = 'SCRIPT_LIST_FAILURE'
+export const ROOT_LIST_REQUEST = 'ROOT_LIST_REQUEST'
+export const ROOT_LIST_SUCCESS = 'ROOT_LIST_SUCCESS'
+export const ROOT_LIST_FAILURE = 'ROOT_LIST_FAILURE'
 
 export const BUFFER_READ_REQUEST = 'BUFFER_READ_REQUEST'
 export const BUFFER_READ_SUCCESS = 'BUFFER_READ_SUCCESS'
@@ -11,12 +11,12 @@ export const DIRECTORY_READ_SUCCESS = 'DIRECTORY_READ_SUCCESS'
 export const DIRECTORY_READ_FAILURE = 'DIRECTORY_READ_FAILURE'
 
 export const BUFFER_CHANGE = 'BUFFER_CHANGE'
+export const BUFFER_SELECT = 'BUFFER_SELECT'
 
 export const BUFFER_SAVE_REQUEST = 'BUFFER_SAVE_REQUEST'
 export const BUFFER_SAVE_SUCCESS = 'BUFFER_SAVE_SUCCESS'
 export const BUFFER_SAVE_FAILURE = 'BUFFER_SAVE_FAILURE'
 
-export const BUFFER_SELECT = 'BUFFER_SELECT'
 export const SCRIPT_NEW = 'SCRIPT_NEW'
 export const SCRIPT_DUPLICATE = 'SCRIPT_DUPLICATE'
 
@@ -41,16 +41,16 @@ export const EXPLORER_ACTIVE_NODE = 'EXPLORER_ACTIVE_NODE'
 // sync actions
 //
 
-export const scriptListRequest = () => {
-    return { type: SCRIPT_LIST_REQUEST }
+export const rootListRequest = (name) => {
+    return { type: ROOT_LIST_REQUEST, name }
 }
 
-export const scriptListSuccess = (value) => {
-    return { type: SCRIPT_LIST_SUCCESS, value }
+export const rootListSuccess = (name, value) => {
+    return { type: ROOT_LIST_SUCCESS, name, value }
 }
 
-export const scriptListFailure = (error) => {
-    return { type: SCRIPT_LIST_FAILURE, error }
+export const rootListFailure = (name, error) => {
+    return { type: ROOT_LIST_FAILURE, name, error }
 }
 
 export const bufferReadRequest = (resource) => {
@@ -158,16 +158,16 @@ export const explorerToggleNode = (node, toggled) => {
 // async actions
 //
 
-export const scriptList = (api) => {
+export const rootList = (rootName, api) => {
     return (dispatch) => {
-        dispatch(scriptListRequest());
-        return api.listScripts((response) => {
+        dispatch(rootListRequest(rootName));
+        return api.listRoot(rootName, (response) => {
             if (response.ok) {
                 response.json().then(data => {
-                    dispatch(scriptListSuccess(data))
+                    dispatch(rootListSuccess(rootName, data))
                 })
             } else {
-                dispatch(scriptListFailure())
+                dispatch(rootListFailure(rootName))
             }
         })
     }

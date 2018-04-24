@@ -3,12 +3,12 @@ import parsePath from 'parse-filepath';
 const API_ROOT = '/api/v1'
 
 function apiPath(p) {
-    return API_ROOT + p;
+    return API_ROOT + '/' + p;
 }
 
 // TODO: once API is stateless move this to be a method
 export function siblingScriptResourceForName(name, siblingResource) {
-    let resourceBase = apiPath('/scripts/');
+    let resourceBase = apiPath('scripts/');
     if (siblingResource) {
         // FIXME: this assumes siblingResource is absolute and lacks an authority
         resourceBase = parsePath(siblingResource).dirname + '/';
@@ -19,8 +19,8 @@ export function siblingScriptResourceForName(name, siblingResource) {
 // TODO: switch all this to just use fetch and remove 'rest'
 // TODO: switch from snake to camel case
 class API {
-    listScripts(cb) {
-        fetch(apiPath('/scripts')).then(cb)
+    listRoot(resourceRoot, cb) {
+        fetch(apiPath(resourceRoot)).then(cb)
     }
 
     // MAINT: unused? delete?
