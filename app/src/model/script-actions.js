@@ -161,9 +161,14 @@ export const explorerToggleNode = (node, toggled) => {
 export const scriptList = (api) => {
     return (dispatch) => {
         dispatch(scriptListRequest());
-        return api.list_scripts((response) => {
-            // FIXME: handle errors
-            dispatch(scriptListSuccess(response.entity))
+        return api.listScripts((response) => {
+            if (response.ok) {
+                response.json().then(data => {
+                    dispatch(scriptListSuccess(data))
+                })
+            } else {
+                dispatch(scriptListFailure())
+            }
         })
     }
 }
@@ -206,7 +211,7 @@ export const scriptDirRead = (api, resource) => {
 export const scriptSave = (api, resource, value, cb) => {
     return (dispatch) => {
         dispatch(scriptSaveRequest(resource, value))
-        return api.write_script(resource, value, (response) => {
+        return api.writeScript(resource, value, (response) => {
             // FIXME: handle errors
             dispatch(scriptSaveSuccess(resource, response.entity))
             cb && cb()

@@ -1,5 +1,3 @@
-import rest from 'rest';
-import mime from 'rest/interceptor/mime';
 import parsePath from 'parse-filepath';
 
 const API_ROOT = '/api/v1'
@@ -21,16 +19,8 @@ export function siblingScriptResourceForName(name, siblingResource) {
 // TODO: switch all this to just use fetch and remove 'rest'
 // TODO: switch from snake to camel case
 class API {
-    constructor() {
-        this.client = rest.wrap(mime);
-    }
-
-    list_scripts(cb) {
-        const request = {
-            method: 'GET',
-            path: apiPath('/scripts'),
-        };
-        this.client(request).then(cb);
+    listScripts(cb) {
+        fetch(apiPath('/scripts')).then(cb)
     }
 
     readScript(resource, cb) {
@@ -38,7 +28,7 @@ class API {
     }
 
     // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
-    write_script(resource, code, cb) {
+    writeScript(resource, code, cb) {
         const formData = new FormData();
         const codeBlob = new Blob([code], {type: 'text/utf-8'})
         formData.append('value', codeBlob)
