@@ -38,7 +38,7 @@ const getActiveBuffer = (editState) => editState.activeBuffer;
 const getRootNodes = (editState) => editState.rootNodes;
 const getExpandedNodes = (editState) => editState.expandedNodes;
 
-const getScriptListing = createSelector(
+const getExplorerData = createSelector(
     [getBuffers, getActiveBuffer, getRootNodes, getExpandedNodes],
     (buffers, activeBuffer, rootNodes, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
@@ -63,13 +63,7 @@ const getScriptListing = createSelector(
         })
     };
 
-    // MAINT: this assumes the "scripts" root is the first node in the list
-    // console.log("rootNode= ", rootNodes.toJS())
-    let scriptRoot = rootNodes.getIn([0, "children"])
-    if (scriptRoot) {
-        return enrich(scriptRoot.toJS());
-    }
-    return [];
+    return enrich(rootNodes.toJS())
 });
 
 const getActiveNode = createSelector(
@@ -86,7 +80,7 @@ const mapStateToProps = (state) => {
         activeNode: getActiveNode(state.edit),
         buffers,
         ui: state.ui,
-        rootListing: getScriptListing(state.edit),  // FIXME: this was scriptListing, make generic for root
+        explorerData: getExplorerData(state.edit),
     }
 }
 

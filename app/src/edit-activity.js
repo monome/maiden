@@ -217,7 +217,7 @@ class EditActivity extends Component {
                 <Explorer
                     className='explorer-container'
                     hidden={this.props.ui.sidebarHidden}
-                    data={this.props.rootListing}
+                    data={this.props.explorerData}
                     bufferSelect={this.props.bufferSelect}
                     directoryRead={this.props.directoryRead}
                     scriptCreate={this.props.explorerScriptNew}

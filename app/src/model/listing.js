@@ -179,6 +179,10 @@ export const getNodeNames = (nodes) => {
     return new Set(nodes.map(node => node.get('name')));
 }
 
+export const getNodeByName = (nodes, name) => {
+    return nodes.find(n => n.get("name") === name)
+}
+
 // given a set of existing names and [optionally] an exemplar generate a new name which isn't taken by adding a number at the end of the name
 export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
     let existing = getNodeNames(siblingNodes)

@@ -88,9 +88,19 @@ class Section extends Component {
         }
     }
 
+    getData() {
+        let node = this.props.data.find(n => n.name === this.props.name)
+        if (node) {
+            return node.children;
+        }
+        return [];
+    }
+
     render() {
+        let data = this.getData()
+
         return (
-            <div 
+            <div
                 className='explorer-section'
                 ref={(elem) => this.section = elem}
             >
@@ -103,7 +113,7 @@ class Section extends Component {
                 <Treebeard
                     style={treeStyle}
                     animations={treeAnim}
-                    data={this.props.data}
+                    data={data}
                     onToggle={this.props.onToggle}
                     decorators={explorerDecorators}
                 />
@@ -232,14 +242,18 @@ class Explorer extends Component {
                     onToggle={this.onToggle}
                 />
                 <Section
-                    name='data'
+                    name='audio'
                     tools={dataTools}
+                    buttonAction={this.onScriptToolClick}
                     data={this.props.data}
+                    onToggle={this.onToggle}
                 />
                 <Section
-                    name='audio'
+                    name='data'
                     tools={audioTools}
-                    data={[]}
+                    buttonAction={this.onScriptToolClick}
+                    data={this.props.data}
+                    onToggle={this.onToggle}
                 />
             </div>
         );

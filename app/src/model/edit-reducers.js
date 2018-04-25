@@ -10,7 +10,6 @@ import {
     virtualNode,
     collectVirtualNodes,
     spliceNodes,
-    virtualRoot,
     sortDir,
     childrenOfRoot,
 } from './listing';
