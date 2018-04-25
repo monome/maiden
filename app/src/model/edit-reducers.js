@@ -61,15 +61,15 @@ edit: {
 
 */
 
-const initialScriptsState = {
+const initialEditState = {
     activeBuffer: undefined,
-    rootNodes: virtualRoot(new List(), "SCRIPTS"),
+    rootNodes: new List(),
     buffers: new Map(),
     activeNode: undefined,
     expandedNodes: new Set(),
 };
 
-const edit = (state = initialScriptsState, action) => {
+const edit = (state = initialEditState, action) => {
     switch (action.type) {
     case ROOT_LIST_SUCCESS:
         return handleRootList(action, state);
@@ -108,7 +108,7 @@ const edit = (state = initialScriptsState, action) => {
 
     case SCRIPT_NEW:
         return handleScriptNew(action, state);
-    
+
     case SCRIPT_DUPLICATE:
         return handleScriptDuplicate(action, state);
 
@@ -161,14 +161,23 @@ const handleBufferChange = (action, state) => {
 }
 
 const handleRootList = (action, state) => {
-    // retain existing virtual nodes (!!! except root node)
-    
-    // the following needs to change to just focus on the root which matches the root named in the action
-    // the filter needs to filter out the virtual root with the same name as in the action
-    let virtuals = collectVirtualNodes(state.rootNodes).filter(n => n.get("name") === state.rootNodes.get("name"))
-    // splitNodes need to learn to not just blindly return a list
-    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries), action.name), virtuals)
-    // but mux in to retain three virtual roots; scripts, audio, data
+    // FIXME: change the virtualNode resource to be the api path
+    let rootNode = virtualNode(action.name, "/", fromJS(action.value.entries))
+
+    let existingRootIndex = state.rootNodes.findIndex(n => n.get("name") === action.name)
+    if (existingRootIndex > 0) {
+        let virtuals = collectVirtualNodes(state.rootNodes.getIn([existingRootIndex, "children"]))
+        let rootChildren = rootNode.get("children")
+        rootNode = rootNode.set("children", spliceNodes(rootChildren, virtuals))
+    }
+
+    var rootNodes
+    if (existingRootIndex > 0) {
+        rootNodes = state.rootNodes.set(existingRootIndex, rootNode)
+    } else {
+        rootNodes = state.rootNodes.push(rootNode)
+    }
+
     return { ...state, rootNodes };
 }
 
