@@ -162,8 +162,13 @@ const handleBufferChange = (action, state) => {
 
 const handleRootList = (action, state) => {
     // retain existing virtual nodes (!!! except root node)
+    
+    // the following needs to change to just focus on the root which matches the root named in the action
+    // the filter needs to filter out the virtual root with the same name as in the action
     let virtuals = collectVirtualNodes(state.rootNodes).filter(n => n.get("name") === state.rootNodes.get("name"))
-    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries), "SCRIPTS"), virtuals)
+    // splitNodes need to learn to not just blindly return a list
+    let rootNodes = spliceNodes(virtualRoot(fromJS(action.value.entries), action.name), virtuals)
+    // but mux in to retain three virtual roots; scripts, audio, data
     return { ...state, rootNodes };
 }
 

@@ -211,6 +211,7 @@ export const virtualNode = (name, resource) => {
     return new Map({ name, url: resource, virtual: true })
 }
 
+// FIXME: this should not return a List
 export const virtualRoot = (children, name = "ROOT") => {
     let rootNodes = fromJS([{ name, url: "/", virtual: true }])
     return rootNodes.setIn([0, "children"], children)
