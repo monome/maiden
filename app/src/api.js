@@ -23,11 +23,6 @@ class API {
         fetch(apiPath(resourceRoot)).then(cb)
     }
 
-    // MAINT: unused? delete?
-    readTextResource(resource, cb) {
-        fetch(resource).then(cb)
-    }
-
     // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
     writeTextResource(resource, code, cb) {
         const formData = new FormData();
