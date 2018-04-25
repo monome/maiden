@@ -57,8 +57,8 @@ export const bufferReadRequest = (resource) => {
     return { type: BUFFER_READ_REQUEST, resource }
 }
 
-export const bufferReadSuccess = (resource, value) => {
-    return { type: BUFFER_READ_SUCCESS, resource, value }
+export const bufferReadSuccess = (resource, value, contentType) => {
+    return { type: BUFFER_READ_SUCCESS, resource, value, contentType }
 }
 
 export const bufferReadFailure = (resource, error) => {
@@ -178,9 +178,16 @@ export const bufferRead = (api, resource) => {
         dispatch(bufferReadRequest(resource))
         fetch(resource).then((response) => {
             if (response.ok) {
-                response.text().then(content => {
-                    dispatch(bufferReadSuccess(resource, content));
-                })
+                let contentType = response.headers.get("Content-Type")
+                if (contentType.includes("text")) {
+                    response.text().then(content => {
+                        dispatch(bufferReadSuccess(resource, content, contentType));
+                    })
+                } else {
+                    response.blob().then(content => {
+                        dispatch(bufferReadSuccess(resource, content, contentType))
+                    })
+                }
             } else {
                 dispatch(bufferReadFailure(resource));
             }

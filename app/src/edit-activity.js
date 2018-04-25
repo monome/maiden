@@ -14,10 +14,12 @@ const tools = [
     {
         name: "save",
         icon: ICONS["floppy-disk"],
+        disabled: false,
     },
     {
         name: "play",
         icon: ICONS["play3"],
+        disabled: false,
     },
 ];
 
@@ -29,7 +31,9 @@ const EditTools = (props) => {
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
                 color="#979797"       // FIXME:
+                disabledColor="rgb(175, 175, 175)"
                 size="24"           // FIXME:
+                disabled={tool.disabled}
             />
         );
     });
@@ -57,7 +61,9 @@ class EditActivity extends Component {
         let { activeBuffer, buffers } = this.props;
         let newActiveBuffer = newProps.activeBuffer;
         if ((activeBuffer !== newActiveBuffer) && buffers.has(activeBuffer)) {
-            this.props.bufferChange(activeBuffer, this.editor.getValue());
+            if (this.editor) {
+                this.props.bufferChange(activeBuffer, this.editor.getValue());
+            }
         }
 
         let newBuffers = newProps.buffers;
@@ -194,10 +200,43 @@ class EditActivity extends Component {
         this.props.explorerResourceRename(api, resource, name, virtual);
     }
 
+    isText = (buffer) => {
+        if (buffer) {
+            return buffer.get("contentType").includes("text")
+        }
+        return false;
+    }
+
     render() {
         const activeBuffer = this.props.activeBuffer;
         const buffer = this.getActiveBuffer();
-        const code = buffer ? buffer.get('value') : '';
+
+        const canEdit = this.isText(buffer);
+        const code = canEdit ? buffer.get('value') : '';
+
+        const enabledTools = tools.map(t => {
+            t.disabled = !canEdit;
+            return t;
+        })
+        // TODO: switch editor based on buffer content type
+        const editor = (
+            <div className='editor-pane'>
+                <Editor
+                    className='editor-container'
+                    ref={(component) => {this.editor = component;}}
+                    { ...this.editorSize() }
+                    bufferName={activeBuffer}
+                    value={code}
+                    bufferChange={this.props.bufferChange}
+                />
+                <EditTools
+                    className='edit-tools'
+                    { ...this.editorToolsSize() }
+                    tools={enabledTools}
+                    buttonAction={this.handleToolInvoke}
+                />
+            </div>
+        )
 
         const sidebarSplitStyle = {
             height: this.props.height,
@@ -238,22 +277,7 @@ class EditActivity extends Component {
                     onChange={this.handleEditorSplitChange}
                     onDragFinished={this.handleEditorSplitDragFinish}
                 >
-                    <div className='editor-pane'>
-                        <Editor
-                            className='editor-container'
-                            ref={(component) => {this.editor = component;}}
-                            { ...this.editorSize() }
-                            bufferName={activeBuffer}
-                            value={code}
-                            bufferChange={this.props.bufferChange}
-                        />
-                        <EditTools
-                            className='edit-tools'
-                            { ...this.editorToolsSize() }
-                            tools={tools}
-                            buttonAction={this.handleToolInvoke}
-                        />
-                    </div>
+                    {editor}
                     <ReplActivity
                         { ...this.replSize() }
                     />

@@ -79,6 +79,7 @@ const edit = (state = initialEditState, action) => {
             buffers: state.buffers.set(action.resource, new Map({
                 value: action.value,
                 modified: false,
+                contentType: action.contentType,
             })),
         };
 
@@ -155,6 +156,7 @@ const handleBufferChange = (action, state) => {
     let changes = new Map({
         value: action.value,
         modified: modified,
+        contentType: buffer.get('contentType'),
     });
     return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
 }
@@ -197,6 +199,7 @@ const handleScriptNew = (action, state) => {
     let newBuffer = new Map({
         modified: true,
         value: action.value || "",
+        contentType: "text/utf-8",
     });
 
     let newNode = virtualNode(newName, newResource)
