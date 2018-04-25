@@ -85,7 +85,7 @@ class API {
 
     fileFromResource(resource) {
         // MAINT: this totally breaks the encapsulation of script resources and returns what matron would see as the script path
-        let prefix = apiPath('/scripts/')
+        let prefix = apiPath('scripts/')
         return resource.split(prefix)[1];
     }
 }
