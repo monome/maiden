@@ -17,7 +17,7 @@ ui: {
 const initialState = {
     sidebarHidden: false,
     sidebarWidth: 250,
-    sidebarMinWidth: 210,
+    sidebarMinWidth: 220,
     sidebarMaxWidth: 500,
     replHidden: false,
     replHeight: 160,

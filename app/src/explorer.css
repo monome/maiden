@@ -1,6 +1,9 @@
 .explorer {
     background-color: #F9F9F9;
     font-family: monospace;
+    height: 100%;
+    overflow-y: overlay;
+    overflow-x: hidden;
 }
 
 .explorer-header {

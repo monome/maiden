@@ -21,7 +21,7 @@
     flex: 1 1 auto;
     margin: 0px 0px 0px 5px;
     color:  rgb(117, 117, 117);
-    overflow: scroll;
+    overflow: overlay;
     overflow-x: hidden;
     /* display: flex; */
     /* flex-direction: row */
