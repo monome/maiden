@@ -148,8 +148,14 @@ const handleBufferChange = (action, state) => {
 
     let buffer = state.buffers.get(action.resource);
     if (buffer === undefined) {
-        console.log('ignoring script change for missing buffer (possibly deleted):', action.resource)
+        console.log('ignoring change for missing buffer (possibly deleted):', action.resource)
         return state
+    }
+
+    // FIXME: super janky hack to prevent marking binary buffers dirty, this needs to be removed when proper alt ui is in place for the editor when binary files are selected
+    if (!buffer.get('contentType').includes('text')) {
+        console.log("ignoring buffer change for binary buffer")
+        return state;
     }
 
     let modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
