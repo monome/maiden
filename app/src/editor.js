@@ -16,7 +16,13 @@ class Editor extends Component {
         // grab reference to ace editor
         this.editor = editor;
 
-        this.editor.getSession().setNewLineMode("unix");
+        let session = this.editor.getSession();
+        session.setNewLineMode("unix");
+        session.setOptions({
+            tabSize: 2,        // MAINT: make this configurable
+            useSoftTabs: true,
+        });
+
 
         /*
         if (this.refs.ace) {
