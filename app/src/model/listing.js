@@ -29,32 +29,6 @@ export const keyPathForResource = (listing, resource) => {
     return walk(listing, undefined);
 }
 
-/*
-export const keyPathForResourceOld = (rootNodes, resource) => {
-    const walk = (node) => {
-        // // // if (!node) {
-        // //     return undefined;
-        // }
-
-        if (node.get("url") === resource) {
-            return new List();
-        }
-
-        let children = node.get("children");
-        console.log("children of: ", node, children)
-        children && children.forEach((child, key) => {
-            let childKey = walk(child);
-            if (childKey) {
-                return childKey.unshift(key, "children");
-            }
-        })
-
-        return undefined;
-    }
-    return walk(rootNodes);
-}
-*/
-
 export const nodeForResource = (rootNodes, resource) => {
     let keyPath = keyPathForResource(rootNodes, resource)
     if (keyPath) {
