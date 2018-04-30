@@ -29,6 +29,7 @@ export const keyPathForResource = (listing, resource) => {
     return walk(listing, undefined);
 }
 
+/*
 export const keyPathForResourceOld = (rootNodes, resource) => {
     const walk = (node) => {
         // // // if (!node) {
@@ -52,6 +53,7 @@ export const keyPathForResourceOld = (rootNodes, resource) => {
     }
     return walk(rootNodes);
 }
+*/
 
 export const nodeForResource = (rootNodes, resource) => {
     let keyPath = keyPathForResource(rootNodes, resource)
@@ -99,9 +101,9 @@ export const spliceDirInfo = (listing, target, info) => {
     return listing
 }
 
-export const spliceFileInfo = (listing, node, siblingResource) => {
+export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0) => {
     // by default if no sibling just insert at top of hierarchy
-    let siblingFamily = new List([0, "children"]) // assumes virtual root node
+    let siblingFamily = new List([categoryIndex, "children"]) // assumes virtual root node
     let newIndex = [0]
 
     let siblingPath = keyPathForResource(listing, siblingResource)
@@ -249,6 +251,10 @@ export const muxInVirtualNodes = (base, incoming) => {
 
 export const childrenOfRoot = (rootNodes, index = 0) => {
     return rootNodes.getIn([index, "children"]);
+}
+
+export const rootCategoryIndex = (rootNodes, category) => {
+    return rootNodes.findIndex(n => n.get("name") === category);
 }
 
 export const siblingNamesForResource = (rootNodes, resource) => {

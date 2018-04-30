@@ -7,8 +7,8 @@ function apiPath(p) {
 }
 
 // TODO: once API is stateless move this to be a method
-export function siblingScriptResourceForName(name, siblingResource) {
-    let resourceBase = apiPath('scripts/');
+export function siblingScriptResourceForName(name, siblingResource, category = 'scripts') {
+    let resourceBase = apiPath(category + '/');
     if (siblingResource) {
         // FIXME: this assumes siblingResource is absolute and lacks an authority
         resourceBase = parsePath(siblingResource).dirname + '/';
@@ -82,6 +82,12 @@ class API {
         // MAINT: this totally breaks the encapsulation of script resources and returns what matron would see as the script path
         let prefix = apiPath('scripts/')
         return resource.split(prefix)[1];
+    }
+
+    categoryFromResource(resource) {
+        // MAINT: another case of broken encapsulation, explorer sections/category tool actions need to ensure the only operate on stuff in their section but the global selection (activeBuffer) is just a URL. here we do evil stuff like extract information out of the URL
+        let tail = resource.split(API_ROOT)[1];
+        return tail.split('/')[1];
     }
 }
 

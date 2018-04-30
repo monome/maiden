@@ -10,7 +10,6 @@ import ModalRename from './modal-rename';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 
-
 const TreeHeader = (props) => {
     let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
     return (
@@ -72,6 +71,7 @@ class Section extends Component {
         super(props)
         this.state = {
             showTools: false,
+            selectedNode: undefined,
         }
     }
 
@@ -87,6 +87,126 @@ class Section extends Component {
             })
         }
     }
+    
+    onToggle = (node, toggled) => {
+        if (node.children) {
+            this.props.explorerToggleNode(node, toggled)
+            if (toggled) {
+                this.props.directoryRead(this.props.api, node.url);
+            }
+        } else {
+            this.props.bufferSelect(node.url);
+        }
+
+        this.setState({ selectedNode: node });
+    }
+
+    onToolClick = (name) => {
+        // add doesn't (necessarily) require a selection
+        if (name === 'add') {
+            let selection = undefined;
+            if (this.state.selectedNode) {
+                selection = this.state.selectedNode.url;
+            }
+            this.props.scriptCreate(
+                selection,                // sibling resource
+                undefined,                // initial buffer contents
+                undefined,                // buffer name
+                this.props.name);         // buffer category
+            return;
+        }
+        
+        // other tools only function if there is a selection, ensure there is one and it is from this category
+        let activeBuffer = this.props.activeBuffer;
+        if (activeBuffer === undefined) {
+            return;
+        }
+
+        let category = this.props.api.categoryFromResource(activeBuffer);
+        if (category !== this.props.name) {
+            console.log("ignoring tool, active buffer is not in category", category);
+            return;
+        }
+
+        /*
+        STOPPED HERE; use CATEGORY to gate invocation instead of selectionURL != activeBuffer stuff.
+
+        ensure duplicate then remove/rename works w/out having to reselect the item
+
+        ensure script create puts a new file in the correct category
+*/
+        switch (name) {
+        case 'duplicate':
+            this.props.scriptDuplicate(this.props.activeBuffer)
+            break;
+
+        case 'remove':
+            this.handleRemove(this.props.activeNode)
+            break;
+
+        case 'rename':
+            this.handleRename(this.props.activeNode)
+            break;
+
+        default:
+            console.log(name)
+            break;
+        }
+    }
+
+    handleRemove = (selection) => {
+        if (selection === undefined) {
+            console.log("handleRemove: selection undefined?")
+            return
+        }
+
+        let removeModalCompletion = (choice) => {
+            console.log('remove:', choice)
+            if (choice === 'ok') {
+                this.props.resourceDelete(this.props.api, selection.get("url"))
+            }
+            this.props.hideModal()
+        }
+
+        let scriptName = selection.get("name")
+        let content = (
+            <ModalContent
+                message={`Delete "${scriptName}"?`}
+                supporting={"This operation cannot be undone."}
+                buttonAction={removeModalCompletion}
+            />
+        )
+
+        this.props.showModal(content)
+    }
+
+    handleRename = (selection) => {
+        if (selection === undefined) {
+            console.log("handleRename: selection undefined?")
+            return
+        }
+
+        let complete = (choice, name) => {
+            console.log('rename:', choice, name)
+            if (name && choice === "ok") {
+                this.props.resourceRename(
+                    this.props.api,
+                    selection.get("url"),
+                    name,
+                    selection.get("virtual") || false
+                )
+            }
+            this.props.hideModal()
+        }
+
+        let initialName = selection.get("name");
+        let content = (
+            <ModalRename message="Rename" buttonAction={complete} initialName={initialName} />
+        )
+
+        this.props.showModal(content)
+    }
+
 
     getData() {
         let node = this.props.data.find(n => n.name === this.props.name)
@@ -107,14 +227,14 @@ class Section extends Component {
                 <SectionHeader
                     name={this.props.name}
                     tools={this.props.tools}
-                    buttonAction={this.props.buttonAction}
+                    buttonAction={this.onToolClick}
                     showTools={this.state.showTools}
                 />
                 <Treebeard
                     style={treeStyle}
                     animations={treeAnim}
                     data={data}
-                    onToggle={this.props.onToggle}
+                    onToggle={this.onToggle}
                     decorators={explorerDecorators}
                 />
             </div>
@@ -145,90 +265,28 @@ const scriptTools = [
     },
 ]
 
+const audioTools = [
+    {
+        name: "remove",
+        icon: ICONS["minus"],
+    },
+    {
+        name: "new-folder",
+        icon: ICONS["folder-plus"],
+    },
+    {
+        name: "rename",
+        icon: ICONS["pencil"],
+    },
+]
+
 const dataTools = scriptTools;
-const audioTools = scriptTools;
+
 
 class Explorer extends Component {
-    onToggle = (node, toggled) => {
-        if (node.children) {
-            this.props.explorerToggleNode(node, toggled)
-            if (toggled) {
-                this.props.directoryRead(this.props.api, node.url);
-            }
-        } else {
-            this.props.bufferSelect(node.url);
-        }
-    }
-
-    onScriptToolClick = (name) => {
-        switch (name) {
-        case 'add':
-            this.props.scriptCreate(this.props.activeBuffer)
-            break;
-
-        case 'duplicate':
-            this.props.scriptDuplicate(this.props.activeBuffer)
-            break;
-
-        case 'remove':
-            this.handleRemove()
-            break;
-
-        case 'rename':
-            this.handleRename()
-            break;
-
-        default:
-            console.log(name)
-            break;
-        }
-    }
-
-    handleRemove = () => {
-        let removeModalCompletion = (choice) => {
-            console.log('remove:', choice)
-            if (choice === 'ok') {
-                this.props.resourceDelete(this.props.api, this.props.activeBuffer)
-            }
-            this.props.hideModal()
-        }
-
-        let scriptName = this.props.activeNode.get("name")
-        let content = (
-            <ModalContent
-                message={`Delete "${scriptName}"?`}
-                supporting={"This operation cannot be undone."}
-                buttonAction={removeModalCompletion}
-            />
-        )
-
-        this.props.showModal(content)
-    }
-
-    handleRename = () => {
-        let complete = (choice, name) => {
-            console.log('rename:', choice, name)
-            if (name && choice === "ok") {
-                this.props.resourceRename(
-                    this.props.api,
-                    this.props.activeNode.get("url"),
-                    name,
-                    this.props.activeNode.get("virtual", false)
-                )
-            }
-            this.props.hideModal()
-        }
-
-        let initialName = this.props.activeNode.get("name");
-        let content = (
-            <ModalRename message="Rename" buttonAction={complete} initialName={initialName} />
-        )
-
-        this.props.showModal(content)
-    }
-
     render() {
         const {width, height} = this.props;
+
         return (
             <div className={'explorer' + (this.props.hidden ? ' hidden' : '')} // FIXME: change this to use classname
                 style={{width, height}}
@@ -237,23 +295,56 @@ class Explorer extends Component {
                 <Section
                     name='scripts'
                     tools={scriptTools}
-                    buttonAction={this.onScriptToolClick}
+                    buttonAction={this.onToolClick}
                     data={this.props.data}
-                    onToggle={this.onToggle}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    bufferSelect={this.props.bufferSelect}
+                    directoryRead={this.props.directoryRead}
+                    scriptCreate={this.props.scriptCreate}
+                    scriptDuplicate={this.props.scriptDuplicate}
+                    resourceDelete={this.props.resourceDelete}
+                    resourceRename={this.props.resourceRename}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
+                    api={this.props.api}
+                    activeBuffer={this.props.activeBuffer}
+                    activeNode={this.props.activeNode}
                 />
                 <Section
                     name='audio'
-                    tools={dataTools}
-                    buttonAction={this.onScriptToolClick}
+                    tools={audioTools}
+                    buttonAction={this.onToolClick}
                     data={this.props.data}
-                    onToggle={this.onToggle}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    bufferSelect={this.props.bufferSelect}
+                    scriptCreate={this.props.scriptCreate}
+                    scriptDuplicate={this.props.scriptDuplicate}
+                    directoryRead={this.props.directoryRead}
+                    resourceDelete={this.props.resourceDelete}
+                    resourceRename={this.props.resourceRename}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
+                    api={this.props.api}
+                    activeBuffer={this.props.activeBuffer}
+                    activeNode={this.props.activeNode}
                 />
                 <Section
                     name='data'
-                    tools={audioTools}
-                    buttonAction={this.onScriptToolClick}
+                    tools={dataTools}
+                    buttonAction={this.onToolClick}
                     data={this.props.data}
-                    onToggle={this.onToggle}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    bufferSelect={this.props.bufferSelect}
+                    scriptCreate={this.props.scriptCreate}
+                    scriptDuplicate={this.props.scriptDuplicate}
+                    directoryRead={this.props.directoryRead}
+                    resourceDelete={this.props.resourceDelete}
+                    resourceRename={this.props.resourceRename}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
+                    api={this.props.api}
+                    activeBuffer={this.props.activeBuffer}
+                    activeNode={this.props.activeNode}
                 />
             </div>
         );

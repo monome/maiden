@@ -11,6 +11,7 @@ import {
     collectVirtualNodes,
     spliceNodes,
     sortDir,
+    rootCategoryIndex,
     childrenOfRoot,
 } from './listing';
 
@@ -190,8 +191,11 @@ const handleRootList = (action, state) => {
 
 // IDEA: might be cool if this copied 'template.lua' as a starting point
 const handleScriptNew = (action, state) => {
-    // assume script will be placed at the top of the hierarchy
-    let siblings = childrenOfRoot(state.rootNodes);
+    let category = action.category || "scripts";
+    let categoryIndex = rootCategoryIndex(state.rootNodes, category);
+
+    // assume script will be placed at the top of the hierarchy (by default)
+    let siblings = childrenOfRoot(state.rootNodes, categoryIndex);
 
     let childPath = keyPathForResource(state.rootNodes, action.siblingResource)
     if (childPath) {
@@ -201,7 +205,7 @@ const handleScriptNew = (action, state) => {
     }
 
     let newName = generateNodeName(siblings, action.name || "untitled.lua")
-    let newResource = siblingScriptResourceForName(newName, action.siblingResource)
+    let newResource = siblingScriptResourceForName(newName, action.siblingResource, category);
     let newBuffer = new Map({
         modified: true,
         value: action.value || "",
@@ -209,7 +213,7 @@ const handleScriptNew = (action, state) => {
     });
 
     let newNode = virtualNode(newName, newResource)
-    let newRootNodes = spliceFileInfo(state.rootNodes, newNode, action.siblingResource)
+    let newRootNodes = spliceFileInfo(state.rootNodes, newNode, action.siblingResource, categoryIndex);
 
     return {
         ...state,

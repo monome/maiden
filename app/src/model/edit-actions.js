@@ -97,8 +97,8 @@ export const bufferSelect = (resource) => {
     return { type: BUFFER_SELECT, resource }
 }
 
-export const scriptNew = (siblingResource, value, name) => {
-    return { type: SCRIPT_NEW, siblingResource, value, name }
+export const scriptNew = (siblingResource, value, name, category) => {
+    return { type: SCRIPT_NEW, siblingResource, value, name, category }
 }
 
 export const scriptDuplicate = (resource) => {

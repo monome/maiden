@@ -53,6 +53,7 @@ const getExplorerData = createSelector(
             if (buffer) {
                 item.loaded = true;
                 item.modified = buffer.get('modified') || false;
+                item.virtual = buffer.get('virtual') || false;
             }
 
             if (item.children) {
@@ -144,8 +145,8 @@ const mapDispatchToProps = (dispatch) => {
         explorerToggleNode: (node, toggled) => {
             dispatch(explorerToggleNode(node, toggled))
         },
-        explorerScriptNew: (sibling, value) => {
-            dispatch(scriptNew(sibling, value))
+        explorerScriptNew: (sibling, value, name, category) => {
+            dispatch(scriptNew(sibling, value, name, category))
         },
         explorerScriptDuplicate: (source) => {
             dispatch(scriptDuplicate(source))
