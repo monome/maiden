@@ -1,0 +1,19 @@
+.configure-activity {
+    background-color: #F9F9F9;
+    font-family: monospace;
+    width: 100%;
+    padding: 10px;
+    color: rgb(117, 117, 117);
+}
+
+.configure-activity > div {
+    margin-bottom: 15px;
+}
+
+.configure-about {
+    font-style: italic;
+}
+
+.configure-tbd {
+    font-style: italic;
+}
