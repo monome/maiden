@@ -2,9 +2,17 @@
     display: flex;
     flex-direction: column;
     background-color: #F4F4F4;
+    justify-content: space-between;
 }
 
-.tool-bar-container {
+.tool-bar-upper {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tool-bar-lower {
     padding-top: 10px;
     padding-bottom: 10px;
     display: flex;

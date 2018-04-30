@@ -5,8 +5,11 @@ import './activity-bar.css'
 
 class ActivityBar extends Component {
     render() {
-        const items = this.props.activities.map(activity => {
-            return (
+        let upperItems = [];
+        let lowerItems = [];
+
+        this.props.activities.forEach(activity => {
+            let button = (
                 <IconButton
                     key={activity.selector + activity.toggle}
                     action={() => this.props.buttonAction(activity)}
@@ -15,11 +18,19 @@ class ActivityBar extends Component {
                     size="24"       // FIXME: this should be configurable?
                 />
             );
+            if (activity.position && activity.position === "lower") {
+                lowerItems.push(button);
+            } else {
+                upperItems.push(button);
+            }
         });
 
         return (
-            <ToolBar style={this.props.style}>
-                {items}
+            <ToolBar 
+                style={this.props.style}
+                lowerChildren={lowerItems}
+            >
+                {upperItems}
             </ToolBar>
         );
     }
