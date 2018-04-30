@@ -4,9 +4,9 @@ import { virtualRoot } from './listing';
 
 import { List, Map, Set } from 'immutable';
 
-it('initial state should have empty collections', () => {
+it('initial state should have empty list', () => {
     let state = scripts(undefined, { type: '@@INIT' })
-    expect(state.rootNodes).toEqual(virtualRoot(new List()))
+    expect(state.rootNodes).toEqual(new List())
     expect(state.buffers).toEqual(new Map())
     expect(state.expandedNodes).toEqual(new Set())
 })
