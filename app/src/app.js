@@ -14,7 +14,7 @@ class App extends Component {
   innerSize() {
     return {
       width: window.innerWidth,
-      height: window.innerHeight,
+      height: window.innerHeight - 6,
     };
   }
 
@@ -25,7 +25,7 @@ class App extends Component {
   render() {
     const headerStyle = {
       width: this.state.width,
-      height: "6px",
+      height: 6,
     };
 
     return (

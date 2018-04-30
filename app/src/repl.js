@@ -8,29 +8,6 @@ class ReplOutput extends Component {
         this.scrollAdjusted = false;
     }
 
-    /*
-    componentDidMount() {
-        this.output.onscroll = () => {
-            this.scrollAdjusted = true;
-            console.log("scrollAdjusted:", this.scrollAdjusted)
-        }
-   
-        // this.observer = new MutationObserver(this.scrollToOutput);
-        // this.observer.observe(this.output, {childList: true});
-    }
-
-    componentDidUpdate() {
-        this.scrollToOutput();
-    }
-
-    scrollToOutput = () => {
-        if (!this.scrollAdjusted) {
-            console.log("scrollToOutput")
-            this.output.scrollTop = this.output.scrollHeight;
-        }
-    }
-    */
-
     componentDidUpdate() {
         // FIXME: this always forces scrolling to the bottom
         if (this.output) {
@@ -124,6 +101,7 @@ class ReplInput extends Component {
                     onKeyDown={this.onKeyDown}
                     autoFocus="true"
                     spellCheck="false"
+                    rows={1}
                 />
             </div>
         )
