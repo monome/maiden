@@ -156,23 +156,36 @@ func writeHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc)
 		name := ctx.Param("name")
 		path := devicePath(&name)
 
-		// get code (file) blob
-		file, err := ctx.FormFile("value")
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		kind, exists := ctx.GetQuery("kind")
+		if exists && kind == "directory" {
+
+			err := os.MkdirAll(path, 0755)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("created directory %s", path)})
+
+		} else {
+			// get code (file) blob
+			file, err := ctx.FormFile("value")
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
+			}
+
+			fmt.Fprintf(logger, "save path: %s\n", path)
+			fmt.Fprintf(logger, "content type: %s\n", file.Header["Content-Type"])
+
+			// size, err := io.Copy(out, file)
+			if err := ctx.SaveUploadedFile(file, path); err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+				return
+			}
+
+			ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("uploaded %s (%s, %d) to %s", file.Filename, file.Header, file.Size, path)})
 		}
-
-		fmt.Fprintf(logger, "save path: %s\n", path)
-		fmt.Fprintf(logger, "content type: %s\n", file.Header["Content-Type"])
-
-		// size, err := io.Copy(out, file)
-		if err := ctx.SaveUploadedFile(file, path); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("uploaded %s (%s, %d) to %s", file.Filename, file.Header, file.Size, path)})
 	}
 }
 
