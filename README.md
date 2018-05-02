@@ -15,7 +15,14 @@ brew install go
 brew install glide
 ```
 
-(TODO: insert details on setting up $GOPATH)
+next, set your [`$GOPATH`](https://golang.org/doc/code.html#GOPATH) environment variable to specify a location for your Go workspace.  see the [go wiki](https://github.com/golang/go/wiki/SettingGOPATH) for considerations and instructions for your OS.
+
+finally, ensure that you have a `$GOPATH/src` directory.  if you're setting up Go for the first time, you'll want to create it. on macos and other unix systems, that can be done like this:
+
+```
+mkdir -p $GOPATH/src
+```
+
 ## building
 
 to build first use glide to pull in all the dependencies then run go build as normal
