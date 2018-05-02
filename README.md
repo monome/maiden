@@ -17,7 +17,7 @@ brew install glide
 
 next, set your [`$GOPATH`](https://golang.org/doc/code.html#GOPATH) environment variable to specify a location for your Go workspace.  see the [go wiki](https://github.com/golang/go/wiki/SettingGOPATH) for considerations and instructions for your OS.
 
-finally, ensure that you have a `$GOPATH/src` directory.  if you're setting up Go for the first time, you'll want to create it. on OS X and other unix systems, that can be done like this:
+finally, ensure that you have a `$GOPATH/src` directory.  if you're setting up Go for the first time, you'll want to create it. on macos and other unix systems, that can be done like this:
 
 ```
 mkdir -p $GOPATH/src
