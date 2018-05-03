@@ -5,10 +5,10 @@ import ui from './ui-reducers';
 import repl from './repl-reducers';
 
 const rootReducer = combineReducers({
-    activity,
-    edit,
-    ui,
-    repl,
-})
+  activity,
+  edit,
+  ui,
+  repl,
+});
 
 export default rootReducer;

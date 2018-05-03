@@ -8,14 +8,15 @@ import store from './model/store';
 import API from './api';
 
 // https://stackoverflow.com/questions/39962757/prevent-scrolling-using-css-on-react-rendered-components
-document.body.style.overflow = "hidden";
+document.body.style.overflow = 'hidden';
 
 const api = new API();
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App api={api}/>
-    </Provider>,
-    document.getElementById('root'));
+  <Provider store={store}>
+    <App api={api} />
+  </Provider>,
+  document.getElementById('root'),
+);
 
 registerServiceWorker();

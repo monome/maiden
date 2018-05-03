@@ -8,7 +8,7 @@ class App extends Component {
     super(props);
     this.state = this.innerSize();
     this.handleResize = this.handleResize.bind(this);
-    window.addEventListener('resize', this.handleResize)
+    window.addEventListener('resize', this.handleResize);
   }
 
   innerSize() {

@@ -1,9 +1,7 @@
-export const ACTIVITY_SELECT = 'ACTIVITY_SELECT'
+export const ACTIVITY_SELECT = 'ACTIVITY_SELECT';
 
 //
 // sync actions
 //
 
-export const activitySelect = (activity) => {
-    return { type: ACTIVITY_SELECT, activity }
-}
+export const activitySelect = activity => ({ type: ACTIVITY_SELECT, activity });
