@@ -23,7 +23,8 @@
     "start": "./gen-version.sh && react-scripts start",
     "build": "./gen-version.sh && react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "./node_modules/.bin/eslint src"
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
