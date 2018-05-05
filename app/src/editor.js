@@ -23,6 +23,8 @@ class Editor extends Component {
             useSoftTabs: true,
         });
 
+        // suppress the default print margin.
+        editor.setPrintMarginColumn(-1);
 
         /*
         if (this.refs.ace) {
