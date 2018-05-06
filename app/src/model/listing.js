@@ -178,6 +178,10 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
   return name;
 };
 
+export const directoryNode = (name, resource) => {
+  return new Map({name, url: resource, children: []});
+}
+
 export const virtualNode = (name, resource, children = undefined) => {
   if (children) {
     return new Map({

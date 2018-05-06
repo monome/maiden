@@ -1,15 +1,25 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Set } from 'immutable';
 import { siblingNamesForResource } from './model/listing';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import { INVALID_NAME_CHARS } from './constants';
 
 const mapStateToProps = (state) => {
-    // renaming is relative to some active node; get sibling names to enable validation
-    let siblingNames = siblingNamesForResource(state.edit.rootNodes, state.edit.activeBuffer);
+    const getSiblingNames = (selectedResource, category) => {
+        if (selectedResource) {
+            return siblingNamesForResource(state.edit.rootNodes, selectedResource);
+        } else if (category) {
+            // no selected node; get names of category root
+            // TODO:
+            
+        }
+        return new Set();
+    }
+    
     return {
-        siblingNames,
+        getSiblingNames,
     }
 }
 
@@ -21,6 +31,8 @@ class ModalRename extends Component {
             showError: false,
             errorMessage: "",
         }
+
+        this.siblingNames = props.getSiblingNames(this.props.selectedResource, this.props.category);
     }
     
     handleKeyDown = (event) => {
@@ -48,7 +60,7 @@ class ModalRename extends Component {
     }
 
     handleOnChange = (event) => {
-        if (this.props.siblingNames.has(this.textArea.value)) {
+        if (this.siblingNames.has(this.textArea.value)) {
             this.setState({
                 errorMessage: "name already in use",
             })
@@ -60,9 +72,8 @@ class ModalRename extends Component {
     }
 
     isValidName = (name) => {
-        return !this.props.siblingNames.has(name);
+        return !this.siblingNames.has(name);
     }
-
 
     complete = (choice) => {
         let name = this.textArea.value;
@@ -83,7 +94,7 @@ class ModalRename extends Component {
             <textarea
                     className="rename-modal-text-area"
                     ref={(e) => this.textArea = e}
-                    placeholder={this.props.initialName}
+                    placeholder={this.props.initialName || ""}
                     rows="1"
                     maxLength="128"
                     wrap="false"

@@ -267,6 +267,7 @@ class EditActivity extends Component {
                     data={this.props.explorerData}
                     bufferSelect={this.props.bufferSelect}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.explorerDirectoryCreate}
                     scriptCreate={this.props.explorerScriptNew}
                     scriptDuplicate={this.props.explorerScriptDuplicate}
                     resourceDelete={this.props.explorerResourceDelete}

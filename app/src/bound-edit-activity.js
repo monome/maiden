@@ -20,6 +20,7 @@ import {
 
   explorerActiveNode,
   explorerToggleNode,
+  directoryCreate,
 } from './model/edit-actions';
 
 import {
@@ -151,6 +152,9 @@ const mapDispatchToProps = dispatch => ({
   explorerResourceRename: (api, activeNode, newName, virtual) => {
     dispatch(resourceRename(api, activeNode, newName, virtual));
   },
+  explorerDirectoryCreate: (api, resource, name, category) => {
+    dispatch(directoryCreate(api, resource, name, category));
+  }
 });
 
 const BoundEditActivity = connect(

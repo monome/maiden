@@ -13,6 +13,7 @@ import {
   sortDir,
   rootCategoryIndex,
   childrenOfRoot,
+  directoryNode,
 } from './listing';
 
 import {
@@ -36,7 +37,7 @@ import {
   scriptNew,
 } from './edit-actions';
 
-import { siblingScriptResourceForName } from '../api';
+import { siblingResourceForName } from '../api';
 
 /*
 
@@ -120,7 +121,7 @@ const edit = (state = initialEditState, action) => {
       return handleResourceRenameSuccess(action, state);
 
     case DIRECTORY_CREATE_SUCCESS:
-      return handleScriptNewFolderSuccess(action, state);
+      return handleDirectoryCreateSuccess(action, state);
 
     case TOOL_INVOKE:
       console.log('tool invoke => ', action.name);
@@ -205,7 +206,7 @@ const handleScriptNew = (action, state) => {
   }
 
   const newName = generateNodeName(siblings, action.name || 'untitled.lua');
-  const newResource = siblingScriptResourceForName(newName, action.siblingResource, category);
+  const newResource = siblingResourceForName(newName, action.siblingResource, category);
   const newBuffer = new Map({
     modified: true,
     value: action.value || '',
@@ -255,7 +256,25 @@ const handleScriptDuplicate = (action, state) => {
   return handleScriptNew(newAction, state);
 };
 
-const handleScriptNewFolderSuccess = (action, state) => state;
+const handleDirectoryCreateSuccess = (action, state) => {
+  console.log('dir success:', action.category, action.resource);
+  const newNode = directoryNode(action.name, action.resource);
+
+  const categoryIndex = rootCategoryIndex(state.rootNodes, action.category);
+  if (categoryIndex >= 0) {
+    const rootChildren = state.rootNodes.getIn([categoryIndex, 'children']);
+    // STOPPED HERE- this splice is failing
+    const newChildren = spliceNodes(rootChildren, new List([newNode]));
+    const newRootNodes = state.rootNodes.setIn([categoryIndex, 'children'], newChildren);
+  
+    return {
+      ...state,
+      rootNodes: newRootNodes
+    };
+  }
+
+  return state;
+}
 
 const handleResourceRenameSuccess = (action, state) => {
   console.log('rename success: ', action);
@@ -263,7 +282,7 @@ const handleResourceRenameSuccess = (action, state) => {
   let newResource = action.newResource;
   if (!newResource) {
     // assume this is virtual; fabricate new url
-    newResource = siblingScriptResourceForName(action.newName, action.resource);
+    newResource = siblingResourceForName(action.newName, action.resource);
     console.log(action.resource, ' => ', newResource);
   }
 

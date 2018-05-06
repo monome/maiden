@@ -9,6 +9,7 @@ import ModalContent from './modal-content';
 import ModalRename from './modal-rename';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+import { siblingResourceForName } from './api';
 
 const TreeHeader = (props) => {
     let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
@@ -104,21 +105,24 @@ class Section extends Component {
     }
 
     onToolClick = (name) => {
+        let selectedResource = this.state.selectedNode ? this.state.selectedNode.url : undefined;
+
         // add doesn't (necessarily) require a selection
         if (name === 'add') {
-            let selection = undefined;
-            if (this.state.selectedNode) {
-                selection = this.state.selectedNode.url;
-            }
             this.props.scriptCreate(
-                selection,                // sibling resource
+                selectedResource,         // sibling resource
                 undefined,                // initial buffer contents
                 undefined,                // buffer name
-                this.props.name);         // buffer category
+                this.getCategory());      // buffer category
             return;
         }
         
-        // other tools only function if there is a selection, ensure there is one and it is from this category
+        if (name === 'new-folder') {
+            this.handleNewFolder(selectedResource);
+            return;
+         }
+
+        // other tools only function if there is an active buffer/selection, ensure there is one and it is from this category
         let activeBuffer = this.props.activeBuffer;
         if (activeBuffer === undefined) {
             return;
@@ -130,13 +134,6 @@ class Section extends Component {
             return;
         }
 
-        /*
-        STOPPED HERE; use CATEGORY to gate invocation instead of selectionURL != activeBuffer stuff.
-
-        ensure duplicate then remove/rename works w/out having to reselect the item
-
-        ensure script create puts a new file in the correct category
-*/
         switch (name) {
         case 'duplicate':
             this.props.scriptDuplicate(this.props.activeBuffer)
@@ -202,13 +199,37 @@ class Section extends Component {
         }
 
         let initialName = selection.get("name");
+        let selectedResource = selection.get("url");
         let content = (
-            <ModalRename message="Rename" buttonAction={complete} initialName={initialName} />
+            <ModalRename message="Rename" buttonAction={complete} selectedResource={selectedResource} initialName={initialName} />
         )
 
         this.props.showModal(content)
     }
 
+    handleNewFolder = (selectedResource) => {
+        const category = this.getCategory();
+
+        let complete = (choice, name) => {
+            console.log('new folder:', choice, name)
+            if (name && choice === "ok") {
+                const newResource = siblingResourceForName(name, selectedResource, category)
+                this.props.directoryCreate(
+                    this.props.api,
+                    newResource,
+                    name,
+                    category,
+                )
+            }
+            this.props.hideModal()
+        }
+
+        let content = (
+            <ModalRename message="New Folder" buttonAction={complete} selectedResource={selectedResource} category={category}/>
+        )
+
+        this.props.showModal(content)
+    }
 
     getData() {
         let node = this.props.data.find(n => n.name === this.props.name)
@@ -216,6 +237,10 @@ class Section extends Component {
             return node.children;
         }
         return [];
+    }
+
+    getCategory() {
+        return this.props.name;
     }
 
     render() {
@@ -336,6 +361,7 @@ class Explorer extends Component {
                     explorerToggleNode={this.props.explorerToggleNode}
                     bufferSelect={this.props.bufferSelect}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     resourceDelete={this.props.resourceDelete}
@@ -356,6 +382,7 @@ class Explorer extends Component {
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     resourceDelete={this.props.resourceDelete}
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
@@ -374,6 +401,7 @@ class Explorer extends Component {
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     resourceDelete={this.props.resourceDelete}
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
