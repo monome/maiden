@@ -118,6 +118,24 @@ class Editor extends Component {
                 value={this.props.value}
                 onLoad={this.onLoad}
                 onChange={this.onChange}
+                showPrintMargin={false}
+                commands={[
+                  {  
+                    name: 'save',
+                    bindKey: { win: "Ctrl-S", mac: "Command-S" },
+                    exec: () => this.props.toolInvoke('save'),
+                  },
+                  {
+                    name: 'play',
+                    bindKey: { win: "Ctrl-P", mac: "Command-P" },
+                    exec: () => this.props.toolInvoke('play'),
+                  },
+                  {
+                    name: 'toggle sidebar',
+                    bindKey: { win: "Ctrl-B", mac: "Command-B" },
+                    exec: () => this.props.sidebarToggle(),
+                  },                
+                ]}
                 editorProps={{
                     $blockScrolling: Infinity,
                     $newLineMode: "unix",
