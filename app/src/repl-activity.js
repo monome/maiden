@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactTooltip from 'react-tooltip';
 import cx from 'classname';
 import Repl from './repl';
 import ToolBar from './tool-bar';
@@ -10,6 +11,8 @@ import './repl-activity.css';
 const tools = [
     {
         name: "clear",
+        tooltipMessage: "clear",
+        tooltipPosition: "left",
         icon: ICONS['forbidden'], // FIXME: temp
     }
 ];
@@ -20,6 +23,8 @@ const ReplTools = (props) => {
         return (
             <IconButton
                 key={tool.name}
+                tooltipMessage={tool.tooltipMessage}
+                tooltipPosition={tool.tooltipPosition}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
                 color="#979797"       // FIXME:
@@ -48,6 +53,8 @@ const ReplConnect = (props) => {
                 <span className="component">{props.activeRepl}</span>
                 <IconButton
                     action={() => props.connectAction(props.activeRepl)}
+                    tooltipMessage="refresh connection"
+                    tooltipPosition="top"
                     icon={ICONS['loop2']}
                     color="#979797"       // FIXME:
                     size="24"           // FIXME:
@@ -59,14 +66,19 @@ const ReplConnect = (props) => {
 
 const ReplSwitcherTab = (props) => {
     let className = cx("repl-switcher-tab", {"noselect": true}, {"repl-active-tab": props.isActive});
+    let tooltipMessage = `show ${props.name} repl`; 
     return (
-        <button 
-            className={className}
-            key={props.name}
-            onClick={props.onClick}
-        >
-            {props.name}
-        </button>
+        <div>
+            <button 
+                className={className}
+                key={props.name}
+                onClick={props.onClick}
+                data-tip={tooltipMessage}
+                data-for={props.name}>
+                {props.name}
+            </button>
+            <ReactTooltip id={props.name} effect="solid" className="customTooltip" delayShow={1000} delayHide={500} place="top"></ReactTooltip>
+        </div>
     );
 }
 
