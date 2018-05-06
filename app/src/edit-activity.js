@@ -226,6 +226,8 @@ class EditActivity extends Component {
                     ref={(component) => {this.editor = component;}}
                     { ...this.editorSize() }
                     bufferName={activeBuffer}
+                    toolInvoke={this.handleToolInvoke}
+                    sidebarToggle={this.props.sidebarToggle}
                     value={code}
                     bufferChange={this.props.bufferChange}
                 />
