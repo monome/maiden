@@ -171,7 +171,7 @@ const handleBufferChange = (action, state) => {
 
 const handleRootList = (action, state) => {
   // FIXME: change the virtualNode resource to be the api path
-  let rootNode = virtualNode(action.name, '/', fromJS(action.value.entries));
+  let rootNode = directoryNode(action.name, action.value.url, fromJS(action.value.entries));
 
   const existingRootIndex = state.rootNodes.findIndex(n => n.get('name') === action.name);
   if (existingRootIndex > 0) {
@@ -257,24 +257,15 @@ const handleScriptDuplicate = (action, state) => {
 };
 
 const handleDirectoryCreateSuccess = (action, state) => {
-  console.log('dir success:', action.category, action.resource);
+  // console.log('dir success:', action.category, action.resource);
   const newNode = directoryNode(action.name, action.resource);
-
-  const categoryIndex = rootCategoryIndex(state.rootNodes, action.category);
-  if (categoryIndex >= 0) {
-    const rootChildren = state.rootNodes.getIn([categoryIndex, 'children']);
-    // STOPPED HERE- this splice is failing
-    const newChildren = spliceNodes(rootChildren, new List([newNode]));
-    const newRootNodes = state.rootNodes.setIn([categoryIndex, 'children'], newChildren);
+  const newRootNodes = spliceNodes(state.rootNodes, new List([newNode]));
   
-    return {
-      ...state,
-      rootNodes: newRootNodes
-    };
-  }
-
-  return state;
-}
+  return {
+    ...state,
+    rootNodes: newRootNodes
+  };
+};
 
 const handleResourceRenameSuccess = (action, state) => {
   console.log('rename success: ', action);

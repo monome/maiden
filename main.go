@@ -281,6 +281,7 @@ type fileInfo struct {
 
 type dirInfo struct {
 	Path    string     `json:"path"`
+	URL     string     `json:"url"`
 	Entries []fileInfo `json:"entries"`
 }
 
@@ -307,6 +308,7 @@ func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc)
 	}
 	return &dirInfo{
 		path,
+		resourcePath(""),
 		files,
 	}
 }
