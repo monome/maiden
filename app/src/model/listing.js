@@ -225,11 +225,16 @@ export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 
 export const rootCategoryIndex = (rootNodes, category) => rootNodes.findIndex(n => n.get('name') === category);
 
 export const siblingNamesForResource = (rootNodes, resource) => {
+  // if resource is a file, returns the names of sibling files
+  // if resource is a dir, returns name of dir children
   let keyPath = keyPathForResource(rootNodes, resource);
-  if (!keyPath.has('children')) {
+  let node = rootNodes.getIn(keyPath);
+  if (!node.has('children')) {
     // this is a script/file itself, get sibling names by listing the parent node
-    keyPath = keyPathParent(keyPath);
-  }
-  const node = rootNodes.getIn(keyPath);
-  return new Set(node.get('children').map(node => node.get('name')));
+    node = rootNodes.getIn(keyPathParent(keyPath));
+  };
+  const names = new Set(node.get('children').map(node => node.get('name')));
+  // console.log("sibs: ", names);
+  return names;
 };
+

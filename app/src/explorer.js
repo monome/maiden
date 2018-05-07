@@ -9,7 +9,7 @@ import ModalContent from './modal-content';
 import ModalRename from './modal-rename';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-import { siblingResourceForName } from './api';
+import { siblingResourceForName, childResourceForName } from './api';
 
 const TreeHeader = (props) => {
     let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
@@ -75,7 +75,7 @@ class Section extends Component {
         this.state = {
             showTools: false,
             selectedNode: undefined,
-        }
+        };
     }
 
     componentDidMount() {
@@ -118,7 +118,7 @@ class Section extends Component {
         }
         
         if (name === 'new-folder') {
-            this.handleNewFolder(selectedResource);
+            this.handleNewFolder(this.state.selectedNode);
             return;
          }
 
@@ -207,36 +207,57 @@ class Section extends Component {
         this.props.showModal(content)
     }
 
-    handleNewFolder = (selectedResource) => {
+    handleNewFolder = (selectedNode) => {
+        // if no selected node, validate/create against root names
+        // if selected node is file, validate/create against siblings name
+        // if selected node is dir, validate/create against *children* of dir
+        if (!selectedNode) {
+            selectedNode = this.getNode();
+        }
+        const selectedResource = selectedNode.url;
         const category = this.getCategory();
+
+        const selectionIsDir = 'children' in selectedNode;
 
         let complete = (choice, name) => {
             console.log('new folder:', choice, name)
             if (name && choice === "ok") {
-                const newResource = siblingResourceForName(name, selectedResource, category)
+                const newResource = selectionIsDir ? childResourceForName(name, selectedResource) : siblingResourceForName(name, selectedResource, category);
                 this.props.directoryCreate(
                     this.props.api,
                     newResource,
                     name,
                     category,
-                )
+                );
             }
-            this.props.hideModal()
+            this.props.hideModal();
+        };
+
+        let message = 'New Folder';
+        if (selectionIsDir) {
+            message +=  ` (${selectedNode.name})`;
         }
 
         let content = (
-            <ModalRename message="New Folder" buttonAction={complete} selectedResource={selectedResource} category={category}/>
-        )
+            <ModalRename message={message} buttonAction={complete} selectedResource={selectedResource} category={category}/>
+        );
 
-        this.props.showModal(content)
+        this.props.showModal(content);
     }
 
+
+
     getData() {
-        let node = this.props.data.find(n => n.name === this.props.name)
+        const node = this.getNode();
         if (node) {
             return node.children;
         }
         return [];
+    }
+
+    getNode() {
+        const category = this.getCategory();
+        return this.props.data.find(n => n.name === category)
     }
 
     getCategory() {

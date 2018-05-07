@@ -7,20 +7,16 @@ import { ICONS } from './svg-icons';
 import { INVALID_NAME_CHARS } from './constants';
 
 const mapStateToProps = (state) => {
-    const getSiblingNames = (selectedResource, category) => {
+    const getSiblingNames = (selectedResource) => {
         if (selectedResource) {
             return siblingNamesForResource(state.edit.rootNodes, selectedResource);
-        } else if (category) {
-            // no selected node; get names of category root
-            // TODO:
-            
         }
         return new Set();
-    }
+    };
     
     return {
         getSiblingNames,
-    }
+    };
 }
 
 class ModalRename extends Component {
@@ -32,7 +28,7 @@ class ModalRename extends Component {
             errorMessage: "",
         }
 
-        this.siblingNames = props.getSiblingNames(this.props.selectedResource, this.props.category);
+        this.siblingNames = props.getSiblingNames(this.props.selectedResource);
     }
     
     handleKeyDown = (event) => {

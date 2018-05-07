@@ -16,6 +16,10 @@ export function siblingResourceForName(name, siblingResource, category = 'script
   return resourceBase + encodeURI(name);
 }
 
+export function childResourceForName(name, parentResource) {
+  return `${parentResource}/${encodeURI(name)}`;
+}
+
 class API {
   listRoot(resourceRoot, cb) {
     fetch(apiPath(resourceRoot)).then(cb);
