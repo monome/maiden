@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import BoundWorkspace from './bound-workspace';
 import activities from './activities';
 import './app.css';
+import './tool-tip.css';
 
 class App extends Component {
   constructor(props) {

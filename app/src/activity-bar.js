@@ -13,6 +13,8 @@ class ActivityBar extends Component {
         <IconButton
           key={activity.selector + activity.toggle}
           action={() => this.props.buttonAction(activity)}
+          tooltipMessage={activity.tooltipMessage}
+          tooltipPosition={activity.tooltipPosition}
           icon={activity.icon}
           color="#979797" // FIXME: this should be styled
           size="24"

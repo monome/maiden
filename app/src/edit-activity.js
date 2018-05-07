@@ -13,11 +13,15 @@ import './edit-activity.css';
 const tools = [
     {
         name: "save",
+        tooltipMessage: "save script",
+        tooltipPosition: "left",
         icon: ICONS["floppy-disk"],
         disabled: false,
     },
     {
         name: "play",
+        tooltipMessage: "run script",
+        tooltipPosition: "left",
         icon: ICONS["play3"],
         disabled: false,
     },
@@ -27,6 +31,8 @@ const EditTools = (props) => {
     const items = props.tools.map(tool => {
         return (
             <IconButton
+                tooltipMessage={tool.tooltipMessage}
+                tooltipPosition={tool.tooltipPosition}
                 key={tool.name}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}

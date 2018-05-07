@@ -45,6 +45,8 @@ const SectionHeader = (props) => {
         return (
             <IconButton
                 key={tool.name}
+                tooltipMessage={tool.tooltipMessage}
+                tooltipPosition={tool.tooltipPosition}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
                 size="12"
@@ -246,22 +248,27 @@ const scriptTools = [
     {
         name: "add",
         icon: ICONS["plus"],
+        tooltipMessage: "new script"
     },
     {
         name: "remove",
         icon: ICONS["minus"],
+        tooltipMessage: "delete script"
     },
     {
         name: "duplicate",
         icon: ICONS["copy"],
+        tooltipMessage: "duplicate script"
     },
     {
         name: "new-folder",
         icon: ICONS["folder-plus"],
+        tooltipMessage: "new folder"
     },
     {
         name: "rename",
         icon: ICONS["pencil"],
+        tooltipMessage: "rename file/folder"
     },
 ]
 
@@ -269,18 +276,47 @@ const audioTools = [
     {
         name: "remove",
         icon: ICONS["minus"],
+        tooltipMessage: "delete audio file"
     },
     {
         name: "new-folder",
         icon: ICONS["folder-plus"],
+        tooltipMessage: "new folder"
     },
     {
         name: "rename",
         icon: ICONS["pencil"],
+        tooltipMessage: "rename file/folder"
     },
 ]
 
-const dataTools = scriptTools;
+const dataTools = [
+    {
+        name: "add",
+        icon: ICONS["plus"],
+        tooltipMessage: "new data file"
+    },
+    {
+        name: "remove",
+        icon: ICONS["minus"],
+        tooltipMessage: "delete data file"
+    },
+    {
+        name: "duplicate",
+        icon: ICONS["copy"],
+        tooltipMessage: "duplicate data file"
+    },
+    {
+        name: "new-folder",
+        icon: ICONS["folder-plus"],
+        tooltipMessage: "new folder"
+    },
+    {
+        name: "rename",
+        icon: ICONS["pencil"],
+        tooltipMessage: "rename file/folder"
+    },
+]
 
 
 class Explorer extends Component {

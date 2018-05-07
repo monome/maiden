@@ -1,0 +1,18 @@
+.customTooltip {
+		font-size: 11px !important;
+		border-radius: 0 !important;
+		padding: 6px !important;
+		transition:
+			opacity .3s,
+			visibility .3s .2s;
+}
+
+.customTooltip.place-left,
+.customTooltip.place-right {
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+}
+
+.customTooltip.show {
+  transition: opacity .3s;
+}
