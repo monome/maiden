@@ -19,7 +19,7 @@ const mapStateToProps = (state) => {
     };
 }
 
-class ModalRename extends Component {
+class ModalGetName extends Component {
     constructor(props) {
         super(props)
         this.textArea = undefined
@@ -88,7 +88,7 @@ class ModalRename extends Component {
                 <p/>
             </div>
             <textarea
-                    className="rename-modal-text-area"
+                    className="get-name-modal-text-area"
                     ref={(e) => this.textArea = e}
                     placeholder={this.props.initialName || ""}
                     rows="1"
@@ -98,7 +98,7 @@ class ModalRename extends Component {
                     onKeyDown={this.handleKeyDown}
                     onChange={this.handleOnChange}
                 />
-            <div className="rename-modal-error-message">
+            <div className="get-name-modal-error-message">
                 {this.state.errorMessage}
             </div>
             <div className="button-container">
@@ -122,5 +122,5 @@ class ModalRename extends Component {
     }
 }
 
-// export default ModalRename;
-export default connect(mapStateToProps)(ModalRename);
+// export default ModalGetName;
+export default connect(mapStateToProps)(ModalGetName);

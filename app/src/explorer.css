@@ -76,7 +76,7 @@
                                     supported by Chrome and Opera */
   }
 
-.rename-modal-text-area {
+.get-name-modal-text-area {
     border: none;
     border-bottom: 1px solid rgb(192, 192, 192);
     resize: none;

@@ -6,7 +6,7 @@ import treeAnim from './explorer-animation';
 import './explorer.css';
 
 import ModalContent from './modal-content';
-import ModalRename from './modal-rename';
+import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import { siblingResourceForName, childResourceForName } from './api';
@@ -201,7 +201,7 @@ class Section extends Component {
         let initialName = selection.get("name");
         let selectedResource = selection.get("url");
         let content = (
-            <ModalRename message="Rename" buttonAction={complete} selectedResource={selectedResource} initialName={initialName} />
+            <ModalGetName message="Rename" buttonAction={complete} selectedResource={selectedResource} initialName={initialName} />
         )
 
         this.props.showModal(content)
@@ -239,7 +239,7 @@ class Section extends Component {
         }
 
         let content = (
-            <ModalRename message={message} buttonAction={complete} selectedResource={selectedResource} category={category}/>
+            <ModalGetName message={message} buttonAction={complete} selectedResource={selectedResource} category={category}/>
         );
 
         this.props.showModal(content);
