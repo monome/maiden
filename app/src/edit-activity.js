@@ -5,6 +5,7 @@ import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+import OS from './utils';
 
 import ReplActivity from './bound-repl-activity'
 
@@ -13,14 +14,14 @@ import './edit-activity.css';
 const tools = [
     {
         name: "save",
-        tooltipMessage: "save script",
+        tooltipMessage: `save script (${OS.metaKey()}S)`,
         tooltipPosition: "left",
         icon: ICONS["floppy-disk"],
         disabled: false,
     },
     {
         name: "play",
-        tooltipMessage: "run script",
+        tooltipMessage: `run script (${OS.metaKey()}P)`,
         tooltipPosition: "left",
         icon: ICONS["play3"],
         disabled: false,
