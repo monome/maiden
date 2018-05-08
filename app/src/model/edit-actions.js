@@ -53,19 +53,46 @@ export const bufferReadSuccess = (resource, value, contentType) => ({
   type: BUFFER_READ_SUCCESS, resource, value, contentType,
 });
 
-export const bufferReadFailure = (resource, error) => ({ type: BUFFER_READ_FAILURE, resource, error });
+export const bufferReadFailure = (resource, error) => ({
+  type: BUFFER_READ_FAILURE,
+  resource,
+  error,
+});
 
-export const directoryReadRequest = resource => ({ type: DIRECTORY_READ_REQUEST, resource });
+export const directoryReadRequest = resource => ({
+  type: DIRECTORY_READ_REQUEST,
+  resource,
+});
 
-export const directoryReadSuccess = (resource, value) => ({ type: DIRECTORY_READ_SUCCESS, resource, value });
+export const directoryReadSuccess = (resource, value) => ({
+  type: DIRECTORY_READ_SUCCESS,
+  resource,
+  value,
+});
 
-export const directoryReadFailure = (resource, error) => ({ type: DIRECTORY_READ_FAILURE, resource, error });
+export const directoryReadFailure = (resource, error) => ({
+  type: DIRECTORY_READ_FAILURE,
+  resource,
+  error,
+});
 
-export const bufferSaveRequest = (resource, value) => ({ type: BUFFER_SAVE_REQUEST, resource, value });
+export const bufferSaveRequest = (resource, value) => ({
+  type: BUFFER_SAVE_REQUEST,
+  resource,
+  value,
+});
 
-export const bufferSaveSuccess = (resource, value) => ({ type: BUFFER_SAVE_SUCCESS, resource, value });
+export const bufferSaveSuccess = (resource, value) => ({
+  type: BUFFER_SAVE_SUCCESS,
+  resource,
+  value,
+});
 
-export const bufferSaveFailure = (resource, error) => ({ type: BUFFER_SAVE_FAILURE, resource, error });
+export const bufferSaveFailure = (resource, error) => ({
+  type: BUFFER_SAVE_FAILURE,
+  resource,
+  error,
+});
 
 export const bufferChange = (resource, value) => ({ type: BUFFER_CHANGE, resource, value });
 
@@ -77,7 +104,11 @@ export const scriptNew = (siblingResource, value, name, category) => ({
 
 export const scriptDuplicate = resource => ({ type: SCRIPT_DUPLICATE, resource });
 
-export const resourceRenameRequest = (resource, name) => ({ type: RESOURCE_RENAME_REQUEST, resource, name });
+export const resourceRenameRequest = (resource, name) => ({
+  type: RESOURCE_RENAME_REQUEST,
+  resource,
+  name,
+});
 
 export const resourceRenameSuccess = (resource, newName, newResource) => ({
   type: RESOURCE_RENAME_SUCCESS, resource, newName, newResource,
@@ -87,24 +118,51 @@ export const resourceRenameFailure = (resource, name, error) => ({
   type: RESOURCE_RENAME_FAILURE, resource, name, error,
 });
 
-export const directoryCreateRequest = (siblingResource, name) => ({ type: DIRECTORY_CREATE_REQUEST, siblingResource, name });
+export const directoryCreateRequest = (siblingResource, name) => ({
+  type: DIRECTORY_CREATE_REQUEST,
+  siblingResource,
+  name,
+});
 
-export const directoryCreateSuccess = resource => ({ type: DIRECTORY_CREATE_SUCCESS, resource });
+export const directoryCreateSuccess = resource => ({
+  type: DIRECTORY_CREATE_SUCCESS,
+  resource,
+});
 
-export const directoryCreateFailure = (resource, error) => ({ type: DIRECTORY_CREATE_FAILURE, resource, error });
+export const directoryCreateFailure = (resource, error) => ({
+  type: DIRECTORY_CREATE_FAILURE,
+  resource,
+  error,
+});
 
-export const resourceDeleteRequest = resource => ({ type: RESOURCE_DELETE_REQUEST, resource });
+export const resourceDeleteRequest = resource => ({
+  type: RESOURCE_DELETE_REQUEST,
+  resource,
+});
 
-export const resourceDeleteSuccess = resource => ({ type: RESOURCE_DELETE_SUCCESS, resource });
+export const resourceDeleteSuccess = resource => ({
+  type: RESOURCE_DELETE_SUCCESS,
+  resource,
+});
 
-export const resourceDeleteFailure = (resource, error) => ({ type: RESOURCE_DELETE_FAILURE, resource, error });
-
+export const resourceDeleteFailure = (resource, error) => ({
+  type: RESOURCE_DELETE_FAILURE,
+  resource,
+  error,
+});
 
 export const toolInvoke = name => ({ type: TOOL_INVOKE, name });
 
-export const explorerActiveNode = node => ({ type: EXPLORER_ACTIVE_NODE, node });
+export const explorerActiveNode = node => ({
+  type: EXPLORER_ACTIVE_NODE,
+  node,
+});
 
-export const explorerToggleNode = (node, toggled) => ({ type: EXPLORER_TOGGLE_NODE, node, toggled });
+export const explorerToggleNode = (node, toggled) => ({
+  type: EXPLORER_TOGGLE_NODE,
+  node,
+  toggled,
+});
 
 //
 // async actions
@@ -166,7 +224,9 @@ export const bufferSave = (api, resource, value, cb) => (dispatch) => {
   return api.writeTextResource(resource, value, (response) => {
     // FIXME: handle errors
     dispatch(bufferSaveSuccess(resource, response.entity));
-    cb && cb();
+    if (cb) {
+      cb();
+    }
   });
 };
 
@@ -175,7 +235,9 @@ export const resourceDelete = (api, resource, cb) => (dispatch) => {
   return api.deleteResource(resource, (response) => {
     // FIXME: handle errors
     dispatch(resourceDeleteSuccess(resource, response.entity));
-    cb && cb();
+    if (cb) {
+      cb();
+    }
   });
 };
 
@@ -202,6 +264,8 @@ export const directoryCreate = (api, sibling, name, cb) => (dispatch) => {
   return api.createFolder(sibling, name, (response) => {
     // handle errors?
     dispatch(directoryCreateSuccess(response.entity));
-    cb && cb();
+    if (cb) {
+      cb();
+    }
   });
 };

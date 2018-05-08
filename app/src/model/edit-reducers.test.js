@@ -1,8 +1,7 @@
 // import rewire from 'rewire';
-import scripts from './edit-reducers';
-import { virtualRoot } from './listing';
-
 import { List, Map, Set } from 'immutable';
+
+import scripts from './edit-reducers';
 
 it('initial state should have empty list', () => {
   const state = scripts(undefined, { type: '@@INIT' });

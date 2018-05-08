@@ -41,11 +41,22 @@ const initialReplState = {
   history: new Map(),
 };
 
+
+/* eslint-disable no-param-reassign */
+const outputAppend = (buffer, limit, line) => {
+  buffer = buffer.push(line);
+  if (buffer.size > limit) {
+    buffer = buffer.shift();
+  }
+  return buffer;
+};
+/* eslint-enable no-param-reassign */
+
 const repl = (state = initialReplState, action) => {
   const conn = state.connections.get(action.component);
-  let changes,
-    history,
-    buffer;
+  let changes;
+  let history;
+  let buffer;
 
   switch (action.type) {
     case REPL_ENDPOINTS_SUCCESS:
@@ -54,36 +65,43 @@ const repl = (state = initialReplState, action) => {
 
     case REPL_CONNECT_DIAL:
       console.log('Connecting to [', action.component, '] ', action.endpoint);
-      const details = new Map({
-        socket: undefined,
-        error: undefined,
-      });
-      return { ...state, connections: state.connections.set(action.component, details) };
+      const details = new Map({ socket: undefined, error: undefined });
+      return {
+        ...state,
+        connections: state.connections.set(action.component, details),
+      };
 
     case REPL_CONNECT_FAILURE:
       // let conn = state.connections.get(action.component);
-      changes = new Map({
-        socket: undefined, // ensure this goes away
-        error: action.error,
-      });
-      return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+      changes = new Map({ socket: undefined, error: action.error }); // ensure this goes away
+      return {
+        ...state,
+        connections: state.connections.set(
+          action.component,
+          conn.merge(changes),
+        ),
+      };
 
     case REPL_CONNECT_CLOSE:
       // let conn = state.connections.get(action.component);
-      changes = new Map({
-        socket: undefined,
-        error: undefined,
-      });
-      return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+      changes = new Map({ socket: undefined, error: undefined });
+      return {
+        ...state,
+        connections: state.connections.set(
+          action.component,
+          conn.merge(changes),
+        ),
+      };
 
     case REPL_CONNECT_SUCCESS:
       // let conn = state.connections.get(action.component);
-      changes = new Map({
-        socket: action.socket,
-      });
+      changes = new Map({ socket: action.socket });
       return {
         ...state,
-        connections: state.connections.set(action.component, conn.merge(changes)),
+        connections: state.connections.set(
+          action.component,
+          conn.merge(changes),
+        ),
         buffers: state.buffers.set(action.component, new List()),
         history: state.history.set(action.component, new List()),
       };
@@ -93,15 +111,17 @@ const repl = (state = initialReplState, action) => {
       action.data.split('\n').forEach((line) => {
         buffer = outputAppend(buffer, state.scrollbackLimit, line);
       });
-      return {
-        ...state,
-        buffers: state.buffers.set(action.component, buffer),
-      };
+      return { ...state, buffers: state.buffers.set(action.component, buffer) };
 
     case REPL_SEND:
       const socket = conn.get('socket');
       if (!socket) {
-        console.log("No socket; can't send", action.value, 'to', action.component);
+        console.log(
+          "No socket; can't send",
+          action.value,
+          'to',
+          action.component,
+        );
         return state;
       }
       socket.send(`${action.value}\n`);
@@ -128,14 +148,6 @@ const repl = (state = initialReplState, action) => {
     default:
       return state;
   }
-};
-
-const outputAppend = (buffer, limit, line) => {
-  buffer = buffer.push(line);
-  if (buffer.size > limit) {
-    buffer = buffer.shift();
-  }
-  return buffer;
 };
 
 export default repl;
