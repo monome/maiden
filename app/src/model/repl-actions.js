@@ -21,13 +21,27 @@ export const REPL_CLEAR = 'REPL_CLEAR';
 
 export const replEndpointsRequest = () => ({ type: REPL_ENDPOINTS_REQUEST });
 
-export const replEndpointsSuccess = endpoints => ({ type: REPL_ENDPOINTS_SUCCESS, endpoints });
+export const replEndpointsSuccess = endpoints => ({
+  type: REPL_ENDPOINTS_SUCCESS,
+  endpoints,
+});
 
-export const replEndpointsFailure = error => ({ type: REPL_ENDPOINTS_FAILURE, error });
+export const replEndpointsFailure = error => ({
+  type: REPL_ENDPOINTS_FAILURE,
+  error,
+});
 
-export const replConnectDial = (component, endpoint) => ({ type: REPL_CONNECT_DIAL, component, endpoint });
+export const replConnectDial = (component, endpoint) => ({
+  type: REPL_CONNECT_DIAL,
+  component,
+  endpoint,
+});
 
-export const replConnectSuccess = (component, socket) => ({ type: REPL_CONNECT_SUCCESS, component, socket });
+export const replConnectSuccess = (component, socket) => ({
+  type: REPL_CONNECT_SUCCESS,
+  component,
+  socket,
+});
 
 export const replConnectFailure = (component, error) =>
 // console.log(error);
@@ -63,13 +77,13 @@ export const replEndpoints = (api, cb) => (dispatch) => {
 export const replConnect = (component, endpoint) => (dispatch) => {
   dispatch(replConnectDial(component, endpoint));
   const socket = new WebSocket(endpoint, ['bus.sp.nanomsg.org']);
-  socket.onopen = (event) => {
+  socket.onopen = (_event) => {
     dispatch(replConnectSuccess(component, socket));
   };
   socket.onerror = (error) => {
     dispatch(replConnectFailure(component, error));
   };
-  socket.onclose = (event) => {
+  socket.onclose = (_event) => {
     dispatch(replConnectClose(component));
   };
   socket.onmessage = (event) => {

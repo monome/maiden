@@ -57,11 +57,31 @@ export const listingReduce = (listing, reduceFn, initial = undefined) => {
     if (!nodes) {
       return acc;
     }
-    return nodes.reduce((acc, node, key) => reduceFn(walk(node.get('children'), acc), node), acc);
+    return nodes.reduce((acc, node, _key) => reduceFn(walk(node.get('children'), acc), node), acc);
   };
   return walk(listing, initial);
 };
 
+export const muxInVirtualNodes = (base, incoming) => {
+  const keys = new Set(incoming.map(n => n.get('url')));
+  const virtuals = base.filter(n => n.get('virtual', false) && !keys.has(n.get('url')));
+  return incoming.push(...virtuals);
+};
+
+export const orderByName = (a, b) => {
+  const na = a.get('name');
+  const nb = b.get('name');
+
+  if (na < nb) {
+    return -1;
+  }
+  if (na > nb) {
+    return 1;
+  }
+  return 0;
+};
+
+/* eslint-disable no-param-reassign */
 export const spliceDirInfo = (listing, target, info) => {
   let path = keyPathForResource(listing, target);
   if (path) {
@@ -72,6 +92,7 @@ export const spliceDirInfo = (listing, target, info) => {
   console.log('unable to find resource in listing, ');
   return listing;
 };
+/* eslint-enable no-param-reassign */
 
 export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0) => {
   // by default if no sibling just insert at top of hierarchy
@@ -86,7 +107,9 @@ export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0
 
   const children = listing.getIn(siblingFamily).insert(newIndex, node);
 
-  // for now we sort the children by name but in the future this will probably be broken out into a separate function so that the new node can be inserted into a specific position (with name still editable) then sort when the name is confirmed
+  // for now we sort the children by name but in the future this will probably be broken out into a
+  // separate function so that the new node can be inserted into a specific position (with name
+  // still editable) then sort when the name is confirmed
   const sorted = children.sort(orderByName);
 
   return listing.setIn(siblingFamily, sorted);
@@ -109,7 +132,7 @@ export const spliceNodes = (rootNodes, nodes) => {
     return rootNodes;
   }
 
-  return nodes.reduce((acc, node, key) => {
+  return nodes.reduce((acc, node, _key) => {
     const url = node.get('url');
     const parsed = parsePath(url);
     const keyPath = keyPathForResource(acc, parsed.dir);
@@ -132,25 +155,14 @@ export const spliceNodes = (rootNodes, nodes) => {
   }, rootNodes);
 };
 
-export const orderByName = (a, b) => {
-  const na = a.get('name');
-  const nb = b.get('name');
-
-  if (na < nb) {
-    return -1;
-  }
-  if (na > nb) {
-    return 1;
-  }
-  return 0;
-};
-
-// take a list of nodes (script/dir info objects) and return a set containing all the names used at that top level
+// take a list of nodes (script/dir info objects) and return a set containing all the names used at
+// that top level
 export const getNodeNames = nodes => new Set(nodes.map(node => node.get('name')));
 
 export const getNodeByName = (nodes, name) => nodes.find(n => n.get('name') === name);
 
-// given a set of existing names and [optionally] an exemplar generate a new name which isn't taken by adding a number at the end of the name
+// given a set of existing names and [optionally] an exemplar generate a new name which isn't taken
+// by adding a number at the end of the name
 export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
   const existing = getNodeNames(siblingNodes);
 
@@ -208,12 +220,6 @@ export const appendNodes = (base, additions) => {
   const keys = new Set(base.map(n => n.get('url')));
   const adds = additions.filterNot(n => keys.has(n.get('url')));
   return base.push(...adds);
-};
-
-export const muxInVirtualNodes = (base, incoming) => {
-  const keys = new Set(incoming.map(n => n.get('url')));
-  const virtuals = base.filter(n => n.get('virtual', false) && !keys.has(n.get('url')));
-  return incoming.push(...virtuals);
 };
 
 export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 'children']);

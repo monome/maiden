@@ -205,7 +205,8 @@ it('splice nodes works on all levels', () => {
         },
       ],
     },
-    // commenting this out since it complicates producing the r0 result since insertIn isn't a provided method and splicing sorts the listing
+    // commenting this out since it complicates producing the r0 result since insertIn isn't a
+    // provided method and splicing sorts the listing
     // { name: "untitled.lua", url: "/untitled.lua", virtual: true },
   ]));
 

@@ -24,6 +24,19 @@ const initialState = {
   replMinHeight: 100,
 };
 
+const handleToggleComponent = (state, action) => {
+  switch (action.name) {
+    case SIDEBAR_COMPONENT:
+      return { ...state, sidebarHidden: !state.sidebarHidden };
+
+    case REPL_COMPONENT:
+      return { ...state, replHidden: !state.replHidden };
+
+    default:
+      return state;
+  }
+};
+
 const ui = (state = initialState, action) => {
   switch (action.type) {
     case TOGGLE_COMPONENT:
@@ -34,19 +47,6 @@ const ui = (state = initialState, action) => {
 
     case REPL_SIZE:
       return { ...state, replHeight: action.height };
-
-    default:
-      return state;
-  }
-};
-
-const handleToggleComponent = (state, action) => {
-  switch (action.name) {
-    case SIDEBAR_COMPONENT:
-      return { ...state, sidebarHidden: !state.sidebarHidden };
-
-    case REPL_COMPONENT:
-      return { ...state, replHidden: !state.replHidden };
 
     default:
       return state;
