@@ -14,6 +14,7 @@ import {
   rootCategoryIndex,
   childrenOfRoot,
   directoryNode,
+  nodeIsDir,
 } from './listing';
 
 import {
@@ -37,7 +38,10 @@ import {
   scriptNew,
 } from './edit-actions';
 
-import { siblingResourceForName } from '../api';
+import { 
+  siblingResourceForName,
+  childResourceForName,
+} from '../api';
 
 /*
 
@@ -197,16 +201,31 @@ const handleScriptNew = (action, state) => {
 
   // assume script will be placed at the top of the hierarchy (by default)
   let siblings = childrenOfRoot(state.rootNodes, categoryIndex);
+  let siblingIsDir = false;
 
   const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
   if (childPath) {
     // a sibling exists, use that level of hierarchy for name computation
-    const siblingPath = childPath.pop();
-    siblings = state.rootNodes.getIn(siblingPath);
+    let siblingNode = state.rootNodes.getIn(childPath);
+    siblingIsDir = nodeIsDir(siblingNode);
+    if (siblingIsDir) {
+      // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.push('children'));
+    } else {
+      // "selected" sibling is file so use its parent directory's children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.pop());
+    }
   }
 
   const newName = generateNodeName(siblings, action.name || 'untitled.lua');
-  const newResource = siblingResourceForName(newName, action.siblingResource, category);
+
+  let newResource = undefined;
+  if (siblingIsDir) {
+    newResource = childResourceForName(newName, action.siblingResource, category);
+  } else {
+    newResource = siblingResourceForName(newName, action.siblingResource, category);
+  }
+
   const newBuffer = new Map({
     modified: true,
     value: action.value || '',

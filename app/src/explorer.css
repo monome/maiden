@@ -44,8 +44,12 @@
     font-style: italic;
 }
 
-.active {
-    background-color: #e0e7f1;
+.active-buffer {
+    background-color: #89b5f14f;
+}
+
+.active-selection {
+    background-color: #cedcf04f;
 }
 
 .explorer-list-item {

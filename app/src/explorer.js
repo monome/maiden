@@ -12,7 +12,13 @@ import { ICONS } from './svg-icons';
 import { siblingResourceForName, childResourceForName } from './api';
 
 const TreeHeader = (props) => {
-    let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
+    const className = cx(
+        'explorer-entry',
+        'noselect',
+        {'dirty': props.node.modified},
+        {'active-buffer': props.node.activeBuffer},
+        {'active-selection': props.node.activeNode && !props.node.activeBuffer},
+    );
     return (
         <span className={className}>
             {props.node.name}
@@ -74,7 +80,7 @@ class Section extends Component {
         super(props)
         this.state = {
             showTools: false,
-            selectedNode: undefined,
+            selectedNode: undefined,  // TODO: get rid of this
         };
     }
 
@@ -100,12 +106,13 @@ class Section extends Component {
         } else {
             this.props.bufferSelect(node.url);
         }
-
+        this.props.explorerActiveNode(node)
         this.setState({ selectedNode: node });
     }
 
     onToolClick = (name) => {
-        let selectedResource = this.state.selectedNode ? this.state.selectedNode.url : undefined;
+        console.log("activeNode: ", this.props.activeNode ? this.props.activeNode.toJS() : undefined);
+        let selectedResource = this.props.activeNode ? this.props.activeNode.get('url') : undefined;
 
         // add doesn't (necessarily) require a selection
         if (name === 'add') {
@@ -118,17 +125,20 @@ class Section extends Component {
         }
         
         if (name === 'new-folder') {
+            // FIXME: switch this to using this.props.activeNode
             this.handleNewFolder(this.state.selectedNode);
             return;
          }
 
         // other tools only function if there is an active buffer/selection, ensure there is one and it is from this category
-        let activeBuffer = this.props.activeBuffer;
-        if (activeBuffer === undefined) {
+        
+        if (this.props.activeNode === undefined) {
             return;
         }
 
-        let category = this.props.api.categoryFromResource(activeBuffer);
+        let activeResource = this.props.activeNode.get('url');
+
+        let category = this.props.api.categoryFromResource(activeResource);
         if (category !== this.props.name) {
             console.log("ignoring tool, active buffer is not in category", category);
             return;
@@ -136,7 +146,7 @@ class Section extends Component {
 
         switch (name) {
         case 'duplicate':
-            this.props.scriptDuplicate(this.props.activeBuffer)
+            this.props.scriptDuplicate(this.props.activeResource)
             break;
 
         case 'remove':
@@ -380,6 +390,7 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     directoryRead={this.props.directoryRead}
                     directoryCreate={this.props.directoryCreate}
@@ -399,6 +410,7 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
@@ -418,6 +430,7 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}

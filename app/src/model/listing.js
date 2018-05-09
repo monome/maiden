@@ -76,15 +76,22 @@ export const spliceDirInfo = (listing, target, info) => {
 export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0) => {
   // by default if no sibling just insert at top of hierarchy
   let siblingFamily = new List([categoryIndex, 'children']); // assumes virtual root node
-  let newIndex = [0];
+  // let newIndex = [0];
 
   const siblingPath = keyPathForResource(listing, siblingResource);
   if (siblingPath) {
-    siblingFamily = siblingPath.pop(); // path to children of sibling parent
-    newIndex = siblingPath.last() + 1; // insert new node just after sibling
+    const siblingPathNode = listing.getIn(siblingPath);
+    if (nodeIsDir(siblingPathNode)) {
+      siblingFamily = siblingPath.push('children');
+      // newIndex = 
+    } else {
+      siblingFamily = siblingPath.pop(); // path to children of sibling parent
+      // newIndex = siblingPath.last() + 1; // insert new node just after sibling
+    }
   }
 
-  const children = listing.getIn(siblingFamily).insert(newIndex, node);
+  // const children = listing.getIn(siblingFamily).insert(newIndex, node);
+  const children = listing.getIn(siblingFamily).push(node);
 
   // for now we sort the children by name but in the future this will probably be broken out into a separate function so that the new node can be inserted into a specific position (with name still editable) then sort when the name is confirmed
   const sorted = children.sort(orderByName);
@@ -177,6 +184,8 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
 
   return name;
 };
+
+export const nodeIsDir = node => node.has('children');
 
 export const directoryNode = (name, resource, children = []) => {
   return new Map({name, url: resource, children: children});
