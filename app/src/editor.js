@@ -3,6 +3,7 @@ import AceEditor from 'react-ace';
 
 import './editor.css';
 
+import 'brace/ext/searchbox';
 import 'brace/mode/lua';
 import 'brace/theme/dawn';
 
