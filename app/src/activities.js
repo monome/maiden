@@ -16,7 +16,7 @@ const activities = [
   },
   {
     selector: 'editor',
-    tooltipMessage: 'toggle repl',
+    tooltipMessage: `toggle repl (${OS.metaKey()}E)`,
     tooltipPosition: 'right',
     icon: ICONS.terminal,
     toggle: REPL_COMPONENT,

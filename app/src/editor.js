@@ -24,9 +24,6 @@ class Editor extends Component {
             useSoftTabs: true,
         });
 
-        // suppress the default print margin.
-        editor.setPrintMarginColumn(-1);
-
         /*
         if (this.refs.ace) {
             window.setTimeout(() => {
@@ -137,7 +134,12 @@ class Editor extends Component {
                     name: 'toggle sidebar',
                     bindKey: { win: "Ctrl-B", mac: "Command-B" },
                     exec: () => this.props.sidebarToggle(),
-                  },                
+                  },
+                  {
+                    name: 'toggle repl',
+                    bindKey: { win: "Ctrl-E", mac: "Command-E" },
+                    exec: () => this.props.replToggle(),
+                  }           
                 ]}
                 editorProps={{
                     $blockScrolling: Infinity,
