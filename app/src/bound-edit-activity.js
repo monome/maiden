@@ -20,6 +20,7 @@ import {
 
   explorerActiveNode,
   explorerToggleNode,
+  directoryCreate,
 } from './model/edit-actions';
 
 import {
@@ -33,17 +34,19 @@ import { replSend } from './model/repl-actions';
 
 const getBuffers = editState => editState.buffers;
 const getActiveBuffer = editState => editState.activeBuffer;
+const getActiveNodeResource = editState => editState.activeNode;
 const getRootNodes = editState => editState.rootNodes;
 const getExpandedNodes = editState => editState.expandedNodes;
 
 const getExplorerData = createSelector(
-  [getBuffers, getActiveBuffer, getRootNodes, getExpandedNodes],
-  (buffers, activeBuffer, rootNodes, expandedNodes) => {
+  [getBuffers, getActiveBuffer, getActiveNodeResource, getRootNodes, getExpandedNodes],
+  (buffers, activeBuffer, activeNode, rootNodes, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
 
     const enrich = items => items.map((l) => {
       const item = { ...l };
-      item.active = l.url === activeBuffer;
+      item.activeBuffer = l.url === activeBuffer;
+      item.activeNode = l.url === activeNode;
       item.toggled = expandedNodes.has(l.url);
 
       const buffer = buffers.get(l.url);
@@ -65,8 +68,8 @@ const getExplorerData = createSelector(
 );
 
 const getActiveNode = createSelector(
-  [getActiveBuffer, getRootNodes],
-  (activeBuffer, rootNodes) => nodeForResource(rootNodes, activeBuffer),
+  [getActiveNodeResource, getRootNodes],
+  (activeNode, rootNodes) => nodeForResource(rootNodes, activeNode),
 );
 
 const mapStateToProps = (state) => {
@@ -150,6 +153,9 @@ const mapDispatchToProps = dispatch => ({
   },
   explorerResourceRename: (api, activeNode, newName, virtual) => {
     dispatch(resourceRename(api, activeNode, newName, virtual));
+  },
+  explorerDirectoryCreate: (api, resource, name, category) => {
+    dispatch(directoryCreate(api, resource, name, category));
   },
 });
 

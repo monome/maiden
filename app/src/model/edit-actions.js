@@ -87,11 +87,17 @@ export const resourceRenameFailure = (resource, name, error) => ({
   type: RESOURCE_RENAME_FAILURE, resource, name, error,
 });
 
-export const directoryCreateRequest = (siblingResource, name) => ({ type: DIRECTORY_CREATE_REQUEST, siblingResource, name });
+export const directoryCreateRequest = (resource, name, category) => ({
+  type: DIRECTORY_CREATE_REQUEST, resource, name, category,
+});
 
-export const directoryCreateSuccess = resource => ({ type: DIRECTORY_CREATE_SUCCESS, resource });
+export const directoryCreateSuccess = (resource, name, category) => ({
+  type: DIRECTORY_CREATE_SUCCESS, resource, name, category,
+});
 
-export const directoryCreateFailure = (resource, error) => ({ type: DIRECTORY_CREATE_FAILURE, resource, error });
+export const directoryCreateFailure = (resource, name, category, error) => ({
+  type: DIRECTORY_CREATE_FAILURE, resource, name, category, error,
+});
 
 export const resourceDeleteRequest = resource => ({ type: RESOURCE_DELETE_REQUEST, resource });
 
@@ -155,10 +161,9 @@ export const directoryRead = (api, resource) => (dispatch) => {
     } else {
       dispatch(directoryReadFailure(resource));
     }
-  })
-    .catch((error) => {
-      dispatch(directoryReadFailure(resource, error));
-    });
+  }).catch((error) => {
+    dispatch(directoryReadFailure(resource, error));
+  });
 };
 
 export const bufferSave = (api, resource, value, cb) => (dispatch) => {
@@ -196,12 +201,17 @@ export const resourceRename = (api, resource, name, virtual) => (dispatch) => {
   }
 };
 
-export const directoryCreate = (api, sibling, name, cb) => (dispatch) => {
-  dispatch(directoryCreateRequest(sibling, name));
-  // this is wrong
-  return api.createFolder(sibling, name, (response) => {
-    // handle errors?
-    dispatch(directoryCreateSuccess(response.entity));
-    cb && cb();
+export const directoryCreate = (api, resource, name, category) => (dispatch) => {
+  dispatch(directoryCreateRequest(resource, name, category));
+  return api.createFolder(resource, (response) => {
+    if (response.ok) {
+      response.json().then((data) => {
+        dispatch(directoryCreateSuccess(resource, name, category));
+      });
+    } else {
+      response.json().then((data) => {
+        dispatch(directoryCreateFailure(resource, name, category, data.error));
+      });
+    }
   });
 };

@@ -7,7 +7,7 @@ function apiPath(p) {
 }
 
 // TODO: once API is stateless move this to be a method
-export function siblingScriptResourceForName(name, siblingResource, category = 'scripts') {
+export function siblingResourceForName(name, siblingResource, category = 'scripts') {
   let resourceBase = apiPath(`${category}/`);
   if (siblingResource) {
     // FIXME: this assumes siblingResource is absolute and lacks an authority
@@ -16,8 +16,10 @@ export function siblingScriptResourceForName(name, siblingResource, category = '
   return resourceBase + encodeURI(name);
 }
 
-// TODO: switch all this to just use fetch and remove 'rest'
-// TODO: switch from snake to camel case
+export function childResourceForName(name, parentResource) {
+  return `${parentResource}/${encodeURI(name)}`;
+}
+
 class API {
   listRoot(resourceRoot, cb) {
     fetch(apiPath(resourceRoot)).then(cb);
@@ -49,8 +51,17 @@ class API {
     }).then(cb);
   }
 
-  createFolder() {
-    console.log('api.createFolder() not implemented');
+  createFolder(resource, cb) {
+    // console.log('createFolder, resource = ', resource);
+    // const formData = new FormData();
+    // formData.append('dummy', 'dummy');
+    const url = new URL(resource, document.origin);
+    url.searchParams.append('kind', 'directory');
+    // console.log('url: ', url);
+    fetch(url, {
+      method: 'PUT',
+      // body: formData,
+    }).then(cb);
   }
 
   getReplEndpoints(cb) {

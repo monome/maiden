@@ -13,6 +13,8 @@ import {
   sortDir,
   rootCategoryIndex,
   childrenOfRoot,
+  directoryNode,
+  nodeIsDir,
 } from './listing';
 
 import {
@@ -36,7 +38,10 @@ import {
   scriptNew,
 } from './edit-actions';
 
-import { siblingScriptResourceForName } from '../api';
+import {
+  siblingResourceForName,
+  childResourceForName,
+} from '../api';
 
 /*
 
@@ -120,7 +125,7 @@ const edit = (state = initialEditState, action) => {
       return handleResourceRenameSuccess(action, state);
 
     case DIRECTORY_CREATE_SUCCESS:
-      return handleScriptNewFolderSuccess(action, state);
+      return handleDirectoryCreateSuccess(action, state);
 
     case TOOL_INVOKE:
       console.log('tool invoke => ', action.name);
@@ -170,7 +175,7 @@ const handleBufferChange = (action, state) => {
 
 const handleRootList = (action, state) => {
   // FIXME: change the virtualNode resource to be the api path
-  let rootNode = virtualNode(action.name, '/', fromJS(action.value.entries));
+  let rootNode = directoryNode(action.name, action.value.url, fromJS(action.value.entries));
 
   const existingRootIndex = state.rootNodes.findIndex(n => n.get('name') === action.name);
   if (existingRootIndex > 0) {
@@ -196,16 +201,31 @@ const handleScriptNew = (action, state) => {
 
   // assume script will be placed at the top of the hierarchy (by default)
   let siblings = childrenOfRoot(state.rootNodes, categoryIndex);
+  let siblingIsDir = false;
 
   const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
   if (childPath) {
     // a sibling exists, use that level of hierarchy for name computation
-    const siblingPath = childPath.pop();
-    siblings = state.rootNodes.getIn(siblingPath);
+    const siblingNode = state.rootNodes.getIn(childPath);
+    siblingIsDir = nodeIsDir(siblingNode);
+    if (siblingIsDir) {
+      // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.push('children'));
+    } else {
+      // "selected" sibling is file so use its parent directory's children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.pop());
+    }
   }
 
   const newName = generateNodeName(siblings, action.name || 'untitled.lua');
-  const newResource = siblingScriptResourceForName(newName, action.siblingResource, category);
+
+  let newResource;
+  if (siblingIsDir) {
+    newResource = childResourceForName(newName, action.siblingResource, category);
+  } else {
+    newResource = siblingResourceForName(newName, action.siblingResource, category);
+  }
+
   const newBuffer = new Map({
     modified: true,
     value: action.value || '',
@@ -255,7 +275,16 @@ const handleScriptDuplicate = (action, state) => {
   return handleScriptNew(newAction, state);
 };
 
-const handleScriptNewFolderSuccess = (action, state) => state;
+const handleDirectoryCreateSuccess = (action, state) => {
+  // console.log('dir success:', action.category, action.resource);
+  const newNode = directoryNode(action.name, action.resource);
+  const newRootNodes = spliceNodes(state.rootNodes, new List([newNode]));
+
+  return {
+    ...state,
+    rootNodes: newRootNodes,
+  };
+};
 
 const handleResourceRenameSuccess = (action, state) => {
   console.log('rename success: ', action);
@@ -263,7 +292,7 @@ const handleResourceRenameSuccess = (action, state) => {
   let newResource = action.newResource;
   if (!newResource) {
     // assume this is virtual; fabricate new url
-    newResource = siblingScriptResourceForName(action.newName, action.resource);
+    newResource = siblingResourceForName(action.newName, action.resource);
     console.log(action.resource, ' => ', newResource);
   }
 

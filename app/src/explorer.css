@@ -44,8 +44,12 @@
     font-style: italic;
 }
 
-.active {
-    background-color: #e0e7f1;
+.active-buffer {
+    background-color: #89b5f14f;
+}
+
+.active-selection {
+    background-color: #cedcf04f;
 }
 
 .explorer-list-item {
@@ -76,7 +80,7 @@
                                     supported by Chrome and Opera */
   }
 
-.rename-modal-text-area {
+.get-name-modal-text-area {
     border: none;
     border-bottom: 1px solid rgb(192, 192, 192);
     resize: none;

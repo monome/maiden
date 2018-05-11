@@ -6,12 +6,19 @@ import treeAnim from './explorer-animation';
 import './explorer.css';
 
 import ModalContent from './modal-content';
-import ModalRename from './modal-rename';
+import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+import { siblingResourceForName, childResourceForName } from './api';
 
 const TreeHeader = (props) => {
-    let className = cx('explorer-entry', 'noselect', {'dirty': props.node.modified}, {'active': props.node.active});
+    const className = cx(
+        'explorer-entry',
+        'noselect',
+        {'dirty': props.node.modified},
+        {'active-buffer': props.node.activeBuffer},
+        {'active-selection': props.node.activeNode && !props.node.activeBuffer},
+    );
     return (
         <span className={className}>
             {props.node.name}
@@ -73,8 +80,8 @@ class Section extends Component {
         super(props)
         this.state = {
             showTools: false,
-            selectedNode: undefined,
-        }
+            selectedNode: undefined,  // TODO: get rid of this
+        };
     }
 
     componentDidMount() {
@@ -99,47 +106,52 @@ class Section extends Component {
         } else {
             this.props.bufferSelect(node.url);
         }
-
+        this.props.explorerActiveNode(node)
         this.setState({ selectedNode: node });
     }
 
     onToolClick = (name) => {
+        console.log("activeNode: ", this.props.activeNode ? this.props.activeNode.toJS() : undefined);
+        let selectedResource = this.props.activeNode ? this.props.activeNode.get('url') : undefined;
+
         // add doesn't (necessarily) require a selection
         if (name === 'add') {
-            let selection = undefined;
-            if (this.state.selectedNode) {
-                selection = this.state.selectedNode.url;
-            }
             this.props.scriptCreate(
-                selection,                // sibling resource
+                selectedResource,         // sibling resource
                 undefined,                // initial buffer contents
                 undefined,                // buffer name
-                this.props.name);         // buffer category
+                this.getCategory());      // buffer category
             return;
         }
         
-        // other tools only function if there is a selection, ensure there is one and it is from this category
-        let activeBuffer = this.props.activeBuffer;
-        if (activeBuffer === undefined) {
+        if (name === 'new-folder') {
+            // FIXME: switch this to using this.props.activeNode
+            this.handleNewFolder(this.state.selectedNode);
+            return;
+         }
+
+        // other tools only function if there is an active buffer/selection, ensure there is one and it is from this category
+        
+        if (this.props.activeNode === undefined) {
             return;
         }
 
-        let category = this.props.api.categoryFromResource(activeBuffer);
+        let activeResource = this.props.activeNode.get('url');
+        let activeResourceIsDir = this.props.activeNode.has('children');
+
+        let category = this.props.api.categoryFromResource(activeResource);
         if (category !== this.props.name) {
             console.log("ignoring tool, active buffer is not in category", category);
             return;
         }
 
-        /*
-        STOPPED HERE; use CATEGORY to gate invocation instead of selectionURL != activeBuffer stuff.
-
-        ensure duplicate then remove/rename works w/out having to reselect the item
-
-        ensure script create puts a new file in the correct category
-*/
         switch (name) {
         case 'duplicate':
-            this.props.scriptDuplicate(this.props.activeBuffer)
+            if (activeResourceIsDir) {
+                console.log("duplicate directory not implemented");
+            } else {
+                this.props.scriptDuplicate(activeResource);
+            }
             break;
 
         case 'remove':
@@ -202,20 +214,69 @@ class Section extends Component {
         }
 
         let initialName = selection.get("name");
+        let selectedResource = selection.get("url");
         let content = (
-            <ModalRename message="Rename" buttonAction={complete} initialName={initialName} />
+            <ModalGetName message="Rename" buttonAction={complete} selectedResource={selectedResource} initialName={initialName} />
         )
 
         this.props.showModal(content)
     }
 
+    handleNewFolder = (selectedNode) => {
+        // if no selected node, validate/create against root names
+        // if selected node is file, validate/create against siblings name
+        // if selected node is dir, validate/create against *children* of dir
+        if (!selectedNode) {
+            selectedNode = this.getNode();
+        }
+        const selectedResource = selectedNode.url;
+        const category = this.getCategory();
+
+        const selectionIsDir = 'children' in selectedNode;
+
+        let complete = (choice, name) => {
+            console.log('new folder:', choice, name)
+            if (name && choice === "ok") {
+                const newResource = selectionIsDir ? childResourceForName(name, selectedResource) : siblingResourceForName(name, selectedResource, category);
+                this.props.directoryCreate(
+                    this.props.api,
+                    newResource,
+                    name,
+                    category,
+                );
+            }
+            this.props.hideModal();
+        };
+
+        let message = 'New Folder';
+        if (selectionIsDir) {
+            message +=  ` (${selectedNode.name})`;
+        }
+
+        let content = (
+            <ModalGetName message={message} buttonAction={complete} selectedResource={selectedResource} category={category}/>
+        );
+
+        this.props.showModal(content);
+    }
+
+
 
     getData() {
-        let node = this.props.data.find(n => n.name === this.props.name)
+        const node = this.getNode();
         if (node) {
             return node.children;
         }
         return [];
+    }
+
+    getNode() {
+        const category = this.getCategory();
+        return this.props.data.find(n => n.name === category)
+    }
+
+    getCategory() {
+        return this.props.name;
     }
 
     render() {
@@ -334,8 +395,10 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     resourceDelete={this.props.resourceDelete}
@@ -352,10 +415,12 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     resourceDelete={this.props.resourceDelete}
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
@@ -370,10 +435,12 @@ class Explorer extends Component {
                     buttonAction={this.onToolClick}
                     data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
                     scriptCreate={this.props.scriptCreate}
                     scriptDuplicate={this.props.scriptDuplicate}
                     directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
                     resourceDelete={this.props.resourceDelete}
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}

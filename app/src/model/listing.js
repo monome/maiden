@@ -76,15 +76,22 @@ export const spliceDirInfo = (listing, target, info) => {
 export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0) => {
   // by default if no sibling just insert at top of hierarchy
   let siblingFamily = new List([categoryIndex, 'children']); // assumes virtual root node
-  let newIndex = [0];
+  // let newIndex = [0];
 
   const siblingPath = keyPathForResource(listing, siblingResource);
   if (siblingPath) {
-    siblingFamily = siblingPath.pop(); // path to children of sibling parent
-    newIndex = siblingPath.last() + 1; // insert new node just after sibling
+    const siblingPathNode = listing.getIn(siblingPath);
+    if (nodeIsDir(siblingPathNode)) {
+      siblingFamily = siblingPath.push('children');
+      // newIndex =
+    } else {
+      siblingFamily = siblingPath.pop(); // path to children of sibling parent
+      // newIndex = siblingPath.last() + 1; // insert new node just after sibling
+    }
   }
 
-  const children = listing.getIn(siblingFamily).insert(newIndex, node);
+  // const children = listing.getIn(siblingFamily).insert(newIndex, node);
+  const children = listing.getIn(siblingFamily).push(node);
 
   // for now we sort the children by name but in the future this will probably be broken out into a separate function so that the new node can be inserted into a specific position (with name still editable) then sort when the name is confirmed
   const sorted = children.sort(orderByName);
@@ -178,6 +185,10 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
   return name;
 };
 
+export const nodeIsDir = node => node.has('children');
+
+export const directoryNode = (name, resource, children = []) => new Map({ name, url: resource, children });
+
 export const virtualNode = (name, resource, children = undefined) => {
   if (children) {
     return new Map({
@@ -221,11 +232,16 @@ export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 
 export const rootCategoryIndex = (rootNodes, category) => rootNodes.findIndex(n => n.get('name') === category);
 
 export const siblingNamesForResource = (rootNodes, resource) => {
-  let keyPath = keyPathForResource(rootNodes, resource);
-  if (!keyPath.has('children')) {
+  // if resource is a file, returns the names of sibling files
+  // if resource is a dir, returns name of dir children
+  const keyPath = keyPathForResource(rootNodes, resource);
+  let node = rootNodes.getIn(keyPath);
+  if (!node.has('children')) {
     // this is a script/file itself, get sibling names by listing the parent node
-    keyPath = keyPathParent(keyPath);
+    node = rootNodes.getIn(keyPathParent(keyPath));
   }
-  const node = rootNodes.getIn(keyPath);
-  return new Set(node.get('children').map(node => node.get('name')));
+  const names = new Set(node.get('children').map(node => node.get('name')));
+  // console.log("sibs: ", names);
+  return names;
 };
+
