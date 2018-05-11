@@ -137,6 +137,7 @@ class Section extends Component {
         }
 
         let activeResource = this.props.activeNode.get('url');
+        let activeResourceIsDir = this.props.activeNode.has('children');
 
         let category = this.props.api.categoryFromResource(activeResource);
         if (category !== this.props.name) {
@@ -146,7 +147,11 @@ class Section extends Component {
 
         switch (name) {
         case 'duplicate':
-            this.props.scriptDuplicate(this.props.activeResource)
+            if (activeResourceIsDir) {
+                console.log("duplicate directory not implemented");
+            } else {
+                this.props.scriptDuplicate(activeResource);
+            }
             break;
 
         case 'remove':
