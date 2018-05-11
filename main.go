@@ -238,7 +238,7 @@ func deleteHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc
 			return
 		}
 
-		err := os.Remove(path)
+		err := os.RemoveAll(path)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
