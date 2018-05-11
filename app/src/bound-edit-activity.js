@@ -156,7 +156,7 @@ const mapDispatchToProps = dispatch => ({
   },
   explorerDirectoryCreate: (api, resource, name, category) => {
     dispatch(directoryCreate(api, resource, name, category));
-  }
+  },
 });
 
 const BoundEditActivity = connect(

@@ -50,7 +50,7 @@ export const rootListFailure = (name, error) => ({ type: ROOT_LIST_FAILURE, name
 export const bufferReadRequest = resource => ({ type: BUFFER_READ_REQUEST, resource });
 
 export const bufferReadSuccess = (resource, value, contentType) => ({
-  type: BUFFER_READ_SUCCESS, resource, value, contentType
+  type: BUFFER_READ_SUCCESS, resource, value, contentType,
 });
 
 export const bufferReadFailure = (resource, error) => ({ type: BUFFER_READ_FAILURE, resource, error });
@@ -72,7 +72,7 @@ export const bufferChange = (resource, value) => ({ type: BUFFER_CHANGE, resourc
 export const bufferSelect = resource => ({ type: BUFFER_SELECT, resource });
 
 export const scriptNew = (siblingResource, value, name, category) => ({
-  type: SCRIPT_NEW, siblingResource, value, name, category
+  type: SCRIPT_NEW, siblingResource, value, name, category,
 });
 
 export const scriptDuplicate = resource => ({ type: SCRIPT_DUPLICATE, resource });
@@ -80,23 +80,23 @@ export const scriptDuplicate = resource => ({ type: SCRIPT_DUPLICATE, resource }
 export const resourceRenameRequest = (resource, name) => ({ type: RESOURCE_RENAME_REQUEST, resource, name });
 
 export const resourceRenameSuccess = (resource, newName, newResource) => ({
-  type: RESOURCE_RENAME_SUCCESS, resource, newName, newResource
+  type: RESOURCE_RENAME_SUCCESS, resource, newName, newResource,
 });
 
 export const resourceRenameFailure = (resource, name, error) => ({
-  type: RESOURCE_RENAME_FAILURE, resource, name, error
+  type: RESOURCE_RENAME_FAILURE, resource, name, error,
 });
 
-export const directoryCreateRequest = (resource, name, category) => ({ 
-  type: DIRECTORY_CREATE_REQUEST, resource, name, category
+export const directoryCreateRequest = (resource, name, category) => ({
+  type: DIRECTORY_CREATE_REQUEST, resource, name, category,
 });
 
 export const directoryCreateSuccess = (resource, name, category) => ({
-  type: DIRECTORY_CREATE_SUCCESS, resource, name, category
+  type: DIRECTORY_CREATE_SUCCESS, resource, name, category,
 });
 
 export const directoryCreateFailure = (resource, name, category, error) => ({
-  type: DIRECTORY_CREATE_FAILURE, resource, name, category, error
+  type: DIRECTORY_CREATE_FAILURE, resource, name, category, error,
 });
 
 export const resourceDeleteRequest = resource => ({ type: RESOURCE_DELETE_REQUEST, resource });
@@ -162,8 +162,8 @@ export const directoryRead = (api, resource) => (dispatch) => {
       dispatch(directoryReadFailure(resource));
     }
   }).catch((error) => {
-      dispatch(directoryReadFailure(resource, error));
-    });
+    dispatch(directoryReadFailure(resource, error));
+  });
 };
 
 export const bufferSave = (api, resource, value, cb) => (dispatch) => {

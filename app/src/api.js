@@ -61,7 +61,7 @@ class API {
     fetch(url, {
       method: 'PUT',
       // body: formData,
-    }).then(cb)
+    }).then(cb);
   }
 
   getReplEndpoints(cb) {

@@ -83,7 +83,7 @@ export const spliceFileInfo = (listing, node, siblingResource, categoryIndex = 0
     const siblingPathNode = listing.getIn(siblingPath);
     if (nodeIsDir(siblingPathNode)) {
       siblingFamily = siblingPath.push('children');
-      // newIndex = 
+      // newIndex =
     } else {
       siblingFamily = siblingPath.pop(); // path to children of sibling parent
       // newIndex = siblingPath.last() + 1; // insert new node just after sibling
@@ -187,9 +187,7 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
 
 export const nodeIsDir = node => node.has('children');
 
-export const directoryNode = (name, resource, children = []) => {
-  return new Map({name, url: resource, children: children});
-}
+export const directoryNode = (name, resource, children = []) => new Map({ name, url: resource, children });
 
 export const virtualNode = (name, resource, children = undefined) => {
   if (children) {
@@ -236,12 +234,12 @@ export const rootCategoryIndex = (rootNodes, category) => rootNodes.findIndex(n 
 export const siblingNamesForResource = (rootNodes, resource) => {
   // if resource is a file, returns the names of sibling files
   // if resource is a dir, returns name of dir children
-  let keyPath = keyPathForResource(rootNodes, resource);
+  const keyPath = keyPathForResource(rootNodes, resource);
   let node = rootNodes.getIn(keyPath);
   if (!node.has('children')) {
     // this is a script/file itself, get sibling names by listing the parent node
     node = rootNodes.getIn(keyPathParent(keyPath));
-  };
+  }
   const names = new Set(node.get('children').map(node => node.get('name')));
   // console.log("sibs: ", names);
   return names;

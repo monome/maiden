@@ -38,7 +38,7 @@ import {
   scriptNew,
 } from './edit-actions';
 
-import { 
+import {
   siblingResourceForName,
   childResourceForName,
 } from '../api';
@@ -206,7 +206,7 @@ const handleScriptNew = (action, state) => {
   const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
   if (childPath) {
     // a sibling exists, use that level of hierarchy for name computation
-    let siblingNode = state.rootNodes.getIn(childPath);
+    const siblingNode = state.rootNodes.getIn(childPath);
     siblingIsDir = nodeIsDir(siblingNode);
     if (siblingIsDir) {
       // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
@@ -219,7 +219,7 @@ const handleScriptNew = (action, state) => {
 
   const newName = generateNodeName(siblings, action.name || 'untitled.lua');
 
-  let newResource = undefined;
+  let newResource;
   if (siblingIsDir) {
     newResource = childResourceForName(newName, action.siblingResource, category);
   } else {
@@ -279,10 +279,10 @@ const handleDirectoryCreateSuccess = (action, state) => {
   // console.log('dir success:', action.category, action.resource);
   const newNode = directoryNode(action.name, action.resource);
   const newRootNodes = spliceNodes(state.rootNodes, new List([newNode]));
-  
+
   return {
     ...state,
-    rootNodes: newRootNodes
+    rootNodes: newRootNodes,
   };
 };
 

@@ -29,7 +29,7 @@ const activities = [
     icon: ICONS.cog,
     view: ConfigureActivity,
     position: 'lower',
-  }
+  },
 ];
 
 export default activities;
