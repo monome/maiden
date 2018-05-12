@@ -16,7 +16,7 @@ class ActivityBar extends Component {
           tooltipMessage={activity.tooltipMessage}
           tooltipPosition={activity.tooltipPosition}
           icon={activity.icon}
-          color="#979797" // FIXME: this should be styled
+          color="#eeeeee" // FIXME: this should be styled
           size="24"
         />
       );

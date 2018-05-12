@@ -38,15 +38,15 @@ const EditTools = (props) => {
                 key={tool.name}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
-                color="#979797"       // FIXME:
-                disabledColor="rgb(175, 175, 175)"
+                color="#000000"       // FIXME:
+                disabledColor="#000000"
                 size="24"           // FIXME:
                 disabled={tool.disabled}
             />
         );
     });
 
-    const style = { width: props.width, height: props.height };
+    const style = { width: props.width, height: props.height, backgroundColor: "#f9f9f9" };
     return (
         <ToolBar style={style}>
             {items}

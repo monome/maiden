@@ -10,6 +10,7 @@ body .ace_scrollbar {
 body .ace_editor .ace_scrollbar:hover {
     opacity: 1;
 }
+
 body .ace_editor .ace_gutter-cell.ace_error {
     background-image: url("icons/red_x.png");
     background-repeat: no-repeat;

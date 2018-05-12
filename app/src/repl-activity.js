@@ -27,13 +27,13 @@ const ReplTools = (props) => {
                 tooltipPosition={tool.tooltipPosition}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
-                color="#979797"       // FIXME:
+                color="#000000"       // FIXME:
                 size="24"           // FIXME:
             />
         );
     });
 
-    const style = { width: props.width, height: props.height };
+    const style = { width: props.width, height: props.height, backgroundColor: "#f9f9f9" };
     return (
         <ToolBar style={style}>
             {items}

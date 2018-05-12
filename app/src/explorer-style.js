@@ -2,7 +2,7 @@ export default {
   tree: {
     base: {
       listStyle: 'none',
-      backgroundColor: '#F9F9F9',
+      backgroundColor: '#000000',
       margin: 0,
       padding: 0,
       color: '#90',
@@ -35,13 +35,13 @@ export default {
         height: 8,
         width: 8,
         arrow: {
-          fill: '#9DA5AB',
+          fill: '#aaaaaa',
           strokeWidth: 0,
         },
       },
       header: {
         base: {
-          color: '#9DA5AB',
+          color: '#eeeeee',
 
         },
         connector: {

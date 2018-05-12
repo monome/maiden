@@ -15,7 +15,7 @@ class App extends Component {
   innerSize() {
     return {
       width: window.innerWidth,
-      height: window.innerHeight - 6,
+      height: window.innerHeight //- 6,
     };
   }
 
@@ -24,14 +24,14 @@ class App extends Component {
   }
 
   render() {
-    const headerStyle = {
-      width: this.state.width,
-      height: 6,
-    };
+    // const headerStyle = {
+    //   width: this.state.width,
+    //   height: 6,
+    // };
 
     return (
       <div>
-        <div className="app-header" style={headerStyle} />
+        {/* <div className="app-header" style={headerStyle} /> */}
         <BoundWorkspace
           activities={activities}
           {...this.state}

@@ -2,13 +2,13 @@ import React, { Component } from 'react';
 import AceEditor from 'react-ace';
 import api from './api';
 
-import './editor.css';
-
 import 'brace/ext/searchbox';
 import 'brace/mode/lua';
 import 'brace/theme/dawn';
 import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
+
+import './editor.css';
 
 class Editor extends Component {
     constructor(props) {

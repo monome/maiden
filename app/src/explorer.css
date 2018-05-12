@@ -1,19 +1,22 @@
 .explorer {
-    background-color: #F9F9F9;
+    background-color: #000000;
     font-family: monospace;
     height: 100%;
     overflow-y: overlay;
     overflow-x: hidden;
+    padding-left: 8px;
 }
 
 .explorer-header {
-    background-color: #979797;
+    background-color: #000000;
     color: #e4e4e4;
     padding: 6px 8px;
     margin-bottom: 8px;
     height: 17px;
     display: flex;
     justify-content: space-between;
+    font-weight: bold;
+    font-stretch: expanded;
 }
 
 .explorer-section {
@@ -41,7 +44,7 @@
 
 .explorer-entry {
     padding: 0.1em;
-    color: rgb(117, 117, 117);
+    color: #bbbbbb;
     margin-left: 3px;
     /* display: block; */
 }
