@@ -5,6 +5,7 @@ import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
+import { commandService } from './services';
 import OS from './utils';
 
 import ReplActivity from './bound-repl-activity'
@@ -225,6 +226,17 @@ class EditActivity extends Component {
             t.disabled = !canEdit;
             return t;
         })
+
+        // TODO (pq): move this somewhere more appropriate.
+        commandService.registerCommand('toggle repl', () =>
+            this.props.replToggle())
+        commandService.registerCommand('toggle sidebar', () =>
+            this.props.sidebarToggle())
+        commandService.registerCommand('play', () =>
+            this.handleToolInvoke('play'))
+        commandService.registerCommand('save', () =>
+            this.handleToolInvoke('save'))
+        
         // TODO: switch editor based on buffer content type
         const editor = (
             <div className='editor-pane'>
@@ -233,9 +245,6 @@ class EditActivity extends Component {
                     ref={(component) => {this.editor = component;}}
                     { ...this.editorSize() }
                     bufferName={activeBuffer}
-                    toolInvoke={this.handleToolInvoke}
-                    replToggle={this.props.replToggle}
-                    sidebarToggle={this.props.sidebarToggle}
                     value={code}
                     bufferChange={this.props.bufferChange}
                 />
