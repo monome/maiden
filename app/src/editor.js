@@ -24,10 +24,10 @@ class Editor extends Component {
             useSoftTabs: true,
         });
 
-        // the 'showSettingsMenu' from 'brace/ext/settings_menu' as it exposes a host of themes and
+        // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).
         this.editor.commands.removeCommand('showSettingsMenu')
-        
+
         // TODO (pq): remove keys bound in the key service to ensure no interference.
 
         /*
