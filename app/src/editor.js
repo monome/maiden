@@ -24,6 +24,8 @@ class Editor extends Component {
             useSoftTabs: true,
         });
 
+        // TODO (pq): remove keys bound in the key service to ensure no interference.
+
         /*
         if (this.refs.ace) {
             window.setTimeout(() => {
@@ -119,28 +121,6 @@ class Editor extends Component {
                 onLoad={this.onLoad}
                 onChange={this.onChange}
                 showPrintMargin={false}
-                commands={[
-                  {  
-                    name: 'save',
-                    bindKey: { win: "Ctrl-S", mac: "Command-S" },
-                    exec: () => this.props.toolInvoke('save'),
-                  },
-                  {
-                    name: 'play',
-                    bindKey: { win: "Ctrl-P", mac: "Command-P" },
-                    exec: () => this.props.toolInvoke('play'),
-                  },
-                  {
-                    name: 'toggle sidebar',
-                    bindKey: { win: "Ctrl-B", mac: "Command-B" },
-                    exec: () => this.props.sidebarToggle(),
-                  },
-                  {
-                    name: 'toggle repl',
-                    bindKey: { win: "Ctrl-E", mac: "Command-E" },
-                    exec: () => this.props.replToggle(),
-                  }           
-                ]}
                 editorProps={{
                     $blockScrolling: Infinity,
                     $newLineMode: "unix",

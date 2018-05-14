@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactModal from 'react-modal';
 import ActivityBar from './activity-bar';
+import { keyService } from './services';
 import './workspace.css';
 
 ReactModal.setAppElement('#root')
@@ -26,6 +27,9 @@ class Workspace extends Component {
        this.props.scriptList(this.props.api)
        this.props.dataList(this.props.api)
        this.props.audioList(this.props.api)
+
+       // direct key events to the key service for handling
+       document.onkeydown= (event) => keyService.handleKey(event)
     }
 
     activityBarSize() {
