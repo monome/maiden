@@ -25,7 +25,7 @@ const activities = [
   },
   {
     selector: 'configure',
-    tooltipMessage: 'configure',
+    tooltipMessage: `configure (${OS.metaKey()};)`,
     tooltipPosition: 'right',
     icon: ICONS.cog,
     view: ConfigureActivity,

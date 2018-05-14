@@ -40,8 +40,7 @@ class KeyStroke {
     if (!this.osModifier.matches(event)) {
       return false;
     }
-    const key = String.fromCharCode(event.keyCode);
-    return key === this.key;
+    return event.key === this.key;
   }
 }
 
@@ -93,8 +92,9 @@ export const keyService = new KeyService();
 
 keyService.bindings = [
   // TODO (pq): consider an enum (or consts) for command names
-  new KeyBinding(new KeyStroke(Modifier.CMD, 'P'), 'play'),
-  new KeyBinding(new KeyStroke(Modifier.CMD, 'S'), 'save'),
-  new KeyBinding(new KeyStroke(Modifier.CMD, 'E'), 'toggle repl'),
-  new KeyBinding(new KeyStroke(Modifier.CMD, 'B'), 'toggle sidebar'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, 'p'), 'play'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, 's'), 'save'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, 'e'), 'toggle repl'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, 'b'), 'toggle sidebar'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, ';'), 'show config'),
 ];
