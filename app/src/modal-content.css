@@ -8,6 +8,7 @@
 
 .modal-content > .message-container > .message {
     font-weight: bolder;
+    font-size: 18px;
 }
 
 .modal-content > .message-container > .supporting {
