@@ -32,6 +32,25 @@ class Workspace extends Component {
        // register workspace commands
        this.registerCommands()
 
+       // prevent accidental navigation out of maiden via swipe gestures
+       var preventNavigation = function (e) {
+         var delta = e.deltaX || e.wheelDeltaX;
+         if (!delta) {
+             return;
+         }
+
+         // adjust for safari
+         if (window.WebKitMediaKeyError) {
+             delta *= -1;
+         }
+
+         const elem = document.body;
+         if (((elem.scrollLeft + elem.offsetWidth) === elem.scrollWidth && delta > 0) || (elem.scrollLeft === 0 && delta < 0)) {
+             e.preventDefault();
+         }
+       };
+       document.addEventListener('mousewheel', preventNavigation);
+
        // direct key events to the key service for handling
        document.onkeydown= (event) => keyService.handleKey(event)
     }
