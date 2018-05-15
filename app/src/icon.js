@@ -1,6 +1,15 @@
 import React from 'react';
 
 const Icon = (props) => {
+  let viewBox = '0 0 32 32';
+  let path = props.icon
+
+  if (typeof props.icon === 'object') {
+    // compound icon description
+    viewBox = props.icon.box;
+    path = props.icon.path;
+  }
+
   const styles = {
     svg: {
       display: 'inline-block',
@@ -12,10 +21,6 @@ const Icon = (props) => {
     ...props.style,
   };
 
-    // MAINT: render this portion of the svg, dependent on source SVG
-    // const viewBox = `0 0 ${props.size} ${props.size}`;
-  const viewBox = '0 0 32 32';
-
   return (
     <svg
       style={styles.svg}
@@ -23,7 +28,7 @@ const Icon = (props) => {
       height={`${props.size}px`}
       viewBox={viewBox}
     >
-      <path style={styles.path} d={props.icon} />
+      <path style={styles.path} d={path} />
     </svg>
   );
 };

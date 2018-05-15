@@ -37,6 +37,17 @@ class IconButton extends Component {
         
         let uniqueId = guid();
 
+        // TODO: remove this once everything is a "component"
+        let graphic;
+        if (this.props.path) {
+            graphic = (<Icon icon={this.props.path} size={this.props.size} color={color}/>);
+        } else {
+            let IconComponent = this.props.icon;
+            // console.log("inc: ", IconComponent);
+            graphic = (<IconComponent width={this.props.size} height={this.props.size} color={color}/>);
+            // graphic = (<div/>);
+        }
+
         return (
             <button
                 className="icon-button"
@@ -46,7 +57,7 @@ class IconButton extends Component {
                 data-for={this.props.tooltipMessage && uniqueId}
                 style={style}
             >
-                <Icon icon={this.props.icon} size={this.props.size} color={color}/>
+                {graphic}
                 {this.props.tooltipMessage && <ReactTooltip id={uniqueId} effect="solid" delayShow={1000} delayHide={500} className="customTooltip"></ReactTooltip>}
             </button>
         );

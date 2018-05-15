@@ -4,16 +4,18 @@ import cx from 'classname';
 import Repl from './repl';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
-import { ICONS } from './svg-icons';
+// import { ICONS } from './svg-icons';
+import { ReplClearIcon, ReplConnectIcon } from './icons';
 
 import './repl-activity.css';
+
 
 const tools = [
     {
         name: "clear",
         tooltipMessage: "clear",
         tooltipPosition: "left",
-        icon: ICONS['forbidden'], // FIXME: temp
+        icon: ReplClearIcon,
     }
 ];
 
@@ -28,7 +30,7 @@ const ReplTools = (props) => {
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
                 color="#000000"       // FIXME:
-                size="24"           // FIXME:
+                size="26"           // FIXME:
             />
         );
     });
@@ -55,7 +57,7 @@ const ReplConnect = (props) => {
                     action={() => props.connectAction(props.activeRepl)}
                     tooltipMessage="refresh connection"
                     tooltipPosition="top"
-                    icon={ICONS['loop2']}
+                    icon={ReplConnectIcon}
                     color="#979797"       // FIXME:
                     size="24"           // FIXME:
                 />

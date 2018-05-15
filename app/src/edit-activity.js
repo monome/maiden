@@ -4,27 +4,33 @@ import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
+<<<<<<< HEAD
 import { ICONS } from './svg-icons';
 import { commandService } from './services';
+=======
+// import { ICONS } from './svg-icons';
+import { PlayIcon, SaveIcon } from './icons';
+>>>>>>> 938fd63... icon hackery
 import OS from './utils';
 
 import ReplActivity from './bound-repl-activity'
 
 import './edit-activity.css';
 
+
 const tools = [
     {
         name: "save",
         tooltipMessage: `save script (${OS.metaKey()}S)`,
         tooltipPosition: "left",
-        icon: ICONS["floppy-disk"],
+        icon: SaveIcon,
         disabled: false,
     },
     {
         name: "play",
         tooltipMessage: `run script (${OS.metaKey()}P)`,
         tooltipPosition: "left",
-        icon: ICONS["play3"],
+        icon: PlayIcon,
         disabled: false,
     },
 ];
@@ -40,7 +46,7 @@ const EditTools = (props) => {
                 icon={tool.icon}
                 color="#000000"       // FIXME:
                 disabledColor="#000000"
-                size="24"           // FIXME:
+                size="26"           // FIXME:
                 disabled={tool.disabled}
             />
         );

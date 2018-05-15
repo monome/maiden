@@ -16,8 +16,9 @@ class ActivityBar extends Component {
           tooltipMessage={activity.tooltipMessage}
           tooltipPosition={activity.tooltipPosition}
           icon={activity.icon}
-          color="#eeeeee" // FIXME: this should be styled
-          size="24"
+          // color="#eeeeee" // FIXME: this should be styled
+          color="#ddd"
+          size="26"
         />
       );
       if (activity.position && activity.position === 'lower') {

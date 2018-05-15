@@ -1,16 +1,20 @@
 import React, { Component } from 'react';
 import { decorators, Treebeard } from 'react-treebeard';
 import cx from 'classname';
+
 import treeStyle from './explorer-style';
 import treeAnim from './explorer-animation';
 import './explorer.css';
 
 import ModalContent from './modal-content';
 import ModalGetName from './modal-get-name';
+
 import IconButton from './icon-button';
-import { ICONS } from './svg-icons';
-import api from './api';
+import { NewFileIcon, DeleteIcon, DuplicateIcon, NewFolderIcon, RenameIcon } from './icons';
+
 import { DUST_SCRIPT_PATH, DUST_LUA_LIB_PATH, DUST_AUDIO_PATH, DUST_DATA_PATH } from './constants';
+import api from './api';
+
 
 const TreeHeader = (props) => {
     const className = cx(
@@ -59,8 +63,8 @@ const SectionHeader = (props) => {
                     tooltipPosition={tool.tooltipPosition}
                     action={() => props.buttonAction(tool.name)}
                     icon={tool.icon}
-                    size="12"
-                    padding="1"
+                    size="24"
+                    padding="0.4px"
                     color="#e4e4e4"
                 />
             );
@@ -331,27 +335,27 @@ class Section extends Component {
 const scriptTools = [
     {
         name: "add",
-        icon: ICONS["plus"],
+        icon: NewFileIcon,
         tooltipMessage: "new script"
     },
     {
         name: "remove",
-        icon: ICONS["minus"],
+        icon: DeleteIcon,
         tooltipMessage: "delete script"
     },
     {
         name: "duplicate",
-        icon: ICONS["copy"],
+        icon: DuplicateIcon,
         tooltipMessage: "duplicate script"
     },
     {
         name: "new-folder",
-        icon: ICONS["folder-plus"],
+        icon: NewFolderIcon,
         tooltipMessage: "new folder"
     },
     {
         name: "rename",
-        icon: ICONS["pencil"],
+        icon: RenameIcon,
         tooltipMessage: "rename file/folder"
     },
 ]
@@ -359,17 +363,17 @@ const scriptTools = [
 const audioTools = [
     {
         name: "remove",
-        icon: ICONS["minus"],
+        icon: DeleteIcon,
         tooltipMessage: "delete audio file"
     },
     {
         name: "new-folder",
-        icon: ICONS["folder-plus"],
+        icon: NewFolderIcon,
         tooltipMessage: "new folder"
     },
     {
         name: "rename",
-        icon: ICONS["pencil"],
+        icon: RenameIcon,
         tooltipMessage: "rename file/folder"
     },
 ]
@@ -377,27 +381,27 @@ const audioTools = [
 const dataTools = [
     {
         name: "add",
-        icon: ICONS["plus"],
+        icon: NewFileIcon,
         tooltipMessage: "new data file"
     },
     {
         name: "remove",
-        icon: ICONS["minus"],
+        icon: DeleteIcon,
         tooltipMessage: "delete data file"
     },
     {
         name: "duplicate",
-        icon: ICONS["copy"],
+        icon: DuplicateIcon,
         tooltipMessage: "duplicate data file"
     },
     {
         name: "new-folder",
-        icon: ICONS["folder-plus"],
+        icon: NewFolderIcon,
         tooltipMessage: "new folder"
     },
     {
         name: "rename",
-        icon: ICONS["pencil"],
+        icon: RenameIcon,
         tooltipMessage: "rename file/folder"
     },
 ]
