@@ -22,21 +22,17 @@
 }
 
 .repl-connect-content {
-    flex: 0 0 auto;
-    /* padding: 20px; */
-    /* background-color: #EBEBEB; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: lowercase;
+    font-style: italic;
+    font-family: monospace;
+    font-size: 120%;
 }
 
 .repl-connect-content > .message {
-    /* color: #979797; */
-    font-style: italic;
-    text-transform: lowercase;
-}
-
-.repl-connect-content > .component {
-    /* color: #979797; */
-    font-style: italic;
-    font-weight: bold;
+    flex: 0 0 auto;
 }
 
 .repl-switcher-tabs {

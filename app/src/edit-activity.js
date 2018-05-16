@@ -4,13 +4,9 @@ import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
-<<<<<<< HEAD
-import { ICONS } from './svg-icons';
 import { commandService } from './services';
-=======
 // import { ICONS } from './svg-icons';
 import { PlayIcon, SaveIcon } from './icons';
->>>>>>> 938fd63... icon hackery
 import OS from './utils';
 
 import ReplActivity from './bound-repl-activity'

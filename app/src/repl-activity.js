@@ -51,8 +51,8 @@ const ReplConnect = (props) => {
     return (
         <div className="repl-connect-container" style={style}>
             <div className="repl-connect-content">
-                <span className="message">Not connected to </span>
-                <span className="component">{props.activeRepl}</span>
+                <span className="message">Not connected to <b>{props.activeRepl}</b></span>
+                {/* // <span className="component">{props.activeRepl}</span> */}
                 <IconButton
                     action={() => props.connectAction(props.activeRepl)}
                     tooltipMessage="refresh connection"
