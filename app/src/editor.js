@@ -19,10 +19,6 @@ class Editor extends Component {
 
         let session = this.editor.getSession();
         session.setNewLineMode("unix");
-        session.setOptions({
-            tabSize: 2,        // MAINT: make this configurable
-            useSoftTabs: true,
-        });
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).
@@ -90,6 +86,19 @@ class Editor extends Component {
             this.editor.getSession().getUndoManager().reset();
 
             this.editor.getSession().setNewLineMode("unix");
+        }
+
+        if (nextProps.editorOptions) {
+            // TODO: this doesn't get triggered right after
+            // a new config option is selected and the
+            // config pane is closed.
+
+            // you have to do something like open a new file
+            if (JSON.stringify(nextProps.editorOptions) !== JSON.stringify(this.props.editorOptions)) {
+                this.editor.getSession().setOptions(nextProps.editorOptions);
+            }
+        } else {
+            this.props.editorConfig(this.props.api, 'api/v1/config/editor.json');
         }
     }
 

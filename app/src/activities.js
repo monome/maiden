@@ -1,5 +1,5 @@
 import BoundEditActivity from './bound-edit-activity';
-import ConfigureActivity from './configure-activity';
+import BoundConfigureActivity from './bound-configure-activity';
 import { ICONS } from './svg-icons';
 import { SIDEBAR_COMPONENT, REPL_COMPONENT } from './constants';
 import OS from './utils';
@@ -28,7 +28,7 @@ const activities = [
     tooltipMessage: `configure (${OS.metaKey()};)`,
     tooltipPosition: 'right',
     icon: ICONS.cog,
-    view: ConfigureActivity,
+    view: BoundConfigureActivity,
     position: 'lower',
   },
 ];

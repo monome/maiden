@@ -23,6 +23,7 @@ const (
 	AudioDir  = "audio"
 	DataDir   = "data"
 	SCLangDir = "sc"
+	ConfigDir = "config"
 )
 
 func main() {
@@ -97,6 +98,14 @@ func main() {
 	api.PUT("/audio/*name", writeHandler(logger, apiPrefix, devicePath))
 	api.PATCH("/audio/*name", renameHandler(logger, apiPrefix, devicePath))
 	api.DELETE("/audio/*name", deleteHandler(logger, apiPrefix, devicePath))
+	
+	// config api
+	apiPrefix = filepath.Join(apiRoot, "config")
+	devicePath = makeDevicePath(filepath.Join(*dataDir, ConfigDir))
+	api.GET("/config", rootListingHandler(logger, apiPrefix, devicePath))
+	api.GET("/config/*name", listingHandler(logger, apiPrefix, devicePath))
+	api.PUT("/config/*name", writeHandler(logger, apiPrefix, devicePath))
+	api.DELETE("/config/*name", deleteHandler(logger, apiPrefix, devicePath))
 
 	r.Run(fmt.Sprintf(":%d", *port))
 }

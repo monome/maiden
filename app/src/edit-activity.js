@@ -245,8 +245,12 @@ class EditActivity extends Component {
                     ref={(component) => {this.editor = component;}}
                     { ...this.editorSize() }
                     bufferName={activeBuffer}
+                    toolInvoke={this.handleToolInvoke}
+                    editorOptions={this.props.editorOptions}
+                    sidebarToggle={this.props.sidebarToggle}
                     value={code}
                     bufferChange={this.props.bufferChange}
+                    editorConfig={this.props.editorConfig}
                 />
                 <EditTools
                     className='edit-tools'

@@ -35,6 +35,22 @@ class API {
       body: formData,
     }).then(cb);
   }
+  
+  writeJSONResource(resource, code, cb) {
+    const formData = new FormData();
+    const codeBlob = new Blob([JSON.stringify(code)], { type: 'application/json' });
+    formData.append('value', codeBlob);
+    fetch(resource, {
+      method: 'PUT',
+      body: formData,
+    }).then(cb);
+  }
+  
+  getResource(resource, cb) {
+    fetch(resource, {
+      method: 'GET',
+    }).then(cb);
+  }
 
   deleteResource(resource, cb) {
     fetch(resource, {
