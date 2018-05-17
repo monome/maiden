@@ -1,3 +1,6 @@
+# data directory
+data/
+
 # glide project dependencies
 vendor/
 
