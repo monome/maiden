@@ -19,10 +19,10 @@ var (
 )
 
 const (
-	ScriptDir = "lua"
+	ScriptDir = "scripts"
 	AudioDir  = "audio"
 	DataDir   = "data"
-	SCLangDir = "sc"
+	SCLangDir = "lib/sc"
 )
 
 func main() {
