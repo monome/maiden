@@ -46,7 +46,14 @@ export const editorConfig = (api, resource) => dispatch => {
           dispatch(editorConfigSuccess(resource, content));
         });
       } else {
-        dispatch(editorConfigFailure(resource, response));
+        if (response.status === 404) {
+          const defaultOpts = { tabSize: 2, useSoftTabs: true };
+          api.writeJSONResource(resource, defaultOpts, response => {
+            dispatch(editorConfigSuccess(resource, defaultOpts));
+          });
+        } else {
+          dispatch(editorConfigFailure(resource, response));
+        }
       }
     })
     .catch(error => {

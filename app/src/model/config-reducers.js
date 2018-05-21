@@ -1,7 +1,7 @@
 import { UPDATE_EDITOR_CONFIG_SUCCESS, EDITOR_CONFIG_SUCCESS } from './config-actions';
 
 const initialConfigState = {
-  editor: { tabSize: 2, useSoftTabs: true },
+  editor: undefined
 };
 
 const config = (state = initialConfigState, action) => {
