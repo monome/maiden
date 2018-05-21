@@ -6,11 +6,28 @@ import './editor.css';
 import 'brace/ext/searchbox';
 import 'brace/mode/lua';
 import 'brace/theme/dawn';
+import 'brace/keybinding/vim';
+import 'brace/keybinding/emacs';
 
 class Editor extends Component {
     constructor(props) {
         super(props);
         this.modified = false;
+    }
+    
+    setOptions = (opts, editor) => {
+
+        let session = this.editor.getSession();
+        let clonedOpts = JSON.parse(JSON.stringify(opts));
+        
+        if (clonedOpts.keyBoardHandler) {
+            editor.setKeyboardHandler(clonedOpts.keyBoardHandler);
+            delete clonedOpts.keyBoardHandler;
+        } else {
+            editor.setKeyboardHandler();
+        }
+        
+        session.setOptions(clonedOpts);
     }
 
     onLoad = (editor) => {
@@ -20,9 +37,9 @@ class Editor extends Component {
         let session = this.editor.getSession();
         session.setNewLineMode("unix");
         if (this.props.editorOptions) {
-            session.setOptions(this.props.editorOptions);
+            this.setOptions(this.props.editorOptions, this.editor);
         } else {
-            this.props.editorConfig(this.props.api, 'api/v1/config/editor.json');
+            this.props.editorConfig(this.props.api, 'api/v1/data/editor.json');
         }
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
@@ -95,7 +112,7 @@ class Editor extends Component {
 
         if (nextProps.editorOptions && JSON.stringify(nextProps.editorOptions) !==
             JSON.stringify(this.props.editorOptions)) {
-                this.editor.getSession().setOptions(nextProps.editorOptions);
+                this.setOptions(nextProps.editorOptions, this.editor);
         }
     }
 

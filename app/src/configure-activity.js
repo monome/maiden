@@ -14,13 +14,13 @@ class ConfigureActivity extends Component {
           width: props.width,
       }
       
-      props.editorConfig(this.props.api, 'api/v1/config/editor.json');
+      props.editorConfig(this.props.api, 'api/v1/data/editor.json');
   }
   
   updateConfiguration(key, val) {
       let newEditorConfig = { ...this.props.editorOptions, [key]: val};
       
-      this.props.updateEditorConfig(this.props.api, 'api/v1/config/editor.json', newEditorConfig);
+      this.props.updateEditorConfig(this.props.api, 'api/v1/data/editor.json', newEditorConfig);
   };
   
   renderEditorOption(key, val, label) {
