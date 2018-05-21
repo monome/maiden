@@ -10,8 +10,10 @@ class ConfigureActivity extends Component {
     super(props);
 
     this.state = {
-      height: props.height,
-      width: props.width,
+      style: {
+        height: props.height,
+        width: props.width,
+      },
     };
 
     props.editorConfig(this.props.api, 'api/v1/data/editor.json');
