@@ -137,10 +137,14 @@ class Editor extends Component {
         const width = `${this.props.width}px`;
         const height = `${this.props.height}px`;
 
+        // fall back to a simple text mode for non-lua files.
+        const fileName = this.props.bufferName;
+        const mode = fileName && fileName.endsWith(".lua") ? "lua" : "text";
+
         return (
             <AceEditor
                 ref="ace"
-                mode="lua"
+                mode={mode}
                 theme="dawn"
                 width={width}
                 height={height}
