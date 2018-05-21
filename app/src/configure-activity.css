@@ -4,6 +4,10 @@
     width: 100%;
     padding: 10px;
     color: rgb(117, 117, 117);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 20px;
 }
 
 .configure-activity > div {
@@ -11,9 +15,47 @@
 }
 
 .configure-about {
+    margin-bottom: 15px;
     font-style: italic;
 }
 
-.configure-tbd {
-    font-style: italic;
+.configure-header {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+.configure-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.configure-label {
+    font-weight: bold;
+    margin-right: 20px;
+    min-width: 120px;
+}
+
+.configure-options {
+    display: flex;
+}
+
+.configure-option {
+    padding:  4px 10px;
+    padding-bottom: 6px;
+    margin-right: 10px;
+    border: 1px solid transparent;
+}
+
+.configure-option:hover {
+    cursor: pointer;
+    background: lightgray;
+}
+
+.configure-option.is-selected,
+.configure-option.is-selected:hover {
+    cursor: text;
+    border-color: rgb(117, 117, 117);
 }

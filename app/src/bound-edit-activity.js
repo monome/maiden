@@ -32,6 +32,8 @@ import {
 
 import { replSend } from './model/repl-actions';
 
+import { editorConfig } from './model/config-actions';
+
 const getBuffers = editState => editState.buffers;
 const getActiveBuffer = editState => editState.activeBuffer;
 const getActiveNodeResource = editState => editState.activeNode;
@@ -80,6 +82,7 @@ const mapStateToProps = (state) => {
     buffers,
     ui: state.ui,
     explorerData: getExplorerData(state.edit),
+    editorOptions: state.config.editor
   };
 };
 
@@ -156,6 +159,11 @@ const mapDispatchToProps = dispatch => ({
   },
   explorerDirectoryCreate: (api, resource, name, category) => {
     dispatch(directoryCreate(api, resource, name, category));
+  },
+  
+  // config
+  editorConfig: (api, resource) => {
+    dispatch(editorConfig(api, resource));
   },
 });
 
