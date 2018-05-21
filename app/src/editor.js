@@ -36,11 +36,12 @@ class Editor extends Component {
 
         let session = this.editor.getSession();
         session.setNewLineMode("unix");
+
         if (this.props.editorOptions) {
             this.setOptions(this.props.editorOptions, this.editor);
-        } else {
-            this.props.editorConfig(this.props.api, 'api/v1/data/editor.json');
         }
+
+        this.props.editorConfig(this.props.api, 'api/v1/data/editor.json');
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).
