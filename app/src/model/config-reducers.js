@@ -1,11 +1,7 @@
-import {
-  UPDATE_EDITOR_CONFIG_SUCCESS,
-  EDITOR_CONFIG_SUCCESS,
-  EDITOR_CONFIG_FAILURE,
-} from './config-actions';
+import { UPDATE_EDITOR_CONFIG_SUCCESS, EDITOR_CONFIG_SUCCESS } from './config-actions';
 
 const initialConfigState = {
-  editor: undefined,
+  editor: { tabSize: 2, useSoftTabs: true },
 };
 
 const config = (state = initialConfigState, action) => {
@@ -20,12 +16,6 @@ const config = (state = initialConfigState, action) => {
       return {
         ...state,
         editor: action.value,
-      };
-
-    case EDITOR_CONFIG_FAILURE:
-      return {
-        ...state,
-        editor: { tabSize: 2, useSoftTabs: true },
       };
 
     default:
