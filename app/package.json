@@ -25,7 +25,8 @@
     "build": "./gen-version.sh && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "./node_modules/.bin/eslint src"
+    "lint": "./node_modules/.bin/eslint src",
+    "format": "./node_modules/.bin/prettier --write src/**/*.js"
   },
   "proxy": "http://localhost:5000",
   "devDependencies": {
@@ -34,6 +35,7 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
+    "prettier": "1.12.1",
     "redux-devtools": "^3.4.1"
   }
 }
