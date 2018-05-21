@@ -35,7 +35,7 @@ class API {
       body: formData,
     }).then(cb);
   }
-  
+
   writeJSONResource(resource, code, cb) {
     const formData = new FormData();
     const codeBlob = new Blob([JSON.stringify(code)], { type: 'application/json' });
@@ -45,7 +45,7 @@ class API {
       body: formData,
     }).then(cb);
   }
-  
+
   getResource(resource, cb) {
     fetch(resource, {
       method: 'GET',

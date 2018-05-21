@@ -1,11 +1,11 @@
 import {
   UPDATE_EDITOR_CONFIG_SUCCESS,
   EDITOR_CONFIG_SUCCESS,
-  EDITOR_CONFIG_FAILURE
+  EDITOR_CONFIG_FAILURE,
 } from './config-actions';
 
 const initialConfigState = {
-  editor: undefined
+  editor: undefined,
 };
 
 const config = (state = initialConfigState, action) => {
@@ -13,21 +13,20 @@ const config = (state = initialConfigState, action) => {
     case UPDATE_EDITOR_CONFIG_SUCCESS:
       return {
         ...state,
-        editor: action.value
+        editor: action.value,
       };
-      
+
     case EDITOR_CONFIG_SUCCESS:
       return {
         ...state,
-        editor: action.value
+        editor: action.value,
       };
-    
+
     case EDITOR_CONFIG_FAILURE:
       return {
         ...state,
-        editor: { "tabSize": 2, "useSoftTabs": true }
+        editor: { tabSize: 2, useSoftTabs: true },
       };
-
 
     default:
       return state;

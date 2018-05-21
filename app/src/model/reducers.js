@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   edit,
   ui,
   repl,
-  config
+  config,
 });
 
 export default rootReducer;

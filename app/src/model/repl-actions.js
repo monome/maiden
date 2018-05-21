@@ -25,14 +25,21 @@ export const replEndpointsSuccess = endpoints => ({ type: REPL_ENDPOINTS_SUCCESS
 
 export const replEndpointsFailure = error => ({ type: REPL_ENDPOINTS_FAILURE, error });
 
-export const replConnectDial = (component, endpoint) => ({ type: REPL_CONNECT_DIAL, component, endpoint });
+export const replConnectDial = (component, endpoint) => ({
+  type: REPL_CONNECT_DIAL,
+  component,
+  endpoint,
+});
 
-export const replConnectSuccess = (component, socket) => ({ type: REPL_CONNECT_SUCCESS, component, socket });
+export const replConnectSuccess = (component, socket) => ({
+  type: REPL_CONNECT_SUCCESS,
+  component,
+  socket,
+});
 
 export const replConnectFailure = (component, error) =>
-// console.log(error);
+  // console.log(error);
   ({ type: REPL_CONNECT_FAILURE, component, error });
-
 
 export const replConnectClose = component => ({ type: REPL_CONNECT_CLOSE, component });
 
@@ -48,9 +55,9 @@ export const replClear = component => ({ type: REPL_CLEAR, component });
 // async actions
 //
 
-export const replEndpoints = (api, cb) => (dispatch) => {
+export const replEndpoints = (api, cb) => dispatch => {
   dispatch(replEndpointsRequest());
-  return api.getReplEndpoints((endpoints) => {
+  return api.getReplEndpoints(endpoints => {
     // FIXME: handle errors
     dispatch(replEndpointsSuccess(endpoints));
     if (cb) {
@@ -60,19 +67,19 @@ export const replEndpoints = (api, cb) => (dispatch) => {
   });
 };
 
-export const replConnect = (component, endpoint) => (dispatch) => {
+export const replConnect = (component, endpoint) => dispatch => {
   dispatch(replConnectDial(component, endpoint));
   const socket = new WebSocket(endpoint, ['bus.sp.nanomsg.org']);
-  socket.onopen = (event) => {
+  socket.onopen = event => {
     dispatch(replConnectSuccess(component, socket));
   };
-  socket.onerror = (error) => {
+  socket.onerror = error => {
     dispatch(replConnectFailure(component, error));
   };
-  socket.onclose = (event) => {
+  socket.onclose = event => {
     dispatch(replConnectClose(component));
   };
-  socket.onmessage = (event) => {
+  socket.onmessage = event => {
     dispatch(replReceive(component, event.data));
   };
 };

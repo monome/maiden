@@ -37,7 +37,7 @@ export const nodeForResource = (rootNodes, resource) => {
   return undefined;
 };
 
-export const keyPathParent = (keyPath) => {
+export const keyPathParent = keyPath => {
   if (keyPath && keyPath.size > 2) {
     return keyPath.pop().pop();
   }
@@ -124,7 +124,7 @@ export const spliceNodes = (rootNodes, nodes) => {
     if (keyPath) {
       const siblingPath = keyPath.push('children');
       const children = acc.getIn(siblingPath);
-      const matches = children.find(c => (url === c.get('url')));
+      const matches = children.find(c => url === c.get('url'));
       if (matches === undefined) {
         // this node isn't in the listing, add
         return acc.setIn(siblingPath, children.push(node).sort(orderByName));
@@ -187,12 +187,16 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
 
 export const nodeIsDir = node => node.has('children');
 
-export const directoryNode = (name, resource, children = []) => new Map({ name, url: resource, children });
+export const directoryNode = (name, resource, children = []) =>
+  new Map({ name, url: resource, children });
 
 export const virtualNode = (name, resource, children = undefined) => {
   if (children) {
     return new Map({
-      name, url: resource, children, virtual: true,
+      name,
+      url: resource,
+      children,
+      virtual: true,
     });
   }
   return new Map({ name, url: resource, virtual: true });
@@ -204,7 +208,7 @@ export const virtualRoot = (children, name = 'ROOT') => {
   return rootNodes.setIn([0, 'children'], children);
 };
 
-export const collectVirtualNodes = (listing) => {
+export const collectVirtualNodes = listing => {
   const reducer = (acc, node) => {
     if (node.get('virtual')) {
       return acc.push(node);
@@ -229,7 +233,8 @@ export const muxInVirtualNodes = (base, incoming) => {
 
 export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 'children']);
 
-export const rootCategoryIndex = (rootNodes, category) => rootNodes.findIndex(n => n.get('name') === category);
+export const rootCategoryIndex = (rootNodes, category) =>
+  rootNodes.findIndex(n => n.get('name') === category);
 
 export const siblingNamesForResource = (rootNodes, resource) => {
   // if resource is a file, returns the names of sibling files
@@ -244,4 +249,3 @@ export const siblingNamesForResource = (rootNodes, resource) => {
   // console.log("sibs: ", names);
   return names;
 };
-

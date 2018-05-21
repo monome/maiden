@@ -14,7 +14,7 @@ const mapDispatchToProps = dispatch => ({
   },
   editorConfig: (api, resource) => {
     dispatch(editorConfig(api, resource));
-  }
+  },
 });
 
 const BoundConfigureActivity = connect(

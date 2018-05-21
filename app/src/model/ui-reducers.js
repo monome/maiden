@@ -1,8 +1,4 @@
-import {
-  SIDEBAR_SIZE,
-  REPL_SIZE,
-  TOGGLE_COMPONENT,
-} from './ui-actions';
+import { SIDEBAR_SIZE, REPL_SIZE, TOGGLE_COMPONENT } from './ui-actions';
 import { SIDEBAR_COMPONENT, REPL_COMPONENT } from '../constants';
 
 /*

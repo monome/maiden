@@ -85,7 +85,6 @@ it('parent path of undefined is undefined', () => {
   expect(keyPathParent(undefined)).toEqual(undefined);
 });
 
-
 // TODO: add tests for spliceDirInfo
 // TODO: add tests for spliceFileInfo
 
@@ -122,16 +121,12 @@ it('generate should increment based on only the trailing digits', () => {
   expect(r3).toEqual('c1234-10.lua');
 });
 
-
 const existing = fromJS([
   { name: 'a.lua', url: '/a.lua' },
   { name: 'untitled.lua', url: '/untitled.lua' },
 ]);
 
-const adds = fromJS([
-  { name: 'b.lua', url: '/b.lua' },
-  { name: 'a.lua', url: '/a.lua' },
-]);
+const adds = fromJS([{ name: 'b.lua', url: '/b.lua' }, { name: 'a.lua', url: '/a.lua' }]);
 
 it('append of empty list should be a no-op', () => {
   expect(appendNodes(existing, new List())).toEqual(existing);
@@ -154,7 +149,6 @@ it('append should just add only new', () => {
   expect(appendNodes(existing, adds)).toEqual(r1);
 });
 
-
 const virtListing = fromJS([
   { name: 'a.lua', url: '/a.lua' },
   { name: 'untitled.lua', url: '/untitled.lua', virtual: true },
@@ -165,9 +159,7 @@ const virtListing = fromJS([
       {
         name: 'bar',
         url: '/foo/bar',
-        children: [
-          { name: 'baz.lua', url: '/foo/bar/baz.lua', virtual: true },
-        ],
+        children: [{ name: 'baz.lua', url: '/foo/bar/baz.lua', virtual: true }],
       },
     ],
   },
@@ -191,24 +183,24 @@ it('splice nodes works on all levels', () => {
   const n1 = fromJS({ name: 'n1.lua', url: '/foo/n1.lua' });
   const n2 = fromJS({ name: 'n2.lua', url: '/foo/bar/n2.lua' });
 
-  const root = virtualRoot(fromJS([
-    { name: 'a.lua', url: '/a.lua' },
-    {
-      name: 'foo',
-      url: '/foo',
-      children: [
-        {
-          name: 'bar',
-          url: '/foo/bar',
-          children: [
-            { name: 'baz.lua', url: '/foo/bar/baz.lua', virtual: true },
-          ],
-        },
-      ],
-    },
-    // commenting this out since it complicates producing the r0 result since insertIn isn't a provided method and splicing sorts the listing
-    // { name: "untitled.lua", url: "/untitled.lua", virtual: true },
-  ]));
+  const root = virtualRoot(
+    fromJS([
+      { name: 'a.lua', url: '/a.lua' },
+      {
+        name: 'foo',
+        url: '/foo',
+        children: [
+          {
+            name: 'bar',
+            url: '/foo/bar',
+            children: [{ name: 'baz.lua', url: '/foo/bar/baz.lua', virtual: true }],
+          },
+        ],
+      },
+      // commenting this out since it complicates producing the r0 result since insertIn isn't a provided method and splicing sorts the listing
+      // { name: "untitled.lua", url: "/untitled.lua", virtual: true },
+    ]),
+  );
 
   // expect(spliceNodes(new List(), new List([n0]))).toEqual(new List([n0]))
 
@@ -229,21 +221,28 @@ it('splice nodes works for directories', () => {
   const d0 = fromJS({ name: 'd0', url: '/d0', children: [] });
   const d1 = fromJS({ name: 'd1', url: '/foo/d1', children: [] });
 
-  const root = virtualRoot(fromJS([
-    { name: 'a.lua', url: '/a.lua' },
-    {
-      name: 'foo',
-      url: '/foo',
-      children: [],
-    },
-  ]));
+  const root = virtualRoot(
+    fromJS([
+      { name: 'a.lua', url: '/a.lua' },
+      {
+        name: 'foo',
+        url: '/foo',
+        children: [],
+      },
+    ]),
+  );
 
-  const c0 = root.getIn([0, 'children']).push(d0).sort(orderByName);
+  const c0 = root
+    .getIn([0, 'children'])
+    .push(d0)
+    .sort(orderByName);
   const r0 = root.setIn([0, 'children'], c0);
   expect(spliceNodes(root, new List([d0]))).toEqual(r0);
 
-  const c1 = root.getIn([0, 'children', 1, 'children']).push(d1).sort(orderByName);
+  const c1 = root
+    .getIn([0, 'children', 1, 'children'])
+    .push(d1)
+    .sort(orderByName);
   const r1 = root.setIn([0, 'children', 1, 'children'], c1);
   expect(spliceNodes(root, new List([d1]))).toEqual(r1);
 });
-

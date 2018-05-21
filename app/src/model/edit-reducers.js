@@ -29,19 +29,13 @@ import {
   SCRIPT_DUPLICATE,
   DIRECTORY_CREATE_SUCCESS,
   RESOURCE_RENAME_SUCCESS,
-
   TOOL_INVOKE,
-
   EXPLORER_ACTIVE_NODE,
   EXPLORER_TOGGLE_NODE,
-
   scriptNew,
 } from './edit-actions';
 
-import {
-  siblingResourceForName,
-  childResourceForName,
-} from '../api';
+import { siblingResourceForName, childResourceForName } from '../api';
 
 /*
 
@@ -82,11 +76,14 @@ const edit = (state = initialEditState, action) => {
     case BUFFER_READ_SUCCESS:
       return {
         ...state,
-        buffers: state.buffers.set(action.resource, new Map({
-          value: action.value,
-          modified: false,
-          contentType: action.contentType,
-        })),
+        buffers: state.buffers.set(
+          action.resource,
+          new Map({
+            value: action.value,
+            modified: false,
+            contentType: action.contentType,
+          }),
+        ),
       };
 
     case DIRECTORY_READ_SUCCESS:
@@ -144,7 +141,6 @@ const edit = (state = initialEditState, action) => {
       return state;
   }
 };
-
 
 const handleBufferChange = (action, state) => {
   if (action.resource === undefined) {
@@ -233,7 +229,12 @@ const handleScriptNew = (action, state) => {
   });
 
   const newNode = virtualNode(newName, newResource);
-  const newRootNodes = spliceFileInfo(state.rootNodes, newNode, action.siblingResource, categoryIndex);
+  const newRootNodes = spliceFileInfo(
+    state.rootNodes,
+    newNode,
+    action.siblingResource,
+    categoryIndex,
+  );
 
   return {
     ...state,
@@ -311,7 +312,9 @@ const handleResourceRenameSuccess = (action, state) => {
   const activeBuffer = state.activeBuffer === action.resource ? newResource : state.activeBuffer;
 
   // buffers are keyed by resource, modify that too
-  const buffers = state.buffers.set(newResource, state.buffers.get(action.resource)).delete(action.resource);
+  const buffers = state.buffers
+    .set(newResource, state.buffers.get(action.resource))
+    .delete(action.resource);
 
   return {
     ...state,

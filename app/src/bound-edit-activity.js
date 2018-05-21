@@ -82,7 +82,7 @@ const mapStateToProps = (state) => {
     buffers,
     ui: state.ui,
     explorerData: getExplorerData(state.edit),
-    editorOptions: state.config.editor
+    editorOptions: state.config.editor,
   };
 };
 
@@ -160,7 +160,7 @@ const mapDispatchToProps = dispatch => ({
   explorerDirectoryCreate: (api, resource, name, category) => {
     dispatch(directoryCreate(api, resource, name, category));
   },
-  
+
   // config
   editorConfig: (api, resource) => {
     dispatch(editorConfig(api, resource));

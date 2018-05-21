@@ -43,9 +43,7 @@ const initialReplState = {
 
 const repl = (state = initialReplState, action) => {
   const conn = state.connections.get(action.component);
-  let changes,
-    history,
-    buffer;
+  let changes, history, buffer;
 
   switch (action.type) {
     case REPL_ENDPOINTS_SUCCESS:
@@ -66,7 +64,10 @@ const repl = (state = initialReplState, action) => {
         socket: undefined, // ensure this goes away
         error: action.error,
       });
-      return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+      return {
+        ...state,
+        connections: state.connections.set(action.component, conn.merge(changes)),
+      };
 
     case REPL_CONNECT_CLOSE:
       // let conn = state.connections.get(action.component);
@@ -74,7 +75,10 @@ const repl = (state = initialReplState, action) => {
         socket: undefined,
         error: undefined,
       });
-      return { ...state, connections: state.connections.set(action.component, conn.merge(changes)) };
+      return {
+        ...state,
+        connections: state.connections.set(action.component, conn.merge(changes)),
+      };
 
     case REPL_CONNECT_SUCCESS:
       // let conn = state.connections.get(action.component);
@@ -90,7 +94,7 @@ const repl = (state = initialReplState, action) => {
 
     case REPL_RECEIVE:
       buffer = state.buffers.get(action.component);
-      action.data.split('\n').forEach((line) => {
+      action.data.split('\n').forEach(line => {
         buffer = outputAppend(buffer, state.scrollbackLimit, line);
       });
       return {
