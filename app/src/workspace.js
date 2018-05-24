@@ -18,16 +18,16 @@ class Workspace extends Component {
 
     componentWillMount() {
         // MAINT: this is a bit odd here but we initiate the connections for the repl early so that any actions taken in the editor (or output from matron/crone) is captured even if the repl isn't being displayed
-       this.props.replEndpoints(this.props.api, (endpoints) => {
+       this.props.replEndpoints((endpoints) => {
            endpoints.forEach((endpoint, component) => {
                this.props.replConnect(component, endpoint)
            })
        })
 
        // trigger initial read of top level scripts
-       this.props.scriptList(this.props.api)
-       this.props.dataList(this.props.api)
-       this.props.audioList(this.props.api)
+       this.props.scriptList()
+       this.props.dataList()
+       this.props.audioList()
 
        // register workspace commands
        this.registerCommands()
@@ -117,7 +117,6 @@ class Workspace extends Component {
                     {...this.activityViewSize()}
                     showModal={this.handleShowModal}
                     hideModal={this.handleHideModal}
-                    api={this.props.api}
                 />
                 <ReactModal
                     isOpen={this.state.showModal}

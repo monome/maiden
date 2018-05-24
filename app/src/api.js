@@ -6,27 +6,26 @@ function apiPath(p) {
   return `${API_ROOT}/${p}`;
 }
 
-// TODO: once API is stateless move this to be a method
-export function siblingResourceForName(name, siblingResource, category = 'scripts') {
-  let resourceBase = apiPath(`${category}/`);
-  if (siblingResource) {
-    // FIXME: this assumes siblingResource is absolute and lacks an authority
-    resourceBase = `${parsePath(siblingResource).dirname}/`;
-  }
-  return resourceBase + encodeURI(name);
-}
-
-export function childResourceForName(name, parentResource) {
-  return `${parentResource}/${encodeURI(name)}`;
-}
-
 class API {
-  listRoot(resourceRoot, cb) {
+  static siblingResourceForName(name, siblingResource, category = 'scripts') {
+    let resourceBase = apiPath(`${category}/`);
+    if (siblingResource) {
+      // FIXME: this assumes siblingResource is absolute and lacks an authority
+      resourceBase = `${parsePath(siblingResource).dirname}/`;
+    }
+    return resourceBase + encodeURI(name);
+  }
+  
+  static childResourceForName(name, parentResource) {
+    return `${parentResource}/${encodeURI(name)}`;
+  }
+  
+  static listRoot(resourceRoot, cb) {
     fetch(apiPath(resourceRoot)).then(cb);
   }
 
   // https://stackoverflow.com/questions/40284338/react-fetch-delete-and-put-requests
-  writeTextResource(resource, code, cb) {
+  static writeTextResource(resource, code, cb) {
     const formData = new FormData();
     const codeBlob = new Blob([code], { type: 'text/utf-8' });
     formData.append('value', codeBlob);
@@ -36,7 +35,7 @@ class API {
     }).then(cb);
   }
 
-  writeJSONResource(resource, code, cb) {
+  static writeJSONResource(resource, code, cb) {
     const formData = new FormData();
     const codeBlob = new Blob([JSON.stringify(code)], { type: 'application/json' });
     formData.append('value', codeBlob);
@@ -46,19 +45,19 @@ class API {
     }).then(cb);
   }
 
-  getResource(resource, cb) {
+  static getResource(resource, cb) {
     fetch(resource, {
       method: 'GET',
     }).then(cb);
   }
 
-  deleteResource(resource, cb) {
+  static deleteResource(resource, cb) {
     fetch(resource, {
       method: 'DELETE',
     }).then(cb);
   }
 
-  renameResource(resource, name, cb) {
+  static renameResource(resource, name, cb) {
     const formData = new FormData();
     formData.append('name', name);
     fetch(resource, {
@@ -67,7 +66,7 @@ class API {
     }).then(cb);
   }
 
-  createFolder(resource, cb) {
+  static createFolder(resource, cb) {
     // console.log('createFolder, resource = ', resource);
     // const formData = new FormData();
     // formData.append('dummy', 'dummy');
@@ -80,7 +79,7 @@ class API {
     }).then(cb);
   }
 
-  getReplEndpoints(cb) {
+  static getReplEndpoints(cb) {
     const origin = document.location.hostname;
     fetch('repl-endpoints.json').then((response) => {
       response.json().then((data) => {
@@ -99,19 +98,21 @@ class API {
     });
   }
 
-  resourceForScript(name, path) {
+  static resourceForScript(name, path) {
     // TODO: would be good to clean up and normalize urls
-    // TODO: implement path (subdir) support
+    if (path) {
+      return apiPath(`${path}/${name}`);
+    }
     return apiPath(name);
   }
 
-  fileFromResource(resource) {
+  static fileFromResource(resource) {
     // MAINT: this totally breaks the encapsulation of script resources and returns what matron would see as the script path
     const prefix = apiPath('scripts/');
     return resource.split(prefix)[1];
   }
 
-  categoryFromResource(resource) {
+  static categoryFromResource(resource) {
     // MAINT: another case of broken encapsulation, explorer sections/category tool actions need to ensure the only operate on stuff in their section but the global selection (activeBuffer) is just a URL. here we do evil stuff like extract information out of the URL
     const tail = resource.split(API_ROOT)[1];
     return tail.split('/')[1];
@@ -119,4 +120,3 @@ class API {
 }
 
 export default API;
-

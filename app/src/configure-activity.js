@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import cx from 'classname';
 import { VERSION, COMMIT } from './version';
+import api from './api';
 
 import './configure-activity.css';
 
@@ -16,13 +17,13 @@ class ConfigureActivity extends Component {
       },
     };
 
-    props.editorConfig(this.props.api, '/api/v1/data/editor.json');
+    props.editorConfig(api.resourceForScript('editor.json', 'data'));
   }
 
   updateConfiguration(key, val) {
     const newEditorConfig = { ...this.props.editorOptions, [key]: val };
 
-    this.props.updateEditorConfig(this.props.api, '/api/v1/data/editor.json', newEditorConfig);
+    this.props.updateEditorConfig(api.resourceForScript('editor.json', 'data'), newEditorConfig);
   }
 
   renderEditorOption(key, val, label) {
