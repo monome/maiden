@@ -3,6 +3,7 @@ import { createSelector } from 'reselect';
 import EditActivity from './edit-activity';
 import { MATRON_COMPONENT } from './constants';
 import { nodeForResource } from './model/listing';
+import api from './api';
 
 import {
   rootList,
@@ -88,20 +89,20 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => ({
   // scripts
-  scriptList: (api) => {
-    dispatch(rootList('scripts', api));
+  scriptList: () => {
+    dispatch(rootList('scripts'));
   },
-  dataList: (api) => {
-    dispatch(rootList('data', api));
+  dataList: () => {
+    dispatch(rootList('data'));
   },
-  audioList: (api) => {
-    dispatch(rootList('audio', api));
+  audioList: () => {
+    dispatch(rootList('audio'));
   },
-  bufferRead: (api, resource) => {
-    dispatch(bufferRead(api, resource));
+  bufferRead: (resource) => {
+    dispatch(bufferRead(resource));
   },
-  directoryRead: (api, resource) => {
-    dispatch(directoryRead(api, resource));
+  directoryRead: (resource) => {
+    dispatch(directoryRead(resource));
   },
   bufferChange: (resource, value) => {
     dispatch(bufferChange(resource, value));
@@ -109,10 +110,10 @@ const mapDispatchToProps = dispatch => ({
   bufferSelect: (resource) => {
     dispatch(bufferSelect(resource));
   },
-  bufferSave: (api, resource, code, completionCB = () => {}) => {
-    dispatch(bufferSave(api, resource, code, completionCB));
+  bufferSave: (resource, code, completionCB = () => {}) => {
+    dispatch(bufferSave(resource, code, completionCB));
   },
-  scriptRun: (api, resource) => {
+  scriptRun: (resource) => {
     const file = api.fileFromResource(resource);
     const cmd = `norns.script.load("${file}")`;
     dispatch(replSend(MATRON_COMPONENT, cmd));
@@ -151,19 +152,19 @@ const mapDispatchToProps = dispatch => ({
   explorerScriptDuplicate: (source) => {
     dispatch(scriptDuplicate(source));
   },
-  explorerResourceDelete: (api, resource) => {
-    dispatch(resourceDelete(api, resource));
+  explorerResourceDelete: (resource) => {
+    dispatch(resourceDelete(resource));
   },
-  explorerResourceRename: (api, activeNode, newName, virtual) => {
-    dispatch(resourceRename(api, activeNode, newName, virtual));
+  explorerResourceRename: (activeNode, newName, virtual) => {
+    dispatch(resourceRename(activeNode, newName, virtual));
   },
-  explorerDirectoryCreate: (api, resource, name, category) => {
-    dispatch(directoryCreate(api, resource, name, category));
+  explorerDirectoryCreate: (resource, name, category) => {
+    dispatch(directoryCreate(resource, name, category));
   },
 
   // config
-  editorConfig: (api, resource) => {
-    dispatch(editorConfig(api, resource));
+  editorConfig: (resource) => {
+    dispatch(editorConfig(resource));
   },
 });
 

@@ -35,7 +35,7 @@ import {
   scriptNew,
 } from './edit-actions';
 
-import { siblingResourceForName, childResourceForName } from '../api';
+import api from '../api';
 
 /*
 
@@ -217,9 +217,9 @@ const handleScriptNew = (action, state) => {
 
   let newResource;
   if (siblingIsDir) {
-    newResource = childResourceForName(newName, action.siblingResource, category);
+    newResource = api.childResourceForName(newName, action.siblingResource, category);
   } else {
-    newResource = siblingResourceForName(newName, action.siblingResource, category);
+    newResource = api.siblingResourceForName(newName, action.siblingResource, category);
   }
 
   const newBuffer = new Map({
@@ -293,7 +293,7 @@ const handleResourceRenameSuccess = (action, state) => {
   let newResource = action.newResource;
   if (!newResource) {
     // assume this is virtual; fabricate new url
-    newResource = siblingResourceForName(action.newName, action.resource);
+    newResource = api.siblingResourceForName(action.newName, action.resource);
     console.log(action.resource, ' => ', newResource);
   }
 

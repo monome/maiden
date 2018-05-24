@@ -1,4 +1,5 @@
 import { Map } from 'immutable';
+import api from '../api';
 
 export const REPL_ENDPOINTS_REQUEST = 'REPL_ENDPOINTS_REQUEST';
 export const REPL_ENDPOINTS_SUCCESS = 'REPL_ENDPOINTS_SUCCESS';
@@ -55,7 +56,7 @@ export const replClear = component => ({ type: REPL_CLEAR, component });
 // async actions
 //
 
-export const replEndpoints = (api, cb) => dispatch => {
+export const replEndpoints = (cb) => dispatch => {
   dispatch(replEndpointsRequest());
   return api.getReplEndpoints(endpoints => {
     // FIXME: handle errors

@@ -25,20 +25,20 @@ const mapDispatchToProps = dispatch => ({
   toggleComponent: (name) => {
     dispatch(toggleComponent(name));
   },
-  replEndpoints: (api, cb) => {
-    dispatch(replEndpoints(api, cb));
+  replEndpoints: (cb) => {
+    dispatch(replEndpoints(cb));
   },
   replConnect: (component, endpoint) => {
     dispatch(replConnect(component, endpoint));
   },
-  scriptList: (api) => {
-    dispatch(rootList('scripts', api));
+  scriptList: () => {
+    dispatch(rootList('scripts'));
   },
-  dataList: (api) => {
-    dispatch(rootList('data', api));
+  dataList: () => {
+    dispatch(rootList('data'));
   },
-  audioList: (api) => {
-    dispatch(rootList('audio', api));
+  audioList: () => {
+    dispatch(rootList('audio'));
   },
 });
 

@@ -9,11 +9,11 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  updateEditorConfig: (api, resource, value) => {
-    dispatch(updateEditorConfig(api, resource, value));
+  updateEditorConfig: (resource, value) => {
+    dispatch(updateEditorConfig(resource, value));
   },
-  editorConfig: (api, resource) => {
-    dispatch(editorConfig(api, resource));
+  editorConfig: (resource) => {
+    dispatch(editorConfig(resource));
   },
 });
 

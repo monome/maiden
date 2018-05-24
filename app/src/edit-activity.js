@@ -77,7 +77,7 @@ class EditActivity extends Component {
         let newBuffers = newProps.buffers;
         if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
             // active buffer isn't (yet) loaded, trigger read
-            this.props.bufferRead(this.props.api, newActiveBuffer);
+            this.props.bufferRead(newActiveBuffer);
         }
     }
 
@@ -174,7 +174,7 @@ class EditActivity extends Component {
         if (tool === 'save') {
             if (buffer.get('modified')) {
                 this.editor.bufferWillSave(resource)
-                this.props.bufferSave(this.props.api, resource, this.editor.getValue(), () => {
+                this.props.bufferSave(resource, this.editor.getValue(), () => {
                     this.editor.bufferWasSaved(resource)
                  })
             }
@@ -183,14 +183,14 @@ class EditActivity extends Component {
             if (buffer.get('modified')) {
                 // save, then run
                 this.editor.bufferWillSave(resource)
-                this.props.bufferSave(this.props.api, resource, this.editor.getValue(), () => {
+                this.props.bufferSave(resource, this.editor.getValue(), () => {
                     this.editor.bufferWasSaved(resource)
-                    this.props.scriptRun(this.props.api, resource)
+                    this.props.scriptRun(resource)
                 })
             }
             else {
                 // not modified, just run
-                this.props.scriptRun(this.props.api, resource)
+                this.props.scriptRun(resource)
             }
         }
         else {
@@ -199,13 +199,13 @@ class EditActivity extends Component {
         }
     }
 
-    handleResourceRename = (api, resource, name, virtual) => {
+    handleResourceRename = (resource, name, virtual) => {
         // MAINT: this annoying; rename changes names, urls, and active this/that which in turn causes a re-render. if the script being renamed is "virtual" then the editor buffer might contain changes which haven't been sync'd to the store. trigger a sync to ensure those changes aren't lost by the rename
         if (virtual) {
             console.log("syncing editor before rename just in case...")
             this.props.bufferChange(this.props.activeBuffer, this.editor.getValue());
         }
-        this.props.explorerResourceRename(api, resource, name, virtual);
+        this.props.explorerResourceRename(resource, name, virtual);
     }
 
     isText = (buffer) => {
@@ -289,7 +289,6 @@ class EditActivity extends Component {
                     resourceRename={this.handleResourceRename}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
-                    api={this.props.api}
                     activeBuffer={activeBuffer}
                     activeNode={this.props.activeNode}
                     showModal={this.props.showModal}

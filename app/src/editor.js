@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
+import api from './api';
 
 import './editor.css';
 
@@ -41,7 +42,7 @@ class Editor extends Component {
             this.setOptions(this.props.editorOptions, this.editor);
         }
 
-        this.props.editorConfig(this.props.api, '/api/v1/data/editor.json');
+        this.props.editorConfig(api.resourceForScript('editor.json', 'data'));
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).

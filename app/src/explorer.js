@@ -9,7 +9,7 @@ import ModalContent from './modal-content';
 import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-import { siblingResourceForName, childResourceForName } from './api';
+import api from './api';
 
 const TreeHeader = (props) => {
     const className = cx(
@@ -101,7 +101,7 @@ class Section extends Component {
         if (node.children) {
             this.props.explorerToggleNode(node, toggled)
             if (toggled) {
-                this.props.directoryRead(this.props.api, node.url);
+                this.props.directoryRead(node.url);
             }
         } else {
             this.props.bufferSelect(node.url);
@@ -139,7 +139,7 @@ class Section extends Component {
         let activeResource = this.props.activeNode.get('url');
         let activeResourceIsDir = this.props.activeNode.has('children');
 
-        let category = this.props.api.categoryFromResource(activeResource);
+        let category = api.categoryFromResource(activeResource);
         if (category !== this.props.name) {
             console.log("ignoring tool, active buffer is not in category", category);
             return;
@@ -177,7 +177,7 @@ class Section extends Component {
         let removeModalCompletion = (choice) => {
             console.log('remove:', choice)
             if (choice === 'ok') {
-                this.props.resourceDelete(this.props.api, selection.get("url"))
+                this.props.resourceDelete(selection.get("url"))
             }
             this.props.hideModal()
         }
@@ -204,7 +204,6 @@ class Section extends Component {
             console.log('rename:', choice, name)
             if (name && choice === "ok") {
                 this.props.resourceRename(
-                    this.props.api,
                     selection.get("url"),
                     name,
                     selection.get("virtual") || false
@@ -237,9 +236,8 @@ class Section extends Component {
         let complete = (choice, name) => {
             console.log('new folder:', choice, name)
             if (name && choice === "ok") {
-                const newResource = selectionIsDir ? childResourceForName(name, selectedResource) : siblingResourceForName(name, selectedResource, category);
+                const newResource = selectionIsDir ? api.childResourceForName(name, selectedResource) : api.siblingResourceForName(name, selectedResource, category);
                 this.props.directoryCreate(
-                    this.props.api,
                     newResource,
                     name,
                     category,
@@ -405,7 +403,6 @@ class Explorer extends Component {
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
-                    api={this.props.api}
                     activeBuffer={this.props.activeBuffer}
                     activeNode={this.props.activeNode}
                 />
@@ -425,7 +422,6 @@ class Explorer extends Component {
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
-                    api={this.props.api}
                     activeBuffer={this.props.activeBuffer}
                     activeNode={this.props.activeNode}
                 />
@@ -445,7 +441,6 @@ class Explorer extends Component {
                     resourceRename={this.props.resourceRename}
                     showModal={this.props.showModal}
                     hideModal={this.props.hideModal}
-                    api={this.props.api}
                     activeBuffer={this.props.activeBuffer}
                     activeNode={this.props.activeNode}
                 />

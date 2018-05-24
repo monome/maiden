@@ -1,3 +1,5 @@
+import api from '../api';
+
 export const ROOT_LIST_REQUEST = 'ROOT_LIST_REQUEST';
 export const ROOT_LIST_SUCCESS = 'ROOT_LIST_SUCCESS';
 export const ROOT_LIST_FAILURE = 'ROOT_LIST_FAILURE';
@@ -174,7 +176,7 @@ export const explorerToggleNode = (node, toggled) => ({
 // async actions
 //
 
-export const rootList = (rootName, api) => dispatch => {
+export const rootList = (rootName) => dispatch => {
   dispatch(rootListRequest(rootName));
   return api.listRoot(rootName, response => {
     if (response.ok) {
@@ -187,7 +189,7 @@ export const rootList = (rootName, api) => dispatch => {
   });
 };
 
-export const bufferRead = (api, resource) => dispatch => {
+export const bufferRead = (resource) => dispatch => {
   dispatch(bufferReadRequest(resource));
   fetch(resource)
     .then(response => {
@@ -211,7 +213,7 @@ export const bufferRead = (api, resource) => dispatch => {
     });
 };
 
-export const directoryRead = (api, resource) => dispatch => {
+export const directoryRead = (resource) => dispatch => {
   dispatch(directoryReadRequest(resource));
   fetch(resource)
     .then(response => {
@@ -228,7 +230,7 @@ export const directoryRead = (api, resource) => dispatch => {
     });
 };
 
-export const bufferSave = (api, resource, value, cb) => dispatch => {
+export const bufferSave = (resource, value, cb) => dispatch => {
   dispatch(bufferSaveRequest(resource, value));
   return api.writeTextResource(resource, value, response => {
     // FIXME: handle errors
@@ -237,7 +239,7 @@ export const bufferSave = (api, resource, value, cb) => dispatch => {
   });
 };
 
-export const resourceDelete = (api, resource, cb) => dispatch => {
+export const resourceDelete = (resource, cb) => dispatch => {
   dispatch(resourceDeleteRequest(resource));
   return api.deleteResource(resource, response => {
     // FIXME: handle errors
@@ -246,7 +248,7 @@ export const resourceDelete = (api, resource, cb) => dispatch => {
   });
 };
 
-export const resourceRename = (api, resource, name, virtual) => dispatch => {
+export const resourceRename = (resource, name, virtual) => dispatch => {
   dispatch(resourceRenameRequest(resource, name));
   if (virtual) {
     dispatch(resourceRenameSuccess(resource, name, undefined));
@@ -263,7 +265,7 @@ export const resourceRename = (api, resource, name, virtual) => dispatch => {
   }
 };
 
-export const directoryCreate = (api, resource, name, category) => dispatch => {
+export const directoryCreate = (resource, name, category) => dispatch => {
   dispatch(directoryCreateRequest(resource, name, category));
   return api.createFolder(resource, response => {
     if (response.ok) {

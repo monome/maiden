@@ -34,7 +34,6 @@ class App extends Component {
         <div className="app-header" style={headerStyle} />
         <BoundWorkspace
           activities={activities}
-          api={this.props.api}
           {...this.state}
         />
       </div>

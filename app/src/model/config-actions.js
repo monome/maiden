@@ -1,3 +1,5 @@
+import api from '../api';
+
 export const EDITOR_CONFIG_REQUEST = 'EDITOR_CONFIG_REQUEST';
 export const EDITOR_CONFIG_SUCCESS = 'EDITOR_CONFIG_SUCCESS';
 export const EDITOR_CONFIG_FAILURE = 'EDITOR_CONFIG_FAILURE';
@@ -35,7 +37,7 @@ export const editorConfigFailure = (resource, error) => ({
 // async actions
 //
 
-export const editorConfig = (api, resource) => dispatch => {
+export const editorConfig = (resource) => dispatch => {
   dispatch(editorConfigRequest(resource));
   fetch(resource)
     .then(response => {
@@ -54,7 +56,7 @@ export const editorConfig = (api, resource) => dispatch => {
     });
 };
 
-export const updateEditorConfig = (api, resource, value) => dispatch => {
+export const updateEditorConfig = (resource, value) => dispatch => {
   dispatch(updateEditorConfigRequest(resource, value));
   api.writeJSONResource(resource, value, response => {
     // FIXME: handle errors
