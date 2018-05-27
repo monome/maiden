@@ -42,7 +42,7 @@ class Editor extends Component {
             this.setOptions(this.props.editorOptions, this.editor);
         }
 
-        this.props.editorConfig(api.resourceForScript('editor.json', 'data'));
+        this.props.editorConfig(api.editorConfigResource());
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).

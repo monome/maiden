@@ -67,15 +67,10 @@ class API {
   }
 
   static createFolder(resource, cb) {
-    // console.log('createFolder, resource = ', resource);
-    // const formData = new FormData();
-    // formData.append('dummy', 'dummy');
     const url = new URL(resource, document.origin);
     url.searchParams.append('kind', 'directory');
-    // console.log('url: ', url);
     fetch(url, {
       method: 'PUT',
-      // body: formData,
     }).then(cb);
   }
 
@@ -116,6 +111,10 @@ class API {
     // MAINT: another case of broken encapsulation, explorer sections/category tool actions need to ensure the only operate on stuff in their section but the global selection (activeBuffer) is just a URL. here we do evil stuff like extract information out of the URL
     const tail = resource.split(API_ROOT)[1];
     return tail.split('/')[1];
+  }
+
+  static editorConfigResource() {
+    return API.resourceForScript('editor.json', 'dust/data');
   }
 }
 

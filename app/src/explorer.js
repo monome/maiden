@@ -10,6 +10,7 @@ import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import api from './api';
+import { DUST_SCRIPT_PATH, DUST_LUA_LIB_PATH, DUST_AUDIO_PATH, DUST_DATA_PATH } from './constants';
 
 const TreeHeader = (props) => {
     const className = cx(
@@ -139,9 +140,8 @@ class Section extends Component {
         let activeResource = this.props.activeNode.get('url');
         let activeResourceIsDir = this.props.activeNode.has('children');
 
-        let category = api.categoryFromResource(activeResource);
-        if (category !== this.props.name) {
-            console.log("ignoring tool, active buffer is not in category", category);
+        if (!activeResource.includes(this.props.dataRootPath)) {
+            console.log("ignoring tool, active buffer is not in category", this.props.dataRootPath);
             return;
         }
 
@@ -274,7 +274,7 @@ class Section extends Component {
     }
 
     getCategory() {
-        return this.props.name;
+        return this.props.dataRootPath;
     }
 
     render() {
@@ -389,9 +389,30 @@ class Explorer extends Component {
             >
                 <Section
                     name='scripts'
+                    dataRootPath={DUST_SCRIPT_PATH}
+                    data={this.props.data}
                     tools={scriptTools}
                     buttonAction={this.onToolClick}
+                    explorerToggleNode={this.props.explorerToggleNode}
+                    explorerActiveNode={this.props.explorerActiveNode}
+                    bufferSelect={this.props.bufferSelect}
+                    directoryRead={this.props.directoryRead}
+                    directoryCreate={this.props.directoryCreate}
+                    scriptCreate={this.props.scriptCreate}
+                    scriptDuplicate={this.props.scriptDuplicate}
+                    resourceDelete={this.props.resourceDelete}
+                    resourceRename={this.props.resourceRename}
+                    showModal={this.props.showModal}
+                    hideModal={this.props.hideModal}
+                    activeBuffer={this.props.activeBuffer}
+                    activeNode={this.props.activeNode}
+                />
+                <Section
+                    name='lib'
+                    dataRootPath={DUST_LUA_LIB_PATH}
                     data={this.props.data}
+                    tools={scriptTools}
+                    buttonAction={this.onToolClick}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
@@ -408,9 +429,10 @@ class Explorer extends Component {
                 />
                 <Section
                     name='audio'
+                    dataRootPath={DUST_AUDIO_PATH}
+                    data={this.props.data}
                     tools={audioTools}
                     buttonAction={this.onToolClick}
-                    data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
@@ -427,9 +449,10 @@ class Explorer extends Component {
                 />
                 <Section
                     name='data'
+                    dataRootPath={DUST_DATA_PATH}
+                    data={this.props.data}
                     tools={dataTools}
                     buttonAction={this.onToolClick}
-                    data={this.props.data}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}

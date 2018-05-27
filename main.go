@@ -18,13 +18,6 @@ var (
 	version = "0.0.2"
 )
 
-const (
-	ScriptDir = "scripts"
-	AudioDir  = "audio"
-	DataDir   = "data"
-	SCLangDir = "lib/sc"
-)
-
 func main() {
 	var port = flag.Int("port", 5000, "http port")
 	var dataDir = flag.String("data", "data/", "path to user data directory")
@@ -71,32 +64,14 @@ func main() {
 
 	logger := os.Stderr
 
-	// scripts api
-	apiPrefix := filepath.Join(apiRoot, "scripts")
-	devicePath := makeDevicePath(filepath.Join(*dataDir, ScriptDir))
-	api.GET("/scripts", rootListingHandler(logger, apiPrefix, devicePath))
-	api.GET("/scripts/*name", listingHandler(logger, apiPrefix, devicePath))
-	api.PUT("/scripts/*name", writeHandler(logger, apiPrefix, devicePath))
-	api.PATCH("/scripts/*name", renameHandler(logger, apiPrefix, devicePath))
-	api.DELETE("/scripts/*name", deleteHandler(logger, apiPrefix, devicePath))
-
-	// data api
-	apiPrefix = filepath.Join(apiRoot, "data")
-	devicePath = makeDevicePath(filepath.Join(*dataDir, DataDir))
-	api.GET("/data", rootListingHandler(logger, apiPrefix, devicePath))
-	api.GET("/data/*name", listingHandler(logger, apiPrefix, devicePath))
-	api.PUT("/data/*name", writeHandler(logger, apiPrefix, devicePath))
-	api.PATCH("/data/*name", renameHandler(logger, apiPrefix, devicePath))
-	api.DELETE("/data/*name", deleteHandler(logger, apiPrefix, devicePath))
-
-	// audio api
-	apiPrefix = filepath.Join(apiRoot, "audio")
-	devicePath = makeDevicePath(filepath.Join(*dataDir, AudioDir))
-	api.GET("/audio", rootListingHandler(logger, apiPrefix, devicePath))
-	api.GET("/audio/*name", listingHandler(logger, apiPrefix, devicePath))
-	api.PUT("/audio/*name", writeHandler(logger, apiPrefix, devicePath))
-	api.PATCH("/audio/*name", renameHandler(logger, apiPrefix, devicePath))
-	api.DELETE("/audio/*name", deleteHandler(logger, apiPrefix, devicePath))
+	// dust api
+	apiPrefix := filepath.Join(apiRoot, "dust")
+	devicePath := makeDevicePath(*dataDir)
+	api.GET("/dust", rootListingHandler(logger, apiPrefix, devicePath))
+	api.GET("/dust/*name", listingHandler(logger, apiPrefix, devicePath))
+	api.PUT("/dust/*name", writeHandler(logger, apiPrefix, devicePath))
+	api.PATCH("/dust/*name", renameHandler(logger, apiPrefix, devicePath))
+	api.DELETE("/dust/*name", deleteHandler(logger, apiPrefix, devicePath))
 
 	r.Run(fmt.Sprintf(":%d", *port))
 }

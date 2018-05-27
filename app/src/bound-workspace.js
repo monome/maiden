@@ -11,6 +11,7 @@ import {
 } from './model/repl-actions';
 
 import { rootList } from './model/edit-actions';
+import { DUST_SCRIPT_PATH, DUST_DATA_PATH, DUST_AUDIO_PATH, DUST_LUA_LIB_PATH } from './constants';
 
 const mapStateToProps = (state) => {
   const selected = state.activity.selected;
@@ -32,14 +33,17 @@ const mapDispatchToProps = dispatch => ({
     dispatch(replConnect(component, endpoint));
   },
   scriptList: () => {
-    dispatch(rootList('scripts'));
+    dispatch(rootList(DUST_SCRIPT_PATH));
   },
   dataList: () => {
-    dispatch(rootList('data'));
+    dispatch(rootList(DUST_DATA_PATH));
   },
   audioList: () => {
-    dispatch(rootList('audio'));
+    dispatch(rootList(DUST_AUDIO_PATH));
   },
+  luaLibList: () => {
+    dispatch(rootList(DUST_LUA_LIB_PATH));
+  }
 });
 
 const BoundWorkspace = connect(
