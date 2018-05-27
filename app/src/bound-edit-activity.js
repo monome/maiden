@@ -29,6 +29,7 @@ import {
   sidebarSize,
   replToggle,
   replSize,
+  toggleCategory,
 } from './model/ui-actions';
 
 import { replSend } from './model/repl-actions';
@@ -83,6 +84,7 @@ const mapStateToProps = (state) => {
     buffers,
     ui: state.ui,
     explorerData: getExplorerData(state.edit),
+    collapsedCategories: state.ui.collapsedCategories,
     editorOptions: state.config.editor,
   };
 };
@@ -160,6 +162,9 @@ const mapDispatchToProps = dispatch => ({
   },
   explorerDirectoryCreate: (resource, name, category) => {
     dispatch(directoryCreate(resource, name, category));
+  },
+  explorerToggleCategory: (name) => {
+    dispatch(toggleCategory(name));
   },
 
   // config

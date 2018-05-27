@@ -287,6 +287,8 @@ class EditActivity extends Component {
                     scriptDuplicate={this.props.explorerScriptDuplicate}
                     resourceDelete={this.props.explorerResourceDelete}
                     resourceRename={this.handleResourceRename}
+                    collapsedCategories={this.props.collapsedCategories}
+                    explorerToggleCategory={this.props.explorerToggleCategory}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     activeBuffer={activeBuffer}

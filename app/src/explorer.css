@@ -11,6 +11,7 @@
     color: #e4e4e4;
     padding: 6px 8px;
     margin-bottom: 8px;
+    height: 17px;
     display: flex;
     justify-content: space-between;
 }
@@ -21,6 +22,13 @@
 
 .explorer-tree {
     font: inherit;
+}
+
+.section-name {
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */      
 }
 
 .hidden {

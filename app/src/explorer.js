@@ -49,28 +49,38 @@ const explorerDecorators = {
 
 // TODO: turn this in a containing component called Section so that individual sections can be collapsed and expanded
 const SectionHeader = (props) => {
-    let tools = props.tools.map(tool => {
-        return (
-            <IconButton
-                key={tool.name}
-                tooltipMessage={tool.tooltipMessage}
-                tooltipPosition={tool.tooltipPosition}
-                action={() => props.buttonAction(tool.name)}
-                icon={tool.icon}
-                size="12"
-                padding="1"
-                color="#e4e4e4"
-            />
-        );
-    });
+    let buttons = undefined;
+    if (props.showTools) {
+        buttons = props.tools.map(tool => {
+            return (
+                <IconButton
+                    key={tool.name}
+                    tooltipMessage={tool.tooltipMessage}
+                    tooltipPosition={tool.tooltipPosition}
+                    action={() => props.buttonAction(tool.name)}
+                    icon={tool.icon}
+                    size="12"
+                    padding="1"
+                    color="#e4e4e4"
+                />
+            );
+        });
+    }
+
+    const handleDoubleClick = (event) => {
+        if (props.headerDoubleClickAction) {
+            props.headerDoubleClickAction(event);
+        }
+    };
 
     return (
-        <div className='explorer-header'>
+
+        <div className='explorer-header' onDoubleClick={handleDoubleClick}>
             <span className='section-name'>{props.name}</span>
             <span
                 className={cx('section-tools', {'opaque': props.showTools})}
             >
-                {tools}
+                {buttons}
             </span>
         </div>
     );
@@ -97,7 +107,11 @@ class Section extends Component {
             })
         }
     }
-    
+
+    isCollapsed = () => {
+        return this.props.collapsedCategories.has(this.getCategory());
+    }
+
     onToggle = (node, toggled) => {
         if (node.children) {
             this.props.explorerToggleNode(node, toggled)
@@ -109,6 +123,10 @@ class Section extends Component {
         }
         this.props.explorerActiveNode(node)
         this.setState({ selectedNode: node });
+    }
+
+    onHeaderToggle = event => {
+        this.props.explorerToggleCategory(this.getCategory());
     }
 
     onToolClick = (name) => {
@@ -258,8 +276,6 @@ class Section extends Component {
         this.props.showModal(content);
     }
 
-
-
     getData() {
         const node = this.getNode();
         if (node) {
@@ -278,7 +294,21 @@ class Section extends Component {
     }
 
     render() {
-        let data = this.getData()
+        const data = this.getData();
+        const isCollapsed = this.isCollapsed();
+        
+        let tree = undefined;
+        if (!isCollapsed) {
+            tree = (
+                <Treebeard
+                    style={treeStyle}
+                    animations={treeAnim}
+                    data={data}
+                    onToggle={this.onToggle}
+                    decorators={explorerDecorators}
+                />
+            );
+        }
 
         return (
             <div
@@ -289,15 +319,10 @@ class Section extends Component {
                     name={this.props.name}
                     tools={this.props.tools}
                     buttonAction={this.onToolClick}
-                    showTools={this.state.showTools}
+                    headerDoubleClickAction={this.onHeaderToggle}
+                    showTools={!isCollapsed && this.state.showTools}
                 />
-                <Treebeard
-                    style={treeStyle}
-                    animations={treeAnim}
-                    data={data}
-                    onToggle={this.onToggle}
-                    decorators={explorerDecorators}
-                />
+                {tree}
             </div>
         );
     }
@@ -393,6 +418,8 @@ class Explorer extends Component {
                     data={this.props.data}
                     tools={scriptTools}
                     buttonAction={this.onToolClick}
+                    collapsedCategories={this.props.collapsedCategories}
+                    explorerToggleCategory={this.props.explorerToggleCategory}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
@@ -413,6 +440,8 @@ class Explorer extends Component {
                     data={this.props.data}
                     tools={scriptTools}
                     buttonAction={this.onToolClick}
+                    collapsedCategories={this.props.collapsedCategories}
+                    explorerToggleCategory={this.props.explorerToggleCategory}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
@@ -433,6 +462,8 @@ class Explorer extends Component {
                     data={this.props.data}
                     tools={audioTools}
                     buttonAction={this.onToolClick}
+                    collapsedCategories={this.props.collapsedCategories}
+                    explorerToggleCategory={this.props.explorerToggleCategory}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
@@ -453,6 +484,8 @@ class Explorer extends Component {
                     data={this.props.data}
                     tools={dataTools}
                     buttonAction={this.onToolClick}
+                    collapsedCategories={this.props.collapsedCategories}
+                    explorerToggleCategory={this.props.explorerToggleCategory}
                     explorerToggleNode={this.props.explorerToggleNode}
                     explorerActiveNode={this.props.explorerActiveNode}
                     bufferSelect={this.props.bufferSelect}
