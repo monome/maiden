@@ -182,7 +182,10 @@ const handleRootList = (action, state) => {
 
   let rootNodes;
   if (existingRootIndex > 0) {
-    rootNodes = sortDir(state.rootNodes.set(existingRootIndex, rootNode), new List([existingRootIndex]));
+    rootNodes = sortDir(
+      state.rootNodes.set(existingRootIndex, rootNode),
+      new List([existingRootIndex]),
+    );
   } else {
     rootNodes = state.rootNodes.push(rootNode);
     rootNodes = sortDir(rootNodes, new List([rootNodes.size - 1]));

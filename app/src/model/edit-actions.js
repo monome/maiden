@@ -176,7 +176,7 @@ export const explorerToggleNode = (node, toggled) => ({
 // async actions
 //
 
-export const rootList = (rootName) => dispatch => {
+export const rootList = rootName => dispatch => {
   dispatch(rootListRequest(rootName));
   return api.listRoot(rootName, response => {
     if (response.ok) {
@@ -189,7 +189,7 @@ export const rootList = (rootName) => dispatch => {
   });
 };
 
-export const bufferRead = (resource) => dispatch => {
+export const bufferRead = resource => dispatch => {
   dispatch(bufferReadRequest(resource));
   fetch(resource)
     .then(response => {
@@ -213,7 +213,7 @@ export const bufferRead = (resource) => dispatch => {
     });
 };
 
-export const directoryRead = (resource) => dispatch => {
+export const directoryRead = resource => dispatch => {
   dispatch(directoryReadRequest(resource));
   fetch(resource)
     .then(response => {

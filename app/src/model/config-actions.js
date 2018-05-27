@@ -37,7 +37,7 @@ export const editorConfigFailure = (resource, error) => ({
 // async actions
 //
 
-export const editorConfig = (resource) => dispatch => {
+export const editorConfig = resource => dispatch => {
   dispatch(editorConfigRequest(resource));
   fetch(resource)
     .then(response => {

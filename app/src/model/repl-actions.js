@@ -56,7 +56,7 @@ export const replClear = component => ({ type: REPL_CLEAR, component });
 // async actions
 //
 
-export const replEndpoints = (cb) => dispatch => {
+export const replEndpoints = cb => dispatch => {
   dispatch(replEndpointsRequest());
   return api.getReplEndpoints(endpoints => {
     // FIXME: handle errors

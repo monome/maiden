@@ -168,7 +168,7 @@ export const orderByTypeThenName = (a, b) => {
     return 1;
   }
 
-  // both are either file or dir, sort by name 
+  // both are either file or dir, sort by name
   if (na < nb) {
     return -1;
   }
@@ -176,7 +176,6 @@ export const orderByTypeThenName = (a, b) => {
     return 1;
   }
   return 0;
-
 };
 
 // take a list of nodes (script/dir info objects) and return a set containing all the names used at that top level
