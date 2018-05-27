@@ -117,8 +117,12 @@ const mapDispatchToProps = dispatch => ({
   },
   scriptRun: (resource) => {
     const file = api.fileFromResource(resource);
-    const cmd = `norns.script.load("${file}")`;
-    dispatch(replSend(MATRON_COMPONENT, cmd));
+    if (file) {
+      const cmd = `norns.script.load("${file}")`;
+      dispatch(replSend(MATRON_COMPONENT, cmd));
+    } else {
+      console.log("resource:", resource, "cannot be run as a script");
+    }
   },
 
   // ui
