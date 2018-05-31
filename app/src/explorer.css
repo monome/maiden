@@ -12,6 +12,7 @@
     color: #e4e4e4;
     padding: 4px 8px 4px 8px;
     margin-bottom: 0px;
+    height: 24px;  /* force this to stay the same hight when icons a not draw */
     display: flex;
     justify-content: space-between;
     font-weight: bold;
