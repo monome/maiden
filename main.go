@@ -86,6 +86,10 @@ type server struct {
 	resourcePath prefixFunc
 }
 
+func (s *server) logf(format string, args ...interface{}) {
+	fmt.Fprintf(s.logger, format, args...)
+}
+
 func (s *server) rootListingHandler(ctx *gin.Context) {
 	top := "" // MAINT: get rid of this
 	entries, err := ioutil.ReadDir(s.devicePath(&top))
@@ -102,8 +106,8 @@ func (s *server) listingHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(&name)
 
-	fmt.Fprintln(s.logger, "get of name: ", name)
-	fmt.Fprintln(s.logger, "device path: ", path)
+	s.logf("get of name: ", name)
+	s.logf("device path: ", path)
 
 	// figure out if this is a file or not
 	info, err := os.Stat(path)
@@ -153,8 +157,8 @@ func (s *server) writeHandler(ctx *gin.Context) {
 			return
 		}
 
-		fmt.Fprintf(s.logger, "save path: %s\n", path)
-		fmt.Fprintf(s.logger, "content type: %s\n", file.Header["Content-Type"])
+		s.logf("save path: %s\n", path)
+		s.logf("content type: %s\n", file.Header["Content-Type"])
 
 		// size, err := io.Copy(out, file)
 		if err := ctx.SaveUploadedFile(file, path); err != nil {
@@ -187,7 +191,7 @@ func (s *server) renameHandler(ctx *gin.Context) {
 	rename := filepath.Join(filepath.Dir(name), newName)
 	renamePath := s.devicePath(&rename)
 
-	fmt.Fprintf(s.logger, "going to rename: %s to: %s\n", path, renamePath)
+	s.logf("going to rename: %s to: %s\n", path, renamePath)
 
 	err = os.Rename(path, renamePath)
 	if err != nil {
@@ -203,7 +207,7 @@ func (s *server) deleteHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(&name)
 
-	fmt.Fprintln(s.logger, "going to delete: ", path)
+	s.logf("going to delete: ", path)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
