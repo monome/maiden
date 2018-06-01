@@ -92,7 +92,7 @@ func (s *server) logf(format string, args ...interface{}) {
 
 func (s *server) rootListingHandler(ctx *gin.Context) {
 	top := "" // MAINT: get rid of this
-	entries, err := ioutil.ReadDir(s.devicePath(&top))
+	entries, err := ioutil.ReadDir(s.devicePath(top))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -104,7 +104,7 @@ func (s *server) rootListingHandler(ctx *gin.Context) {
 
 func (s *server) listingHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
-	path := s.devicePath(&name)
+	path := s.devicePath(name)
 
 	s.logf("get of name: ", name)
 	s.logf("device path: ", path)
@@ -136,7 +136,7 @@ func (s *server) listingHandler(ctx *gin.Context) {
 
 func (s *server) writeHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
-	path := s.devicePath(&name)
+	path := s.devicePath(name)
 
 	kind, exists := ctx.GetQuery("kind")
 	if exists && kind == "directory" {
@@ -173,7 +173,7 @@ func (s *server) writeHandler(ctx *gin.Context) {
 func (s *server) renameHandler(ctx *gin.Context) {
 	// FIXME: this logic basically assumes PATCH == rename operation at the moment
 	name := ctx.Param("name")
-	path := s.devicePath(&name)
+	path := s.devicePath(name)
 
 	// figure out if this exists or not
 	_, err := os.Stat(path)
@@ -189,7 +189,7 @@ func (s *server) renameHandler(ctx *gin.Context) {
 		return
 	}
 	rename := filepath.Join(filepath.Dir(name), newName)
-	renamePath := s.devicePath(&rename)
+	renamePath := s.devicePath(rename)
 
 	s.logf("going to rename: %s to: %s\n", path, renamePath)
 
@@ -205,7 +205,7 @@ func (s *server) renameHandler(ctx *gin.Context) {
 
 func (s *server) deleteHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
-	path := s.devicePath(&name)
+	path := s.devicePath(name)
 
 	s.logf("going to delete: ", path)
 
@@ -223,11 +223,11 @@ func (s *server) deleteHandler(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("deleted %s", path)})
 }
 
-type devicePathFunc func(name *string) string
+type devicePathFunc func(name string) string
 
 func makeDevicePath(prefix string) devicePathFunc {
-	return func(name *string) string {
-		return filepath.Join(prefix, *name)
+	return func(name string) string {
+		return filepath.Join(prefix, name)
 	}
 }
 
