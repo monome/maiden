@@ -8,6 +8,7 @@ building the editor requires installing `node`, `yarn`, and `react-scripts`.
 - `npm install -g react-scripts`
 
 ## to build
+from the `app/` directory within the `maiden` source tree (likely `$GOPATH/src/github.com/monome/maiden/app/`)
 
 ```
 yarn install
