@@ -1,9 +1,14 @@
 .icon-button {
     /* padding: 6px; */
-    background-color: Transparent;
+    background-color: transparent;
     background-repeat: no-repeat;
     border: none;
     cursor: pointer;
     overflow: hidden;
     outline: none;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.icon-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
 }

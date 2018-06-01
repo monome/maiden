@@ -10,7 +10,7 @@ import './icon-button.css';
 class IconButton extends Component {
     handleClick = () => {
         if (!this.props.disabled) {
-            this.props.action()
+            this.props.action();
         }
     }
 
