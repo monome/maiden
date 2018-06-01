@@ -62,165 +62,161 @@ func main() {
 		ctx.JSON(http.StatusOK, apiInfo{"maiden", version})
 	})
 
-	logger := os.Stderr
-
 	// dust api
 	apiPrefix := filepath.Join(apiRoot, "dust")
-	devicePath := makeDevicePath(*dataDir)
-	api.GET("/dust", rootListingHandler(logger, apiPrefix, devicePath))
-	api.GET("/dust/*name", listingHandler(logger, apiPrefix, devicePath))
-	api.PUT("/dust/*name", writeHandler(logger, apiPrefix, devicePath))
-	api.PATCH("/dust/*name", renameHandler(logger, apiPrefix, devicePath))
-	api.DELETE("/dust/*name", deleteHandler(logger, apiPrefix, devicePath))
+	s := server{
+		logger:       os.Stderr,
+		apiPrefix:    apiPrefix,
+		devicePath:   makeDevicePath(*dataDir),
+		resourcePath: makeResourcePath(apiPrefix),
+	}
+	api.GET("/dust", s.rootListingHandler)
+	api.GET("/dust/*name", s.listingHandler)
+	api.PUT("/dust/*name", s.writeHandler)
+	api.PATCH("/dust/*name", s.renameHandler)
+	api.DELETE("/dust/*name", s.deleteHandler)
 
 	r.Run(fmt.Sprintf(":%d", *port))
 }
 
-func rootListingHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
-	resourcePath := makeResourcePath(apiPrefix)
+type server struct {
+	logger       io.Writer
+	apiPrefix    string
+	devicePath   devicePathFunc
+	resourcePath prefixFunc
+}
 
-	return func(ctx *gin.Context) {
-		top := "" // MAINT: get rid of this
-		entries, err := ioutil.ReadDir(devicePath(&top))
+func (s *server) rootListingHandler(ctx *gin.Context) {
+	top := "" // MAINT: get rid of this
+	entries, err := ioutil.ReadDir(s.devicePath(&top))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	dir := handleDirRead("", &entries, s.resourcePath)
+	ctx.JSON(http.StatusOK, dir)
+}
+
+func (s *server) listingHandler(ctx *gin.Context) {
+	name := ctx.Param("name")
+	path := s.devicePath(&name)
+
+	fmt.Fprintln(s.logger, "get of name: ", name)
+	fmt.Fprintln(s.logger, "device path: ", path)
+
+	// figure out if this is a file or not
+	info, err := os.Stat(path)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if info.IsDir() {
+		entries, err := ioutil.ReadDir(path)
+		if err != nil {
+			// not sure why this would fail given that we just stat()'d the dir
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		prefix := filepath.Join(s.apiPrefix, name)
+		subResourcePath := makeResourcePath(prefix)
+		dir := handleDirRead(name, &entries, subResourcePath)
+		ctx.JSON(http.StatusOK, dir)
+		return
+	}
+
+	ctx.File(path)
+}
+
+func (s *server) writeHandler(ctx *gin.Context) {
+	name := ctx.Param("name")
+	path := s.devicePath(&name)
+
+	kind, exists := ctx.GetQuery("kind")
+	if exists && kind == "directory" {
+
+		err := os.MkdirAll(path, 0755)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("created directory %s", path)})
+
+	} else {
+		// get code (file) blob
+		file, err := ctx.FormFile("value")
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
-		dir := handleDirRead("", &entries, resourcePath)
-		ctx.JSON(http.StatusOK, dir)
-	}
-}
+		fmt.Fprintf(s.logger, "save path: %s\n", path)
+		fmt.Fprintf(s.logger, "content type: %s\n", file.Header["Content-Type"])
 
-func listingHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		name := ctx.Param("name")
-		path := devicePath(&name)
-
-		fmt.Fprintln(logger, "get of name: ", name)
-		fmt.Fprintln(logger, "device path: ", path)
-
-		// figure out if this is a file or not
-		info, err := os.Stat(path)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-
-		if info.IsDir() {
-			entries, err := ioutil.ReadDir(path)
-			if err != nil {
-				// not sure why this would fail given that we just stat()'d the dir
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-
-			prefix := filepath.Join(apiPrefix, name)
-			subResourcePath := makeResourcePath(prefix)
-			dir := handleDirRead(name, &entries, subResourcePath)
-			ctx.JSON(http.StatusOK, dir)
-			return
-		}
-
-		ctx.File(path)
-	}
-}
-
-func writeHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		name := ctx.Param("name")
-		path := devicePath(&name)
-
-		kind, exists := ctx.GetQuery("kind")
-		if exists && kind == "directory" {
-
-			err := os.MkdirAll(path, 0755)
-			if err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-
-			ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("created directory %s", path)})
-
-		} else {
-			// get code (file) blob
-			file, err := ctx.FormFile("value")
-			if err != nil {
-				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-				return
-			}
-
-			fmt.Fprintf(logger, "save path: %s\n", path)
-			fmt.Fprintf(logger, "content type: %s\n", file.Header["Content-Type"])
-
-			// size, err := io.Copy(out, file)
-			if err := ctx.SaveUploadedFile(file, path); err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-
-			ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("uploaded %s (%s, %d) to %s", file.Filename, file.Header, file.Size, path)})
-		}
-	}
-}
-
-func renameHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
-	resourcePath := makeResourcePath(apiPrefix)
-
-	return func(ctx *gin.Context) {
-		// FIXME: this logic basically assumes PATCH == rename operation at the moment
-		name := ctx.Param("name")
-		path := devicePath(&name)
-
-		// figure out if this exists or not
-		_, err := os.Stat(path)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-
-		// compute new path
-		newName, exists := ctx.GetPostForm("name")
-		if !exists {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "missing 'name' key in form"})
-			return
-		}
-		rename := filepath.Join(filepath.Dir(name), newName)
-		renamePath := devicePath(&rename)
-
-		fmt.Fprintf(logger, "going to rename: %s to: %s\n", path, renamePath)
-
-		err = os.Rename(path, renamePath)
-		if err != nil {
+		// size, err := io.Copy(out, file)
+		if err := ctx.SaveUploadedFile(file, path); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
-		info := patchInfo{resourcePath(rename)}
-		ctx.JSON(http.StatusOK, info)
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("uploaded %s (%s, %d) to %s", file.Filename, file.Header, file.Size, path)})
 	}
 }
 
-func deleteHandler(logger io.Writer, apiPrefix string, devicePath devicePathFunc) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		name := ctx.Param("name")
-		path := devicePath(&name)
+func (s *server) renameHandler(ctx *gin.Context) {
+	// FIXME: this logic basically assumes PATCH == rename operation at the moment
+	name := ctx.Param("name")
+	path := s.devicePath(&name)
 
-		fmt.Fprintln(logger, "going to delete: ", path)
-
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-			return
-		}
-
-		err := os.RemoveAll(path)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("deleted %s", path)})
+	// figure out if this exists or not
+	_, err := os.Stat(path)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
 	}
+
+	// compute new path
+	newName, exists := ctx.GetPostForm("name")
+	if !exists {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "missing 'name' key in form"})
+		return
+	}
+	rename := filepath.Join(filepath.Dir(name), newName)
+	renamePath := s.devicePath(&rename)
+
+	fmt.Fprintf(s.logger, "going to rename: %s to: %s\n", path, renamePath)
+
+	err = os.Rename(path, renamePath)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	info := patchInfo{s.resourcePath(rename)}
+	ctx.JSON(http.StatusOK, info)
+}
+
+func (s *server) deleteHandler(ctx *gin.Context) {
+	name := ctx.Param("name")
+	path := s.devicePath(&name)
+
+	fmt.Fprintln(s.logger, "going to delete: ", path)
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := os.RemoveAll(path)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("deleted %s", path)})
 }
 
 type devicePathFunc func(name *string) string
