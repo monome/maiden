@@ -15,21 +15,36 @@ brew install go
 brew install glide
 ```
 
-next, set your [`$GOPATH`](https://golang.org/doc/code.html#GOPATH) environment variable to specify a location for your Go workspace.  see the [go wiki](https://github.com/golang/go/wiki/SettingGOPATH) for considerations and instructions for your OS.
+IMPORTANT – set your [`$GOPATH`](https://golang.org/doc/code.html#GOPATH) environment variable to specify a location for your Go workspace.  see the [go wiki](https://github.com/golang/go/wiki/SettingGOPATH) for considerations and instructions for your OS.
 
-finally, ensure that you have a `$GOPATH/src` directory.  if you're setting up Go for the first time, you'll want to create it. on macos and other unix systems, that can be done like this:
+
+finally, download the source using `go get`. if one is building/developing directly against the main git repository:
 
 ```
-mkdir -p $GOPATH/src
+go get -d github.com/monome/maiden
 ```
+
+if the repository has been forked on github first then one can download the fork:
+
+```
+go get -d github.com/<your_github_id>/maiden
+```
+
+the `-d` flag is passed to `go get` to ensure it simply downloads the code and does not attempt to immediately build it. in order to build `maiden` it is important to use `glide` to download specific versions of each dependency.
 
 ## building
 
-to build first use glide to pull in all the dependencies then run go build as normal
+to build first use `glide` to pull in all the dependencies then run go build as normal. `glide` should be run from the top of the `maiden` source tree which should be in `$GOPATH/src/github.com/monome/maiden` or `$GOPATH/src/github.com/<your_github_id>/maiden` depending on whether or not the repository was first forked.
 
 ```
 glide install
 go build
+```
+
+_if you forked the repository `glide install` will emit a warning (which is safe to ignore) that looks like this:_
+
+```
+[WARN]	The name listed in the config file (github.com/monome/maiden) does not match the current location (.)
 ```
 
 if developing on a linux or macos it is trivial to cross compile for arm
