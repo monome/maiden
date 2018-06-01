@@ -1,4 +1,4 @@
-package: github.com/ngwese/maiden
+package: github.com/monome/maiden
 import:
 - package: github.com/gin-gonic/gin
   version: 6ad7b9c9d382844036334ad061b832e56269e14f
