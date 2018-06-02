@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -19,17 +20,26 @@ var (
 )
 
 func main() {
-	var port = flag.Int("port", 5000, "http port")
-	var dataDir = flag.String("data", "data/", "path to user data directory")
-	var appDir = flag.String("app", "app/", "path to maiden app directory")
-	var docDir = flag.String("doc", "doc/", "path to matron lua docs")
-	var debug = flag.Bool("debug", false, "enable debug logging")
+	var (
+		httpPort = flag.Int("port", 5000, "HTTP `port`")
+		httpFD   = flag.Int("fd", 0, "file `descriptor` on which to serve HTTP (overrides -port)")
 
+		dataDir = flag.String("data", "data/", "path to user data directory")
+		appDir  = flag.String("app", "app/", "path to maiden app directory")
+		docDir  = flag.String("doc", "doc/", "path to matron lua docs")
+
+		debug = flag.Bool("debug", false, "enable debug logging")
+	)
 	flag.Parse()
+
+	httpLocation := fmt.Sprintf("port %d", *httpPort)
+	if *httpFD > 0 {
+		httpLocation = fmt.Sprintf("fd %d", *httpFD)
+	}
 
 	// FIXME: pull in git version
 	log.Printf("maiden (%s)", version)
-	log.Printf("  port: %d", *port)
+	log.Printf("  http: %s", httpLocation)
 	log.Printf("   app: %s", *appDir)
 	log.Printf("  data: %s", *dataDir)
 	log.Printf("   doc: %s", *docDir)
@@ -76,7 +86,17 @@ func main() {
 	api.PATCH("/dust/*name", s.renameHandler)
 	api.DELETE("/dust/*name", s.deleteHandler)
 
-	r.Run(fmt.Sprintf(":%d", *port))
+	var l net.Listener
+	var err error
+	if *httpFD > 0 {
+		l, err = net.FileListener(os.NewFile(uintptr(*httpFD), "http"))
+	} else {
+		l, err = net.Listen("tcp", fmt.Sprintf(":%d", *httpPort))
+	}
+	if err != nil {
+		log.Fatalf("listen error: %v", err)
+	}
+	log.Fatal(http.Serve(l, r))
 }
 
 type server struct {
