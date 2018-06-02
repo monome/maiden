@@ -126,8 +126,8 @@ func (s *server) listingHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(name)
 
-	s.logf("get of name: ", name)
-	s.logf("device path: ", path)
+	s.logf("get of name: %s\n", name)
+	s.logf("device path: %s\n", path)
 
 	// figure out if this is a file or not
 	info, err := os.Stat(path)
@@ -227,7 +227,7 @@ func (s *server) deleteHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(name)
 
-	s.logf("going to delete: ", path)
+	s.logf("going to delete: %s\n", path)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
