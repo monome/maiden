@@ -26,6 +26,7 @@
     /* display: flex; */
     /* flex-direction: row */
     font-family: monospace;
+    white-space: pre;
 }
 
 /*
