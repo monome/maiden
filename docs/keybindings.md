@@ -17,7 +17,6 @@ a few useful ones include:
 
 (note that these require the editor pane to have focus).   
 
-the 
 vim and emacs modes are also supported (enabled via the configuration page).
 
 ## maiden actions
