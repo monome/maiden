@@ -95,7 +95,7 @@ const repl = (state = initialReplState, action) => {
     case REPL_RECEIVE:
       buffer = state.buffers.get(action.component);
       action.data.split('\n').forEach(line => {
-        buffer = outputAppend(buffer, state.scrollbackLimit, line.replace('\t', '  '));
+        buffer = outputAppend(buffer, state.scrollbackLimit, line);
       });
       return {
         ...state,

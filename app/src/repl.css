@@ -26,6 +26,9 @@
     /* display: flex; */
     /* flex-direction: row */
     font-family: monospace;
+}
+
+.repl-line {
     white-space: pre;
 }
 
