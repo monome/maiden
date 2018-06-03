@@ -28,6 +28,10 @@
     font-family: monospace;
 }
 
+.repl-line {
+    white-space: pre;
+}
+
 /*
 .repl-output-lines {
     flex: 1 1 auto;
