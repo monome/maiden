@@ -4,8 +4,10 @@ import api from './api';
 
 import './editor.css';
 
+import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 import 'brace/mode/lua';
+import 'brace/snippets/lua'
 import 'brace/theme/dawn';
 import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
@@ -154,6 +156,8 @@ class Editor extends Component {
                 onLoad={this.onLoad}
                 onChange={this.onChange}
                 showPrintMargin={false}
+                enableBasicAutocompletion={true}
+                enableSnippets={true}
                 editorProps={{
                     $blockScrolling: Infinity,
                     $newLineMode: "unix",

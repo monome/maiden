@@ -28,6 +28,10 @@
     font-family: monospace;
 }
 
+.repl-line {
+    white-space: pre;
+}
+
 /*
 .repl-output-lines {
     flex: 1 1 auto;
@@ -64,9 +68,10 @@
 .repl-input > .label {
     flex: 0 0 auto;
     /* height: 40px; */
-    padding: 0px 5px 5px 5px;
-    color:  rgb(117, 117, 117);
-    font-size: 20px;
+    padding: 5px 5px 5px 5px;
+    /* color:  rgb(117, 117, 117); */
+    font-size: 16px;
+    font-family: monospace;
 }
 
 .repl-input > .value {
@@ -82,6 +87,7 @@
     box-shadow: none;
     font-size: 16px;
     font-family: monospace;
+    padding-top: 5px;
     /* text-align: center; */
 
 }
