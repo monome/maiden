@@ -2,12 +2,21 @@
 
 self contained web based editor for norns
 
+`maiden` consists of two parts - a backend http server and a frontend single page web app.
+
 ## setup
 
-development can either be done directly on the device or on a linux/macos machine by installing the toolchain
+development can either be done directly on the device or on a linux/macos machine by installing the toolchain.
 
 * install [go](https://golang.org)
 * install [glide](https://glide.sh/)
+
+known compatible versions:
+
+tool | version
+-----|---------
+go | 1.10+
+glide | 0.13.1+
 
 on macos (for development) this is easily done with brew:
 ```
@@ -52,6 +61,7 @@ if developing on a linux or macos it is trivial to cross compile for arm
 GOOS=linux GOARCH=arm go build -o maiden.arm
 ```
 **tip:** _install FUSE on your linux/macos machine and then mount the device filesystem using sshfs - the build results can then be written directly to the device._
+
 
 ...one also needs to build the [**ui**](app/README.md) as well.
 
