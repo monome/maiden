@@ -6,9 +6,8 @@
     cursor: pointer;
     overflow: hidden;
     outline: none;
-    transition: background-color 0.3s ease-in-out;
 }
 
-.icon-button:hover {
-    background-color: rgba(0, 0, 0, 0.1);
+.icon-button:disabled {
+    cursor: not-allowed;
 }

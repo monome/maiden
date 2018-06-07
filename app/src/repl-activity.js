@@ -27,7 +27,7 @@ const ReplTools = (props) => {
                 tooltipPosition={tool.tooltipPosition}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
-                color="#979797"       // FIXME:
+                color="hsl(0, 0%, 59%)"
                 size="24"           // FIXME:
             />
         );
@@ -56,7 +56,7 @@ const ReplConnect = (props) => {
                     tooltipMessage="refresh connection"
                     tooltipPosition="top"
                     icon={ICONS['loop2']}
-                    color="#979797"       // FIXME:
+                    color="hsl(0, 0%, 59%)"
                     size="24"           // FIXME:
                 />
             </div>

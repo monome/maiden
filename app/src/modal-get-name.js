@@ -106,14 +106,14 @@ class ModalGetName extends Component {
                     key='cancel'
                     action={() => this.complete('cancel')}
                     icon={ICONS['cross']}
-                    color="#979797"   // FIXME:
+                    color="hsl(0, 0%, 59%)"
                     size="24"
                 />
                 <IconButton
                     key='ok'
                     action={() => this.complete('ok')}
                     icon={ICONS['check']}
-                    color="#979797"   // FIXME:
+                    color="hsl(0, 0%, 59%)"
                     size="30"
                 />
             </div>
