@@ -20,7 +20,7 @@ const ModalContent = props => (
         tooltipMessage="cancel"
         tooltipPosition="top"
         icon={ICONS.cross}
-        color="#979797" // FIXME:
+        color="hsl(0, 0%, 59%)"
         size="24"
       />
       <IconButton
@@ -29,7 +29,7 @@ const ModalContent = props => (
         tooltipMessage="ok"
         tooltipPosition="top"
         icon={ICONS.check}
-        color="#979797" // FIXME:
+        color="hsl(0, 0%, 59%)"
         size="30"
       />
     </div>

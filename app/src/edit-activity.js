@@ -38,8 +38,7 @@ const EditTools = (props) => {
                 key={tool.name}
                 action={() => props.buttonAction(tool.name)}
                 icon={tool.icon}
-                color="#979797"       // FIXME:
-                disabledColor="rgb(175, 175, 175)"
+                color="hsl(0, 0%, 59%)"
                 size="24"           // FIXME:
                 disabled={tool.disabled}
             />
