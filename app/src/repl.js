@@ -1,3 +1,4 @@
+import Linkify from 'react-linkify';
 import React, { Component } from 'react';
 import './repl.css';
 
@@ -27,9 +28,13 @@ class ReplOutput extends Component {
         return atBottom;
     }
 
+    linkify(l) {
+        return <Linkify properties={{target: '_blank'}}>{l}</Linkify>
+    }
+
     render() {
         let lines = this.props.lines.map((l, key) =>
-            <div className="repl-line" key={key}>{l}</div>
+            <div className="repl-line" key={key}>{this.linkify(l)}</div>
         )
         
         // this.isScrolledBottom()
@@ -41,7 +46,7 @@ class ReplOutput extends Component {
                 {lines}
             </div>
         )
-    };
+    }
 }
 
 class ReplInput extends Component {
