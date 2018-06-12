@@ -14,6 +14,9 @@ a few useful ones include:
 | ⌘ / | ctrl+/ | toggle comment |
 | ⌘ d | ctrl+d | remove line |
 | ⌘ shift d | ctrl+shift+d | duplicate line |
+| tab | tab | indent |
+| shift+tab | shift+tab | outdent |
+| ctrl+space | ctrl+space | see code completions, snippets |
 
 (note that these require the editor pane to have focus).   
 
