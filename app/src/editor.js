@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
 import api from './api';
+import { getCompleter } from './services';
 
 import './editor.css';
 
@@ -11,6 +12,9 @@ import 'brace/snippets/lua'
 import 'brace/theme/dawn';
 import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
+
+import ace from 'brace';
+const langTools = ace.acequire("ace/ext/language_tools");
 
 class Editor extends Component {
     constructor(props) {
@@ -144,6 +148,11 @@ class Editor extends Component {
         // fall back to a simple text mode for non-lua files.
         const fileName = this.props.bufferName;
         const mode = fileName && fileName.endsWith(".lua") ? "lua" : "text";
+
+        const completer = getCompleter(fileName);
+        if (completer) {
+          langTools.addCompleter(completer);
+        }
 
         return (
             <AceEditor
