@@ -1,4 +1,5 @@
 import OS from './utils';
+import { nornsSnippetCompleter } from './snippets';
 
 const Modifier = {
   CMD: 1,
@@ -98,3 +99,10 @@ keyService.bindings = [
   new KeyBinding(new KeyStroke(Modifier.CMD, 'b'), 'toggle sidebar'),
   new KeyBinding(new KeyStroke(Modifier.CMD, ';'), 'show config'),
 ];
+
+export function getCompleter(fileName) {
+  if (fileName && fileName.endsWith('.lua')) {
+    return nornsSnippetCompleter;
+  }
+  return null;
+}

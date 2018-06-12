@@ -15,3 +15,29 @@ body .ace_editor .ace_gutter-cell.ace_error {
     background-repeat: no-repeat;
     background-position: 2px center;
 }
+
+
+.ace_tooltip {
+    background-color: #FFF;
+    background-image: none;
+    border: 1px solid gray;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color: black;
+    font-family: monospace;
+    max-width: 100%;
+    padding: 3px 4px;
+    position: fixed;
+    z-index: 999999;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    cursor: default;
+    white-space: pre;
+    word-wrap: break-word;
+    line-height: normal;
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    pointer-events: none;
+}
