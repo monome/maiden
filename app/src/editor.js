@@ -14,7 +14,7 @@ import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
 
 import ace from 'brace';
-const lang_tools = ace.acequire("ace/ext/language_tools");
+const langTools = ace.acequire("ace/ext/language_tools");
 
 class Editor extends Component {
     constructor(props) {
@@ -151,7 +151,7 @@ class Editor extends Component {
 
         const completer = getCompleter(fileName);
         if (completer) {
-          lang_tools.addCompleter(completer);
+          langTools.addCompleter(completer);
         }
 
         return (
