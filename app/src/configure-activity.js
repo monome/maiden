@@ -48,13 +48,9 @@ class ConfigureActivity extends Component {
     return (
       <div className="configure-activity" style={this.state.style}>
         <div className="configure-upper">
-          <div className="configure-header">
-                editor options
-          </div>
+          <div className="configure-header">editor options</div>
           <div className="configure-item">
-            <div className="configure-label">
-                    key bindings:
-            </div>
+            <div className="configure-label">key bindings:</div>
             <div className="configure-options">
               {this.renderEditorOption('keyBoardHandler', null, 'default (ace)')}
               {this.renderEditorOption('keyBoardHandler', 'ace/keyboard/vim', 'vim')}
@@ -62,9 +58,7 @@ class ConfigureActivity extends Component {
             </div>
           </div>
           <div className="configure-item">
-            <div className="configure-label">
-                    tab size:
-            </div>
+            <div className="configure-label">tab size:</div>
             <div className="configure-options">
               {this.renderEditorOption('tabSize', 2, 'two')}
               {this.renderEditorOption('tabSize', 4, 'four')}
@@ -73,7 +67,9 @@ class ConfigureActivity extends Component {
         </div>
         <div className="configure-lower">
           <div className="configure-about">
-            <span>maiden version: {VERSION} ({COMMIT})</span>
+            <span>
+              maiden version: {VERSION} ({COMMIT})
+            </span>
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Icon = (props) => {
+const Icon = props => {
   const styles = {
     svg: {
       display: 'inline-block',
@@ -12,17 +12,12 @@ const Icon = (props) => {
     ...props.style,
   };
 
-    // MAINT: render this portion of the svg, dependent on source SVG
-    // const viewBox = `0 0 ${props.size} ${props.size}`;
+  // MAINT: render this portion of the svg, dependent on source SVG
+  // const viewBox = `0 0 ${props.size} ${props.size}`;
   const viewBox = '0 0 32 32';
 
   return (
-    <svg
-      style={styles.svg}
-      width={`${props.size}px`}
-      height={`${props.size}px`}
-      viewBox={viewBox}
-    >
+    <svg style={styles.svg} width={`${props.size}px`} height={`${props.size}px`} viewBox={viewBox}>
       <path style={styles.path} d={props.icon} />
     </svg>
   );

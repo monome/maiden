@@ -32,10 +32,7 @@ class App extends Component {
     return (
       <div>
         <div className="app-header" style={headerStyle} />
-        <BoundWorkspace
-          activities={activities}
-          {...this.state}
-        />
+        <BoundWorkspace activities={activities} {...this.state} />
       </div>
     );
   }

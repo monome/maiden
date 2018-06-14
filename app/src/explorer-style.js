@@ -42,10 +42,8 @@ export default {
       header: {
         base: {
           color: '#9DA5AB',
-
         },
-        connector: {
-        },
+        connector: {},
         title: {
           lineHeight: '24px',
           verticalAlign: 'middle',
