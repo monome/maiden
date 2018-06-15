@@ -108,7 +108,12 @@ const repl = (state = initialReplState, action) => {
         console.log("No socket; can't send", action.value, 'to', action.component);
         return state;
       }
-      socket.send(`${action.value}\n`);
+      if (action.component === 'sc') {
+        // lame, sclang expects commands to be terminated with special command bytes
+        socket.send(`${action.value}\x1b`);
+      } else {
+        socket.send(`${action.value}\n`);
+      }
       // add command to history list
       history = state.history.get(action.component).unshift(action.value);
       // echo command to output buffer
