@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
 import api from './api';
-import { getCompleter } from './services';
+import { editorService } from './services';
 
 import './editor.css';
 
@@ -12,9 +12,6 @@ import 'brace/snippets/lua'
 import 'brace/theme/dawn';
 import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
-
-import ace from 'brace';
-const langTools = ace.acequire("ace/ext/language_tools");
 
 class Editor extends Component {
     constructor(props) {
@@ -52,7 +49,7 @@ class Editor extends Component {
 
         // the 'showSettingsMenu' from 'brace/ext/settings_menu' exposes a host of themes and
         // modes we don't want to support (or require unconditionally).
-        this.editor.commands.removeCommand('showSettingsMenu')
+        this.editor.commands.removeCommand('showSettingsMenu');
 
         // TODO (pq): remove keys bound in the key service to ensure no interference.
 
@@ -145,19 +142,13 @@ class Editor extends Component {
         const width = `${this.props.width}px`;
         const height = `${this.props.height}px`;
 
-        // fall back to a simple text mode for non-lua files.
-        const fileName = this.props.bufferName;
-        const mode = fileName && fileName.endsWith(".lua") ? "lua" : "text";
-
-        const completer = getCompleter(fileName);
-        if (completer) {
-          langTools.addCompleter(completer);
-        }
+        const mode = editorService.getMode(this.props.bufferName);
+        mode.onRender(this.editor);   
 
         return (
             <AceEditor
                 ref="ace"
-                mode={mode}
+                mode={mode.id}
                 theme="dawn"
                 width={width}
                 height={height}

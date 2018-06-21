@@ -1,5 +1,4 @@
-/* eslint no-template-curly-in-string: "off" */
-
+/* eslint-disable no-template-curly-in-string */
 const snippets = {
   cleanup: {
     code: '-- cleanup, release memory\nfunction cleanup()\n  ${0}\nend',
@@ -27,11 +26,10 @@ const snippets = {
   },
   // TODO (pq): add midi, hid, ...
 };
+/* eslint-enable no-template-curly-in-string */
 
 export const nornsSnippetCompleter = {
   getCompletions(editor, session, pos, prefix, callback) {
-    // Skip null prefixes until we can find a way to de-dup results.
-    if (prefix.length === 0) { callback(null, []); return; }
     callback(
       null,
       Object.keys(snippets).map((word) => ({
@@ -46,7 +44,7 @@ export const nornsSnippetCompleter = {
   },
   getDocTooltip(item) {
     if (item.meta === 'norns' && !item.docHTML) {
-      /* eslint no-param-reassign: "off" */
+      /* eslint-disable-next-line no-param-reassign */
       item.docHTML = [
         '<b>',
         item.caption,
