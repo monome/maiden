@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import Icon from './icon';
 import ReactTooltip from 'react-tooltip';
+import Icon from './icon';
 import './icon-button.css';
 
 // TODO:
@@ -50,7 +50,7 @@ class IconButton extends Component {
   handleMouseEnter = () => {
     // Only apply the hover styles if the button is active
     if (!this.props.disabled) {
-      this.setState((prevState, props) => ({
+      this.setState(() => ({
         color: this.hoverColor,
       }));
     }

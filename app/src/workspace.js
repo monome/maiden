@@ -34,7 +34,7 @@ class Workspace extends Component {
     this.registerCommands();
 
     // prevent accidental navigation out of maiden via swipe gestures
-    const preventNavigation = function(e) {
+    const preventNavigation = e => {
       let delta = e.deltaX || e.wheelDeltaX;
       if (!delta) {
         return;

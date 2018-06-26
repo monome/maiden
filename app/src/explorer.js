@@ -86,12 +86,12 @@ class Section extends Component {
   }
 
   componentDidMount() {
-    this.section.onmouseenter = e => {
+    this.section.onmouseenter = () => {
       this.setState({
         showTools: true,
       });
     };
-    this.section.onmouseleave = e => {
+    this.section.onmouseleave = () => {
       this.setState({
         showTools: false,
       });
@@ -113,7 +113,7 @@ class Section extends Component {
     this.setState({ selectedNode: node });
   };
 
-  onHeaderToggle = event => {
+  onHeaderToggle = () => {
     this.props.explorerToggleCategory(this.getCategory());
   };
 
@@ -229,13 +229,12 @@ class Section extends Component {
     this.props.showModal(content);
   };
 
-  handleNewFolder = selectedNode => {
+  handleNewFolder = clickedNode => {
     // if no selected node, validate/create against root names
     // if selected node is file, validate/create against siblings name
     // if selected node is dir, validate/create against *children* of dir
-    if (!selectedNode) {
-      selectedNode = this.getNode();
-    }
+    const selectedNode = clickedNode || this.getNode();
+
     const selectedResource = selectedNode.url;
     const category = this.getCategory();
 

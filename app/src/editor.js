@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
-import api from './api';
-import { getCompleter } from './services';
-
-import './editor.css';
-
+import ace from 'brace';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 import 'brace/mode/lua';
@@ -13,7 +9,10 @@ import 'brace/theme/dawn';
 import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
 
-import ace from 'brace';
+import api from './api';
+import { getCompleter } from './services';
+
+import './editor.css';
 
 const langTools = ace.acequire('ace/ext/language_tools');
 

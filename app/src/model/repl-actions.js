@@ -71,13 +71,13 @@ export const replEndpoints = cb => dispatch => {
 export const replConnect = (component, endpoint) => dispatch => {
   dispatch(replConnectDial(component, endpoint));
   const socket = new WebSocket(endpoint, ['bus.sp.nanomsg.org']);
-  socket.onopen = event => {
+  socket.onopen = () => {
     dispatch(replConnectSuccess(component, socket));
   };
   socket.onerror = error => {
     dispatch(replConnectFailure(component, error));
   };
-  socket.onclose = event => {
+  socket.onclose = () => {
     dispatch(replConnectClose(component));
   };
   socket.onmessage = event => {

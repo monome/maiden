@@ -37,6 +37,7 @@
         "fetch": true,
         "FormData": true,
         "it": true,
+        "describe": true,
         "navigator": true,
         "WebSocket": true,
         "window": true,

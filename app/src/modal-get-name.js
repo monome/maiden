@@ -55,7 +55,7 @@ class ModalGetName extends Component {
     }
   };
 
-  handleOnChange = event => {
+  handleOnChange = () => {
     if (this.siblingNames.has(this.textArea.value)) {
       this.setState({
         errorMessage: 'name already in use',

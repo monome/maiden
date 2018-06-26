@@ -210,10 +210,7 @@ class EditActivity extends Component {
     const canEdit = this.isText(buffer);
     const code = canEdit ? buffer.get('value') : '';
 
-    const enabledTools = tools.map(t => {
-      t.disabled = !canEdit;
-      return t;
-    });
+    const enabledTools = tools.map(t => ({ ...t, disabled: !canEdit }));
 
     // TODO (pq): move this somewhere more appropriate.
     commandService.registerCommand('toggle repl', () => this.props.replToggle());
