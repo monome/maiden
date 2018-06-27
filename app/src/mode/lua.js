@@ -44,10 +44,8 @@ const luaKeyWordsToAdd = [
 class NornsLuaRules extends window.ace.acequire('ace/mode/lua_highlight_rules').LuaHighlightRules {
   constructor() {
     super();
-    console.log(this.$keywordList);
     const filteredKeywords = this.$keywordList.filter(k => !includes(luaKeyWordsToFilter, k));
     this.$keywordList = filteredKeywords.concat(luaKeyWordsToAdd);
-    console.log(this.$keywordList);
   }
 }
 
