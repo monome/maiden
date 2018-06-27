@@ -1,5 +1,8 @@
 import OS from './utils';
 import { nornsSnippetCompleter } from './snippets';
+import NornsLuaMode from './mode/lua';
+
+const includes = require('array-includes');
 
 const Modifier = {
   CMD: 1,
@@ -100,9 +103,51 @@ keyService.bindings = [
   new KeyBinding(new KeyStroke(Modifier.CMD, ';'), 'show config'),
 ];
 
-export function getCompleter(fileName) {
-  if (fileName && fileName.endsWith('.lua')) {
-    return nornsSnippetCompleter;
+export class EditorMode {
+  constructor(id) {
+    this.id = id;
   }
-  return null;
+
+  /* eslint-disable-next-line no-unused-vars */
+  onRender(editor) {
+    // no-op; optionally overridden in subclasses.
+  }
 }
+
+class LuaMode extends EditorMode {
+  constructor() {
+    super('lua');
+    this.nornsLuaAceMode = new NornsLuaMode();
+  }
+  onRender(editor) {
+    // ensure our contributions are registered.
+    const session = editor.getSession();
+    if (session.getMode() !== this.nornsLuaAceMode) {
+      session.setMode(this.nornsLuaAceMode);
+    }
+
+    const completers = editor.completers;
+    if (!includes(completers, nornsSnippetCompleter)) {
+      completers.push(nornsSnippetCompleter);
+    }
+  }
+}
+
+class TextMode extends EditorMode {
+  constructor() {
+    super('text');
+  }
+}
+
+class EditorService {
+  constructor() {
+    this.luaMode = new LuaMode();
+    this.textMode = new TextMode();
+  }
+  getMode(fileName) {
+    // fall back to a simple text mode for non-lua files.
+    return fileName && fileName.endsWith('.lua') ? this.luaMode : this.textMode;
+  }
+}
+
+export const editorService = new EditorService();
