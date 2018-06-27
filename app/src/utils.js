@@ -1,5 +1,4 @@
-function OS() {
-}
+function OS() {}
 
 OS.isMac = navigator.appVersion.indexOf('Mac') !== -1;
 

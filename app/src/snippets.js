@@ -31,10 +31,13 @@ const snippets = {
 export const nornsSnippetCompleter = {
   getCompletions(editor, session, pos, prefix, callback) {
     // Skip null prefixes until we can find a way to de-dup results.
-    if (prefix.length === 0) { callback(null, []); return; }
+    if (prefix.length === 0) {
+      callback(null, []);
+      return;
+    }
     callback(
       null,
-      Object.keys(snippets).map((word) => ({
+      Object.keys(snippets).map(word => ({
         caption: word,
         value: word,
         snippet: snippets[word].code,

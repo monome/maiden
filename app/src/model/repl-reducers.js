@@ -32,6 +32,11 @@ repl: {
 }
 */
 
+export const outputAppend = (buffer, limit, line) => {
+  const newbuffer = buffer.push(line);
+  return newbuffer.size > limit ? newbuffer.shift() : newbuffer;
+};
+
 const initialReplState = {
   scrollbackLimit: 200,
   activeRepl: 'matron',
@@ -43,7 +48,9 @@ const initialReplState = {
 
 const repl = (state = initialReplState, action) => {
   const conn = state.connections.get(action.component);
-  let changes, history, buffer;
+  let changes;
+  let history;
+  let buffer;
 
   switch (action.type) {
     case REPL_ENDPOINTS_SUCCESS:
@@ -137,14 +144,6 @@ const repl = (state = initialReplState, action) => {
     default:
       return state;
   }
-};
-
-const outputAppend = (buffer, limit, line) => {
-  buffer = buffer.push(line);
-  if (buffer.size > limit) {
-    buffer = buffer.shift();
-  }
-  return buffer;
 };
 
 export default repl;

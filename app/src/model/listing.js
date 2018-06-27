@@ -29,6 +29,38 @@ export const keyPathForResource = (listing, resource) => {
   return walk(listing, undefined);
 };
 
+export const orderByTypeThenName = (a, b) => {
+  const na = a.get('name');
+  const aIsDir = a.get('children') !== undefined;
+  const nb = b.get('name');
+  const bIsDir = b.get('children') !== undefined;
+
+  // console.log("a:", na, aIsDir, "b:", nb, bIsDir);
+
+  // sort directories first in the list
+  if (aIsDir && !bIsDir) {
+    return -1;
+  }
+  if (bIsDir && !aIsDir) {
+    return 1;
+  }
+
+  // both are either file or dir, sort by name
+  if (na < nb) {
+    return -1;
+  }
+  if (na > nb) {
+    return 1;
+  }
+  return 0;
+};
+
+export const muxInVirtualNodes = (base, incoming) => {
+  const keys = new Set(incoming.map(n => n.get('url')));
+  const virtuals = base.filter(n => n.get('virtual', false) && !keys.has(n.get('url')));
+  return incoming.push(...virtuals);
+};
+
 export const nodeForResource = (rootNodes, resource) => {
   const keyPath = keyPathForResource(rootNodes, resource);
   if (keyPath) {
@@ -36,6 +68,8 @@ export const nodeForResource = (rootNodes, resource) => {
   }
   return undefined;
 };
+
+export const nodeIsDir = node => node.has('children');
 
 export const keyPathParent = keyPath => {
   if (keyPath && keyPath.size > 2) {
@@ -57,7 +91,7 @@ export const listingReduce = (listing, reduceFn, initial = undefined) => {
     if (!nodes) {
       return acc;
     }
-    return nodes.reduce((acc, node, key) => reduceFn(walk(node.get('children'), acc), node), acc);
+    return nodes.reduce((acc, node) => reduceFn(walk(node.get('children'), acc), node), acc);
   };
   return walk(listing, initial);
 };
@@ -66,8 +100,10 @@ export const spliceDirInfo = (listing, target, info) => {
   let path = keyPathForResource(listing, target);
   if (path) {
     path = path.push('children');
-    info = muxInVirtualNodes(listing.getIn(path), info).sort(orderByTypeThenName);
-    return listing.setIn(path, info);
+    return listing.setIn(
+      path,
+      muxInVirtualNodes(listing.getIn(path), info).sort(orderByTypeThenName),
+    );
   }
   console.log('unable to find resource in listing, ');
   return listing;
@@ -116,7 +152,7 @@ export const spliceNodes = (rootNodes, nodes) => {
     return rootNodes;
   }
 
-  return nodes.reduce((acc, node, key) => {
+  return nodes.reduce((acc, node) => {
     const url = node.get('url');
     const parsed = parsePath(url);
     const keyPath = keyPathForResource(acc, parsed.dir);
@@ -143,32 +179,6 @@ export const orderByName = (a, b) => {
   const na = a.get('name');
   const nb = b.get('name');
 
-  if (na < nb) {
-    return -1;
-  }
-  if (na > nb) {
-    return 1;
-  }
-  return 0;
-};
-
-export const orderByTypeThenName = (a, b) => {
-  const na = a.get('name');
-  const aIsDir = a.get('children') !== undefined;
-  const nb = b.get('name');
-  const bIsDir = b.get('children') !== undefined;
-
-  // console.log("a:", na, aIsDir, "b:", nb, bIsDir);
-
-  // sort directories first in the list
-  if (aIsDir && !bIsDir) {
-    return -1;
-  }
-  if (bIsDir && !aIsDir) {
-    return 1;
-  }
-
-  // both are either file or dir, sort by name
   if (na < nb) {
     return -1;
   }
@@ -211,8 +221,6 @@ export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
   return name;
 };
 
-export const nodeIsDir = node => node.has('children');
-
 export const directoryNode = (name, resource, children = []) =>
   new Map({ name, url: resource, children });
 
@@ -249,12 +257,6 @@ export const appendNodes = (base, additions) => {
   const keys = new Set(base.map(n => n.get('url')));
   const adds = additions.filterNot(n => keys.has(n.get('url')));
   return base.push(...adds);
-};
-
-export const muxInVirtualNodes = (base, incoming) => {
-  const keys = new Set(incoming.map(n => n.get('url')));
-  const virtuals = base.filter(n => n.get('virtual', false) && !keys.has(n.get('url')));
-  return incoming.push(...virtuals);
 };
 
 export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 'children']);

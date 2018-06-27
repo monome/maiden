@@ -5,28 +5,25 @@ import { activitySelect } from './model/activity-actions';
 
 import { toggleComponent } from './model/ui-actions';
 
-import {
-  replEndpoints,
-  replConnect,
-} from './model/repl-actions';
+import { replEndpoints, replConnect } from './model/repl-actions';
 
 import { rootList } from './model/edit-actions';
 import { DUST_SCRIPT_PATH, DUST_DATA_PATH, DUST_AUDIO_PATH, DUST_LUA_LIB_PATH } from './constants';
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const selected = state.activity.selected;
   const endpoints = state.repl.endpoints;
   return { selected, endpoints };
 };
 
 const mapDispatchToProps = dispatch => ({
-  activitySelect: (name) => {
+  activitySelect: name => {
     dispatch(activitySelect(name));
   },
-  toggleComponent: (name) => {
+  toggleComponent: name => {
     dispatch(toggleComponent(name));
   },
-  replEndpoints: (cb) => {
+  replEndpoints: cb => {
     dispatch(replEndpoints(cb));
   },
   replConnect: (component, endpoint) => {
@@ -43,12 +40,9 @@ const mapDispatchToProps = dispatch => ({
   },
   luaLibList: () => {
     dispatch(rootList(DUST_LUA_LIB_PATH));
-  }
+  },
 });
 
-const BoundWorkspace = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Workspace);
+const BoundWorkspace = connect(mapStateToProps, mapDispatchToProps)(Workspace);
 
 export default BoundWorkspace;

@@ -16,9 +16,7 @@ import {
   scriptDuplicate,
   resourceDelete,
   resourceRename,
-
   toolInvoke,
-
   explorerActiveNode,
   explorerToggleNode,
   directoryCreate,
@@ -47,25 +45,26 @@ const getExplorerData = createSelector(
   (buffers, activeBuffer, activeNode, rootNodes, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
 
-    const enrich = items => items.map((l) => {
-      const item = { ...l };
-      item.activeBuffer = l.url === activeBuffer;
-      item.activeNode = l.url === activeNode;
-      item.toggled = expandedNodes.has(l.url);
+    const enrich = items =>
+      items.map(l => {
+        const item = { ...l };
+        item.activeBuffer = l.url === activeBuffer;
+        item.activeNode = l.url === activeNode;
+        item.toggled = expandedNodes.has(l.url);
 
-      const buffer = buffers.get(l.url);
-      if (buffer) {
-        item.loaded = true;
-        item.modified = buffer.get('modified') || false;
-        item.virtual = buffer.get('virtual') || false;
-      }
+        const buffer = buffers.get(l.url);
+        if (buffer) {
+          item.loaded = true;
+          item.modified = buffer.get('modified') || false;
+          item.virtual = buffer.get('virtual') || false;
+        }
 
-      if (item.children) {
-        item.children = enrich(item.children);
-      }
+        if (item.children) {
+          item.children = enrich(item.children);
+        }
 
-      return item;
-    });
+        return item;
+      });
 
     return enrich(rootNodes.toJS());
   },
@@ -76,7 +75,7 @@ const getActiveNode = createSelector(
   (activeNode, rootNodes) => nodeForResource(rootNodes, activeNode),
 );
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   const { activeBuffer, buffers } = state.edit;
   return {
     activeBuffer,
@@ -100,28 +99,28 @@ const mapDispatchToProps = dispatch => ({
   audioList: () => {
     dispatch(rootList('audio'));
   },
-  bufferRead: (resource) => {
+  bufferRead: resource => {
     dispatch(bufferRead(resource));
   },
-  directoryRead: (resource) => {
+  directoryRead: resource => {
     dispatch(directoryRead(resource));
   },
   bufferChange: (resource, value) => {
     dispatch(bufferChange(resource, value));
   },
-  bufferSelect: (resource) => {
+  bufferSelect: resource => {
     dispatch(bufferSelect(resource));
   },
   bufferSave: (resource, code, completionCB = () => {}) => {
     dispatch(bufferSave(resource, code, completionCB));
   },
-  scriptRun: (resource) => {
+  scriptRun: resource => {
     const file = api.fileFromResource(resource);
     if (file) {
       const cmd = `norns.script.load("${file}")`;
       dispatch(replSend(MATRON_COMPONENT, cmd));
     } else {
-      console.log("resource:", resource, "cannot be run as a script");
+      console.log('resource:', resource, 'cannot be run as a script');
     }
   },
 
@@ -129,24 +128,23 @@ const mapDispatchToProps = dispatch => ({
   sidebarToggle: () => {
     dispatch(sidebarToggle());
   },
-  sidebarSize: (width) => {
+  sidebarSize: width => {
     dispatch(sidebarSize(width));
   },
   replToggle: () => {
     dispatch(replToggle());
   },
-  replSize: (height) => {
+  replSize: height => {
     dispatch(replSize(height));
   },
 
-
   // tools
-  toolInvoke: (name) => {
+  toolInvoke: name => {
     dispatch(toolInvoke(name));
   },
 
   // explorer
-  explorerActiveNode: (node) => {
+  explorerActiveNode: node => {
     dispatch(explorerActiveNode(node));
   },
   explorerToggleNode: (node, toggled) => {
@@ -155,10 +153,10 @@ const mapDispatchToProps = dispatch => ({
   explorerScriptNew: (sibling, value, name, category) => {
     dispatch(scriptNew(sibling, value, name, category));
   },
-  explorerScriptDuplicate: (source) => {
+  explorerScriptDuplicate: source => {
     dispatch(scriptDuplicate(source));
   },
-  explorerResourceDelete: (resource) => {
+  explorerResourceDelete: resource => {
     dispatch(resourceDelete(resource));
   },
   explorerResourceRename: (activeNode, newName, virtual) => {
@@ -167,19 +165,16 @@ const mapDispatchToProps = dispatch => ({
   explorerDirectoryCreate: (resource, name, category) => {
     dispatch(directoryCreate(resource, name, category));
   },
-  explorerToggleCategory: (name) => {
+  explorerToggleCategory: name => {
     dispatch(toggleCategory(name));
   },
 
   // config
-  editorConfig: (resource) => {
+  editorConfig: resource => {
     dispatch(editorConfig(resource));
   },
 });
 
-const BoundEditActivity = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(EditActivity);
+const BoundEditActivity = connect(mapStateToProps, mapDispatchToProps)(EditActivity);
 
 export default BoundEditActivity;

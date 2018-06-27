@@ -38,12 +38,11 @@ const handleToggleComponent = (state, action) => {
 
 const handleToggleCategory = (state, action) => {
   if (state.collapsedCategories.has(action.name)) {
-    let newCollapsedCategories = state.collapsedCategories.delete(action.name);
-    return { ...state, collapsedCategories: newCollapsedCategories };
-  } else {
-    let newCollapsedCategories = state.collapsedCategories.add(action.name);
+    const newCollapsedCategories = state.collapsedCategories.delete(action.name);
     return { ...state, collapsedCategories: newCollapsedCategories };
   }
+  const newCollapsedCategories = state.collapsedCategories.add(action.name);
+  return { ...state, collapsedCategories: newCollapsedCategories };
 };
 
 const ui = (state = initialState, action) => {

@@ -58,7 +58,7 @@ export const editorConfig = resource => dispatch => {
 
 export const updateEditorConfig = (resource, value) => dispatch => {
   dispatch(updateEditorConfigRequest(resource, value));
-  api.writeJSONResource(resource, value, response => {
+  api.writeJSONResource(resource, value, () => {
     // FIXME: handle errors
     dispatch(updateEditorConfigSuccess(resource, value));
   });

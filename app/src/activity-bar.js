@@ -8,7 +8,7 @@ class ActivityBar extends Component {
     const upperItems = [];
     const lowerItems = [];
 
-    this.props.activities.forEach((activity) => {
+    this.props.activities.forEach(activity => {
       const button = (
         <IconButton
           key={activity.selector + activity.toggle}
@@ -28,10 +28,7 @@ class ActivityBar extends Component {
     });
 
     return (
-      <ToolBar
-        style={this.props.style}
-        lowerChildren={lowerItems}
-      >
+      <ToolBar style={this.props.style} lowerChildren={lowerItems}>
         {upperItems}
       </ToolBar>
     );

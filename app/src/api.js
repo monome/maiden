@@ -15,11 +15,11 @@ class API {
     }
     return resourceBase + encodeURI(name);
   }
-  
+
   static childResourceForName(name, parentResource) {
     return `${parentResource}/${encodeURI(name)}`;
   }
-  
+
   static listRoot(resourceRoot, cb) {
     fetch(apiPath(resourceRoot)).then(cb);
   }
@@ -76,8 +76,8 @@ class API {
 
   static getReplEndpoints(cb) {
     const origin = document.location.hostname;
-    fetch('repl-endpoints.json').then((response) => {
-      response.json().then((data) => {
+    fetch('repl-endpoints.json').then(response => {
+      response.json().then(data => {
         // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
         const config = new Map();
         const template = new Map(Object.entries(data));

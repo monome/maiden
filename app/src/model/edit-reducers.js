@@ -60,6 +60,193 @@ edit: {
 
 */
 
+const handleScriptNew = (action, state) => {
+  const category = action.category || 'scripts';
+  const categoryIndex = rootCategoryIndex(state.rootNodes, category);
+
+  // assume script will be placed at the top of the hierarchy (by default)
+  let siblings = childrenOfRoot(state.rootNodes, categoryIndex);
+  let siblingIsDir = false;
+
+  const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
+  if (childPath) {
+    // a sibling exists, use that level of hierarchy for name computation
+    const siblingNode = state.rootNodes.getIn(childPath);
+    siblingIsDir = nodeIsDir(siblingNode);
+    if (siblingIsDir) {
+      // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.push('children'));
+    } else {
+      // "selected" sibling is file so use its parent directory's children as the "siblings" for name generation and placement
+      siblings = state.rootNodes.getIn(childPath.pop());
+    }
+  }
+
+  const newName = generateNodeName(siblings, action.name || 'untitled.lua');
+
+  let newResource;
+  if (siblingIsDir) {
+    newResource = api.childResourceForName(newName, action.siblingResource, category);
+  } else {
+    newResource = api.siblingResourceForName(newName, action.siblingResource, category);
+  }
+
+  const newBuffer = new Map({
+    modified: true,
+    value: action.value || '',
+    contentType: 'text/utf-8',
+  });
+
+  const newNode = virtualNode(newName, newResource);
+  const newRootNodes = spliceFileInfo(
+    state.rootNodes,
+    newNode,
+    action.siblingResource,
+    categoryIndex,
+  );
+
+  return {
+    ...state,
+    rootNodes: newRootNodes,
+    activeBuffer: newResource,
+    buffers: state.buffers.set(newResource, newBuffer),
+  };
+};
+
+const handleBufferChange = (action, state) => {
+  if (action.resource === undefined) {
+    console.log('implicitly creating new script');
+    return handleScriptNew(scriptNew(undefined, action.value), state);
+  }
+
+  const buffer = state.buffers.get(action.resource);
+  if (buffer === undefined) {
+    console.log('ignoring change for missing buffer (possibly deleted):', action.resource);
+    return state;
+  }
+
+  // FIXME: super janky hack to prevent marking binary buffers dirty, this needs to be removed when proper alt ui is in place for the editor when binary files are selected
+  if (!buffer.get('contentType').includes('text')) {
+    console.log('ignoring buffer change for binary buffer');
+    return state;
+  }
+
+  const modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
+  const changes = new Map({
+    value: action.value,
+    modified,
+    contentType: buffer.get('contentType'),
+  });
+  return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
+};
+
+const handleRootList = (action, state) => {
+  // FIXME: change the virtualNode resource to be the api path
+  let rootNode = directoryNode(action.name, action.value.url, fromJS(action.value.entries));
+
+  const existingRootIndex = state.rootNodes.findIndex(n => n.get('name') === action.name);
+  if (existingRootIndex > 0) {
+    const virtuals = collectVirtualNodes(state.rootNodes.getIn([existingRootIndex, 'children']));
+    const rootChildren = rootNode.get('children');
+    rootNode = rootNode.set('children', spliceNodes(rootChildren, virtuals));
+  }
+
+  let rootNodes;
+  if (existingRootIndex > 0) {
+    rootNodes = sortDir(
+      state.rootNodes.set(existingRootIndex, rootNode),
+      new List([existingRootIndex]),
+    );
+  } else {
+    rootNodes = state.rootNodes.push(rootNode);
+    rootNodes = sortDir(rootNodes, new List([rootNodes.size - 1]));
+  }
+
+  return { ...state, rootNodes };
+};
+
+// IDEA: might be cool if this copied 'template.lua' as a starting point
+
+const handleResourceDeleteSuccess = (action, state) => {
+  console.log('in handleResourceDelete()', action);
+  const childPath = keyPathForResource(state.rootNodes, action.resource);
+  const newRootNodes = state.rootNodes.removeIn(childPath);
+  const newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
+
+  return {
+    ...state,
+    rootNodes: newRootNodes,
+    activeBuffer: newActiveBuffer,
+    buffers: state.buffers.delete(action.resource),
+  };
+};
+
+const handleScriptDuplicate = (action, state) => {
+  if (!action.resource) {
+    // can't duplicate without a resource
+    return state;
+  }
+
+  const sourceNode = nodeForResource(state.rootNodes, action.resource);
+  if (!sourceNode) {
+    console.log('cannot find existing resource to duplicate');
+    return state;
+  }
+
+  const sourceBuffer = state.buffers.get(action.resource);
+  const newAction = scriptNew(action.resource, sourceBuffer.get('value'), sourceNode.get('name'));
+
+  return handleScriptNew(newAction, state);
+};
+
+const handleDirectoryCreateSuccess = (action, state) => {
+  // console.log('dir success:', action.category, action.resource);
+  const newNode = directoryNode(action.name, action.resource);
+  const newRootNodes = spliceNodes(state.rootNodes, new List([newNode]));
+
+  return {
+    ...state,
+    rootNodes: newRootNodes,
+  };
+};
+
+const handleResourceRenameSuccess = (action, state) => {
+  console.log('rename success: ', action);
+
+  let newResource = action.newResource;
+  if (!newResource) {
+    // assume this is virtual; fabricate new url
+    newResource = api.siblingResourceForName(action.newName, action.resource);
+    console.log(action.resource, ' => ', newResource);
+  }
+
+  const oldNode = nodeForResource(state.rootNodes, action.resource);
+  const newNode = oldNode.set('url', newResource).set('name', action.newName);
+
+  const keyPath = keyPathForResource(state.rootNodes, action.resource);
+  let rootNodes = state.rootNodes.setIn(keyPath, newNode);
+
+  // sort parent dir of node
+  const dirPath = keyPathParent(keyPath);
+
+  rootNodes = sortDir(rootNodes, dirPath);
+
+  // update active buffer if pointing at the renamed resource
+  const activeBuffer = state.activeBuffer === action.resource ? newResource : state.activeBuffer;
+
+  // buffers are keyed by resource, modify that too
+  const buffers = state.buffers
+    .set(newResource, state.buffers.get(action.resource))
+    .delete(action.resource);
+
+  return {
+    ...state,
+    activeBuffer,
+    rootNodes,
+    buffers,
+  };
+};
+
 const initialEditState = {
   activeBuffer: undefined,
   rootNodes: new List(),
@@ -140,192 +327,6 @@ const edit = (state = initialEditState, action) => {
     default:
       return state;
   }
-};
-
-const handleBufferChange = (action, state) => {
-  if (action.resource === undefined) {
-    console.log('implicitly creating new script');
-    return handleScriptNew(scriptNew(undefined, action.value), state);
-  }
-
-  const buffer = state.buffers.get(action.resource);
-  if (buffer === undefined) {
-    console.log('ignoring change for missing buffer (possibly deleted):', action.resource);
-    return state;
-  }
-
-  // FIXME: super janky hack to prevent marking binary buffers dirty, this needs to be removed when proper alt ui is in place for the editor when binary files are selected
-  if (!buffer.get('contentType').includes('text')) {
-    console.log('ignoring buffer change for binary buffer');
-    return state;
-  }
-
-  const modified = buffer.get('modified') || buffer.get('value') !== action.value; // FIXME: inefficient?
-  const changes = new Map({
-    value: action.value,
-    modified,
-    contentType: buffer.get('contentType'),
-  });
-  return { ...state, buffers: state.buffers.set(action.resource, buffer.merge(changes)) };
-};
-
-const handleRootList = (action, state) => {
-  // FIXME: change the virtualNode resource to be the api path
-  let rootNode = directoryNode(action.name, action.value.url, fromJS(action.value.entries));
-
-  const existingRootIndex = state.rootNodes.findIndex(n => n.get('name') === action.name);
-  if (existingRootIndex > 0) {
-    const virtuals = collectVirtualNodes(state.rootNodes.getIn([existingRootIndex, 'children']));
-    const rootChildren = rootNode.get('children');
-    rootNode = rootNode.set('children', spliceNodes(rootChildren, virtuals));
-  }
-
-  let rootNodes;
-  if (existingRootIndex > 0) {
-    rootNodes = sortDir(
-      state.rootNodes.set(existingRootIndex, rootNode),
-      new List([existingRootIndex]),
-    );
-  } else {
-    rootNodes = state.rootNodes.push(rootNode);
-    rootNodes = sortDir(rootNodes, new List([rootNodes.size - 1]));
-  }
-
-  return { ...state, rootNodes };
-};
-
-// IDEA: might be cool if this copied 'template.lua' as a starting point
-const handleScriptNew = (action, state) => {
-  const category = action.category || 'scripts';
-  const categoryIndex = rootCategoryIndex(state.rootNodes, category);
-
-  // assume script will be placed at the top of the hierarchy (by default)
-  let siblings = childrenOfRoot(state.rootNodes, categoryIndex);
-  let siblingIsDir = false;
-
-  const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
-  if (childPath) {
-    // a sibling exists, use that level of hierarchy for name computation
-    const siblingNode = state.rootNodes.getIn(childPath);
-    siblingIsDir = nodeIsDir(siblingNode);
-    if (siblingIsDir) {
-      // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
-      siblings = state.rootNodes.getIn(childPath.push('children'));
-    } else {
-      // "selected" sibling is file so use its parent directory's children as the "siblings" for name generation and placement
-      siblings = state.rootNodes.getIn(childPath.pop());
-    }
-  }
-
-  const newName = generateNodeName(siblings, action.name || 'untitled.lua');
-
-  let newResource;
-  if (siblingIsDir) {
-    newResource = api.childResourceForName(newName, action.siblingResource, category);
-  } else {
-    newResource = api.siblingResourceForName(newName, action.siblingResource, category);
-  }
-
-  const newBuffer = new Map({
-    modified: true,
-    value: action.value || '',
-    contentType: 'text/utf-8',
-  });
-
-  const newNode = virtualNode(newName, newResource);
-  const newRootNodes = spliceFileInfo(
-    state.rootNodes,
-    newNode,
-    action.siblingResource,
-    categoryIndex,
-  );
-
-  return {
-    ...state,
-    rootNodes: newRootNodes,
-    activeBuffer: newResource,
-    buffers: state.buffers.set(newResource, newBuffer),
-  };
-};
-
-const handleResourceDeleteSuccess = (action, state) => {
-  console.log('in handleResourceDelete()', action);
-  const childPath = keyPathForResource(state.rootNodes, action.resource);
-  const newRootNodes = state.rootNodes.removeIn(childPath);
-  const newActiveBuffer = state.activeBuffer === action.resource ? undefined : state.activeBuffer;
-
-  return {
-    ...state,
-    rootNodes: newRootNodes,
-    activeBuffer: newActiveBuffer,
-    buffers: state.buffers.delete(action.resource),
-  };
-};
-
-const handleScriptDuplicate = (action, state) => {
-  if (!action.resource) {
-    // can't duplicate without a resource
-    return state;
-  }
-
-  const sourceNode = nodeForResource(state.rootNodes, action.resource);
-  if (!sourceNode) {
-    console.log('cannot find existing resource to duplicate');
-    return state;
-  }
-
-  const sourceBuffer = state.buffers.get(action.resource);
-  const newAction = scriptNew(action.resource, sourceBuffer.get('value'), sourceNode.get('name'));
-
-  return handleScriptNew(newAction, state);
-};
-
-const handleDirectoryCreateSuccess = (action, state) => {
-  // console.log('dir success:', action.category, action.resource);
-  const newNode = directoryNode(action.name, action.resource);
-  const newRootNodes = spliceNodes(state.rootNodes, new List([newNode]));
-
-  return {
-    ...state,
-    rootNodes: newRootNodes,
-  };
-};
-
-const handleResourceRenameSuccess = (action, state) => {
-  console.log('rename success: ', action);
-
-  let newResource = action.newResource;
-  if (!newResource) {
-    // assume this is virtual; fabricate new url
-    newResource = api.siblingResourceForName(action.newName, action.resource);
-    console.log(action.resource, ' => ', newResource);
-  }
-
-  const oldNode = nodeForResource(state.rootNodes, action.resource);
-  const newNode = oldNode.set('url', newResource).set('name', action.newName);
-
-  const keyPath = keyPathForResource(state.rootNodes, action.resource);
-  let rootNodes = state.rootNodes.setIn(keyPath, newNode);
-
-  // sort parent dir of node
-  const dirPath = keyPathParent(keyPath);
-
-  rootNodes = sortDir(rootNodes, dirPath);
-
-  // update active buffer if pointing at the renamed resource
-  const activeBuffer = state.activeBuffer === action.resource ? newResource : state.activeBuffer;
-
-  // buffers are keyed by resource, modify that too
-  const buffers = state.buffers
-    .set(newResource, state.buffers.get(action.resource))
-    .delete(action.resource);
-
-  return {
-    ...state,
-    activeBuffer,
-    rootNodes,
-    buffers,
-  };
 };
 
 export default edit;

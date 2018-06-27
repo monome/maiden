@@ -235,7 +235,7 @@ export const bufferSave = (resource, value, cb) => dispatch => {
   return api.writeTextResource(resource, value, response => {
     // FIXME: handle errors
     dispatch(bufferSaveSuccess(resource, response.entity));
-    cb && cb();
+    return cb ? cb() : null;
   });
 };
 
@@ -244,7 +244,7 @@ export const resourceDelete = (resource, cb) => dispatch => {
   return api.deleteResource(resource, response => {
     // FIXME: handle errors
     dispatch(resourceDeleteSuccess(resource, response.entity));
-    cb && cb();
+    return cb ? cb() : null;
   });
 };
 
@@ -269,7 +269,7 @@ export const directoryCreate = (resource, name, category) => dispatch => {
   dispatch(directoryCreateRequest(resource, name, category));
   return api.createFolder(resource, response => {
     if (response.ok) {
-      response.json().then(data => {
+      response.json().then(() => {
         dispatch(directoryCreateSuccess(resource, name, category));
       });
     } else {
