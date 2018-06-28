@@ -1,4 +1,4 @@
-import Linkify from 'react-linkify';
+import Linkify, { linkify } from 'react-linkify';
 import React, { Component } from 'react';
 import './repl.css';
 
@@ -6,6 +6,9 @@ class ReplOutput extends Component {
   constructor(props) {
     super(props);
     this.scrollAdjusted = false;
+
+    // ignore repl output that looks host-like
+    linkify.set({ fuzzyLink: false });
   }
 
   componentDidUpdate() {
