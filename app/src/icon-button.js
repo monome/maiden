@@ -108,7 +108,6 @@ class IconButton extends Component {
             className="customTooltip"
           />
         )}
-        )}
       </button>
     );
   }
