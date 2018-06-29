@@ -1,3 +1,9 @@
+/* anti-alias where supported */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* https://stackoverflow.com/questions/26210839/hide-scrollbars-if-not-necessary-ace-editor */
 body .ace_scrollbar {
     -webkit-transition: opacity .3s ease-in-out;
@@ -10,12 +16,33 @@ body .ace_scrollbar {
 body .ace_editor .ace_scrollbar:hover {
     opacity: 1;
 }
-body .ace_editor .ace_gutter-cell.ace_error {
+
+.ace_editor.ace_gutter-cell.ace_error {
     background-image: url("icons/red_x.png");
     background-repeat: no-repeat;
     background-position: 2px center;
 }
 
+.ace_editor.ace_autocomplete.ace_dark .ace_marker-layer .ace_active-line {
+    background-color: rgba(12, 65, 134, 0.486);
+    z-index: 1;
+}
+
+.ace_editor.ace_autocomplete.ace_dark .ace_completion-highlight {
+    color:  rgba(0, 151, 251, 0.911);
+    text-shadow: 0 0 0.01em;
+}
+
+.ace_editor.ace_autocomplete.ace_dark  {
+    width: 280px;
+    z-index: 200000;
+    background: #2f3135;
+    color: #f9f9f9;
+    border: 1px lightgray solid;
+    position: fixed;
+    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
+    line-height: 1.4;
+}
 
 .ace_tooltip {
     background-color: #FFF;
@@ -24,6 +51,31 @@ body .ace_editor .ace_gutter-cell.ace_error {
     border-radius: 1px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
     color: black;
+    font-family: monospace;
+    max-width: 100%;
+    padding: 3px 4px;
+    position: fixed;
+    z-index: 999999;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    cursor: default;
+    white-space: pre;
+    word-wrap: break-word;
+    line-height: normal;
+    font-style: normal;
+    font-weight: normal;
+    letter-spacing: normal;
+    pointer-events: none;
+}
+
+.ace_dark ~ .ace_tooltip {
+    background-color: #2f3135;
+    background-image: none;
+    border: 1px solid gray;
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    color: whitesmoke;
     font-family: monospace;
     max-width: 100%;
     padding: 3px 4px;

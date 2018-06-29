@@ -120,6 +120,7 @@ class LuaMode extends EditorMode {
     this.nornsLuaAceMode = new NornsLuaMode();
   }
   onRender(editor) {
+    if (!editor) return;
     // ensure our contributions are registered.
     const session = editor.getSession();
     if (session.getMode() !== this.nornsLuaAceMode) {
