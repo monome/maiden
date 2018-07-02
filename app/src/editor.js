@@ -12,6 +12,7 @@ import api from './api';
 import { editorService } from './services';
 
 import './editor.css';
+import './theme/norns_dark';
 
 class Editor extends Component {
   constructor(props) {
@@ -28,6 +29,11 @@ class Editor extends Component {
       delete clonedOpts.keyBoardHandler;
     } else {
       editor.setKeyboardHandler();
+    }
+
+    if (clonedOpts.editorTheme) {
+      // theme is not a session option
+      delete clonedOpts.editorTheme;
     }
 
     session.setOptions(clonedOpts);
@@ -149,11 +155,13 @@ class Editor extends Component {
     const mode = editorService.getMode(this.props.bufferName);
     mode.onRender(this.editor);
 
+    const theme = this.props.editorOptions.editorTheme || 'dawn';
+
     return (
       <AceEditor
         ref="ace"
         mode={mode.id}
-        theme="dawn"
+        theme={theme}
         width={width}
         height={height}
         value={this.props.value}

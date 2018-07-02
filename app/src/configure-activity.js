@@ -64,6 +64,13 @@ class ConfigureActivity extends Component {
               {this.renderEditorOption('tabSize', 4, 'four')}
             </div>
           </div>
+          <div className="configure-item">
+            <div className="configure-label">editor theme:</div>
+            <div className="configure-options">
+              {this.renderEditorOption('editorTheme', 'dawn', 'light')}
+              {this.renderEditorOption('editorTheme', 'norns_dark', 'dark')}
+            </div>
+          </div>
         </div>
         <div className="configure-lower">
           <div className="configure-about">
