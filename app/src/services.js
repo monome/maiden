@@ -1,8 +1,6 @@
 import OS from './utils';
-import { nornsSnippetCompleter } from './snippets';
-import NornsLuaMode from './mode/lua';
-
-const includes = require('array-includes');
+import EditorMode from './mode';
+import LuaMode from './mode/lua';
 
 const Modifier = {
   CMD: 1,
@@ -102,37 +100,6 @@ keyService.bindings = [
   new KeyBinding(new KeyStroke(Modifier.CMD, 'b'), 'toggle sidebar'),
   new KeyBinding(new KeyStroke(Modifier.CMD, ';'), 'show config'),
 ];
-
-export class EditorMode {
-  constructor(id) {
-    this.id = id;
-  }
-
-  /* eslint-disable-next-line no-unused-vars */
-  onRender(editor) {
-    // no-op; optionally overridden in subclasses.
-  }
-}
-
-class LuaMode extends EditorMode {
-  constructor() {
-    super('lua');
-    this.nornsLuaAceMode = new NornsLuaMode();
-  }
-  onRender(editor) {
-    if (!editor) return;
-    // ensure our contributions are registered.
-    const session = editor.getSession();
-    if (session.getMode() !== this.nornsLuaAceMode) {
-      session.setMode(this.nornsLuaAceMode);
-    }
-
-    const completers = editor.completers;
-    if (!includes(completers, nornsSnippetCompleter)) {
-      completers.push(nornsSnippetCompleter);
-    }
-  }
-}
 
 class TextMode extends EditorMode {
   constructor() {
