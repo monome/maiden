@@ -1,6 +1,9 @@
 import 'brace/mode/lua';
 import 'brace/mode/text';
 
+import EditorMode from '../mode';
+import { nornsSnippetCompleter } from '../snippets';
+
 const includes = require('array-includes');
 
 const luaKeyWordsToFilter = [
@@ -49,9 +52,29 @@ class NornsLuaRules extends window.ace.acequire('ace/mode/lua_highlight_rules').
   }
 }
 
-export default class NornsLuaMode extends window.ace.acequire('ace/mode/lua').Mode {
+class NornsLuaMode extends window.ace.acequire('ace/mode/lua').Mode {
   constructor() {
     super();
     this.HighlightRules = NornsLuaRules;
+  }
+}
+
+export default class LuaMode extends EditorMode {
+  constructor() {
+    super('lua');
+    this.nornsLuaAceMode = new NornsLuaMode();
+  }
+  onRender(editor) {
+    if (!editor) return;
+    // ensure our contributions are registered.
+    const session = editor.getSession();
+    if (session.getMode() !== this.nornsLuaAceMode) {
+      session.setMode(this.nornsLuaAceMode);
+    }
+
+    const completers = editor.completers;
+    if (!includes(completers, nornsSnippetCompleter)) {
+      completers.push(nornsSnippetCompleter);
+    }
   }
 }
