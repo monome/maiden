@@ -169,7 +169,7 @@ class Editor extends Component {
         onChange={this.onChange}
         showPrintMargin={false}
         enableBasicAutocompletion
-        enableSnippets
+        enableSnippets={mode.enableSnippets}
         editorProps={{
           $blockScrolling: Infinity,
           $newLineMode: 'unix',

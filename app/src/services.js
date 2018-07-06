@@ -104,6 +104,8 @@ keyService.bindings = [
 class TextMode extends EditorMode {
   constructor() {
     super('text');
+    // https://github.com/monome/maiden/issues/129
+    this.enableSnippets = false;
   }
 }
 
