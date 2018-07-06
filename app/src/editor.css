@@ -69,7 +69,7 @@ body .ace_editor .ace_scrollbar:hover {
     pointer-events: none;
 }
 
-.ace_dark ~ .ace_tooltip {
+.ace_dark ~ .ace_tooltip, .ace_dark .ace_tooltip {
     background-color: #2f3135;
     background-image: none;
     border: 1px solid gray;
