@@ -1,15 +1,12 @@
 .configure-activity {
-    background-color: #F9F9F9;
     font-family: monospace;
-    padding: 10px;
     color: rgb(117, 117, 117);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 10px 20px;
 }
 
-.configure-activity > div {
+.configure-upper {
     margin-bottom: 15px;
 }
 

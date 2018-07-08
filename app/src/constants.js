@@ -7,6 +7,7 @@ export const CRONE_COMPONENT = 'crone';
 
 export const SIDEBAR_COMPONENT = 'sidebar';
 export const REPL_COMPONENT = 'repl';
+export const CONFIG_COMPONENT = 'config';
 
 export const INVALID_NAME_CHARS = new Set(['/']);
 
