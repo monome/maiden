@@ -62,4 +62,4 @@ a very quick/iterative development configuration can be achieved by:
 * using `sshfs` to mount the `we` home directory locally - `sshfs we@norns.local: ~/norns`
 * editing `repl-endpoints.json` to point at the norns device
 * starting the backend locally - `go build && ./maiden -app app/build/ -data ~/norns/dust -doc ~/norns/norns/doc -debug`
-* starting the yarns development server `cd app; yarns start`
+* starting the yarns development server `cd app; yarn start`
