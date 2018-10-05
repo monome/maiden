@@ -1,5 +1,4 @@
 import BoundEditActivity from './bound-edit-activity';
-import BoundConfigureActivity from './bound-configure-activity';
 import { ICONS } from './svg-icons';
 import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from './constants';
 import OS from './utils';

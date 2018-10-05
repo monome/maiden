@@ -4,8 +4,6 @@ import ModalContent from './modal-content';
 import BoundConfigureActivity from './bound-configure-activity';
 import ActivityBar from './activity-bar';
 import activities from './activities';
-import IconButton from './icon-button';
-import { ICONS } from './svg-icons';
 import { commandService, keyService } from './services';
 import './workspace.css';
 
