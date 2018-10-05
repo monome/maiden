@@ -13,7 +13,8 @@ import { DUST_SCRIPT_PATH, DUST_DATA_PATH, DUST_AUDIO_PATH, DUST_LUA_LIB_PATH } 
 const mapStateToProps = state => {
   const selected = state.activity.selected;
   const endpoints = state.repl.endpoints;
-  return { selected, endpoints };
+  const configHidden = state.ui.configHidden;
+  return { selected, endpoints, configHidden };
 };
 
 const mapDispatchToProps = dispatch => ({

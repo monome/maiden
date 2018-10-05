@@ -15,23 +15,36 @@ class ConfigureActivity extends Component {
         height: props.height,
         width: props.width,
       },
+      editorConfig: { ...this.props.editorOptions },
     };
 
     props.editorConfig(api.editorConfigResource());
   }
 
-  updateConfiguration(key, val) {
-    const newEditorConfig = { ...this.props.editorOptions, [key]: val };
+  componentDidMount() {
+    this.props.onRef(this);
+  }
 
-    this.props.updateEditorConfig(api.editorConfigResource(), newEditorConfig);
+  componentWillUnmount() {
+    this.props.onRef(undefined);
+  }
+
+  updateConfiguration(key, val) {
+    this.setState({
+      editorConfig: { ...this.state.editorConfig, [key]: val },
+    });
+  }
+
+  save() {
+    this.props.updateEditorConfig(api.editorConfigResource(), this.state.editorConfig);
   }
 
   renderEditorOption(key, val, label) {
     const editorOptionClasses = (key, val) => {
       if (val) {
-        return cx('configure-option', { 'is-selected': this.props.editorOptions[key] === val });
+        return cx('configure-option', { 'is-selected': this.state.editorConfig[key] === val });
       }
-      return cx('configure-option', { 'is-selected': !this.props.editorOptions[key] });
+      return cx('configure-option', { 'is-selected': !this.state.editorConfig[key] });
     };
 
     return (

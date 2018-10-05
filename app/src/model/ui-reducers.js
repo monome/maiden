@@ -1,7 +1,7 @@
 import { Set } from 'immutable';
 
 import { SIDEBAR_SIZE, REPL_SIZE, TOGGLE_COMPONENT, TOGGLE_CATEGORY } from './ui-actions';
-import { SIDEBAR_COMPONENT, REPL_COMPONENT } from '../constants';
+import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from '../constants';
 
 /*
 
@@ -20,6 +20,7 @@ const initialState = {
   replHidden: false,
   replHeight: 160,
   replMinHeight: 100,
+  configHidden: true,
   collapsedCategories: new Set(),
 };
 
@@ -30,6 +31,9 @@ const handleToggleComponent = (state, action) => {
 
     case REPL_COMPONENT:
       return { ...state, replHidden: !state.replHidden };
+    
+    case CONFIG_COMPONENT:
+      return { ...state, configHidden: !state.configHidden }
 
     default:
       return state;
@@ -37,11 +41,14 @@ const handleToggleComponent = (state, action) => {
 };
 
 const handleToggleCategory = (state, action) => {
+  let newCollapsedCategories;
+
   if (state.collapsedCategories.has(action.name)) {
-    const newCollapsedCategories = state.collapsedCategories.delete(action.name);
-    return { ...state, collapsedCategories: newCollapsedCategories };
+    newCollapsedCategories = state.collapsedCategories.delete(action.name);
+  } else {
+    newCollapsedCategories = state.collapsedCategories.add(action.name);
   }
-  const newCollapsedCategories = state.collapsedCategories.add(action.name);
+
   return { ...state, collapsedCategories: newCollapsedCategories };
 };
 
