@@ -2,10 +2,17 @@
 
 ## required tooling
 
-building the editor requires installing `node`, `yarn`, and `react-scripts`.
+building the editor requires installing `node` and `yarn`.
 
-- `npm install -g yarn` (or brew install yarn)
-- `npm install -g react-scripts`
+both `node` and `yarn` can be installed from your package manager:
+
+- macOS Homebrew: `brew install node yarn`
+- Arch Linux: `pacman -Sy nodejs npm yarn`
+- Debian / Ubuntu: [repo for `node`][node-debian] and [repo for `yarn`][yarn-debian]
+- You can also manually install `yarn` with `npm install -g yarn`
+
+[node-debian]: https://nodejs.org/en/download/package-manager/#debian-and-ubuntu-based-linux-distributions
+[yarn-debian]: https://yarnpkg.com/lang/en/docs/install/#debian-stable
 
 known compatible versions:
 
@@ -13,7 +20,6 @@ tool | version
 -----|--------
 npm | 6.1.0
 yarn | 1.7.0
-react-scripts | 1.0.17
 
 ## to build
 from the `app/` directory within the `maiden` source tree (likely `$GOPATH/src/github.com/monome/maiden/app/`)
