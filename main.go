@@ -12,11 +12,12 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/coreos/go-systemd/dbus"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	version = "0.0.2"
+	version = "0.5.0"
 )
 
 func main() {
@@ -74,20 +75,30 @@ func main() {
 
 	// dust api
 	apiPrefix := filepath.Join(apiRoot, "dust")
+
+	// dbus connection for process management
+	dbusConn, err := dbus.NewSystemConnection()
+	if err != nil {
+		log.Printf("dbus connection error: %v", err)
+	}
+
 	s := server{
 		logger:       os.Stderr,
 		apiPrefix:    apiPrefix,
 		devicePath:   makeDevicePath(*dataDir),
 		resourcePath: makeResourcePath(apiPrefix),
+		dbusConn:     dbusConn,
 	}
+
 	api.GET("/dust", s.rootListingHandler)
 	api.GET("/dust/*name", s.listingHandler)
 	api.PUT("/dust/*name", s.writeHandler)
 	api.PATCH("/dust/*name", s.renameHandler)
 	api.DELETE("/dust/*name", s.deleteHandler)
 
+	api.GET("/unit/:name", s.unitHandler)
+
 	var l net.Listener
-	var err error
 	if *httpFD > 0 {
 		l, err = net.FileListener(os.NewFile(uintptr(*httpFD), "http"))
 	} else {
@@ -97,6 +108,10 @@ func main() {
 		log.Fatalf("listen error: %v", err)
 	}
 	log.Fatal(http.Serve(l, r))
+
+	if dbusConn != nil {
+		dbusConn.Close()
+	}
 }
 
 type server struct {
@@ -104,10 +119,64 @@ type server struct {
 	apiPrefix    string
 	devicePath   devicePathFunc
 	resourcePath prefixFunc
+	dbusConn     *dbus.Conn
 }
 
 func (s *server) logf(format string, args ...interface{}) {
 	fmt.Fprintf(s.logger, format, args...)
+}
+
+func (s *server) unitHandler(ctx *gin.Context) {
+	if s.dbusConn == nil {
+		ctx.JSON(http.StatusServiceUnavailable, gin.H{"error": "no dbus connection"})
+		return
+	}
+
+	name := ctx.Param("name")
+	operation, set := ctx.GetQuery("do")
+	if set {
+		var jobID int
+		var err error
+		ch := make(chan string)
+
+		// perform operation (replacing any previously queued changes)
+		if operation == "restart" {
+			jobID, err = s.dbusConn.RestartUnit(name, "replace", ch)
+		} else if operation == "stop" {
+			jobID, err = s.dbusConn.StopUnit(name, "replace", ch)
+		} else if operation == "start" {
+			jobID, err = s.dbusConn.StartUnit(name, "replace", ch)
+		} else {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "unrecognized operation"})
+			return
+		}
+
+		// signal error if operation failed
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// package operation result
+		result := <-ch
+		ctx.JSON(http.StatusOK, gin.H{
+			"job_id": jobID,
+			"result": result,
+		})
+
+	} else {
+		props, err := s.dbusConn.GetUnitProperties(name)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// package status result
+		ctx.JSON(http.StatusOK, gin.H{
+			"state":     props["ActiveState"],
+			"sub_state": props["SubState"],
+		})
+	}
 }
 
 func (s *server) rootListingHandler(ctx *gin.Context) {

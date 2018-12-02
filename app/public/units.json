@@ -1,0 +1,6 @@
+{
+    "units" : {
+        "matron": "norns-matron.service",
+        "sc": "norns-crone.service"
+    }
+}
