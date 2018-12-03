@@ -12,9 +12,14 @@ export const REPL_CONNECT_CLOSE = 'REPL_CONNECT_CLOSE';
 
 export const REPL_RECEIVE = 'REPL_RECEIVE';
 export const REPL_SEND = 'REPL_SEND';
+export const REPL_ECHO = 'REPL_ECHO';
 
 export const REPL_SELECT = 'REPL_SELECT';
 export const REPL_CLEAR = 'REPL_CLEAR';
+
+export const REPL_UNIT_MAP_REQUEST = 'REPL_UNIT_MAP_REQUEST';
+export const REPL_UNIT_MAP_SUCCESS = 'REPL_UNIT_MAP_SUCCESS';
+export const REPL_UNIT_MAP_FAILURE = 'REPL_UNIT_MAP_FAILURE';
 
 //
 // sync action creators
@@ -48,9 +53,17 @@ export const replReceive = (component, data) => ({ type: REPL_RECEIVE, component
 
 export const replSend = (component, value) => ({ type: REPL_SEND, component, value });
 
+export const replEcho = (component, value) => ({ type: REPL_ECHO, component, value });
+
 export const replSelect = component => ({ type: REPL_SELECT, component });
 
 export const replClear = component => ({ type: REPL_CLEAR, component });
+
+export const unitMappingRequest = () => ({ type: REPL_UNIT_MAP_REQUEST });
+
+export const unitMappingSuccess = units => ({ type: REPL_UNIT_MAP_SUCCESS, units });
+
+export const unitMappingFailure = error => ({ type: REPL_UNIT_MAP_SUCCESS, error });
 
 //
 // async actions
@@ -84,3 +97,42 @@ export const replConnect = (component, endpoint) => dispatch => {
     dispatch(replReceive(component, event.data));
   };
 };
+
+export const unitMapping = cb => dispatch => {
+  dispatch(unitMappingRequest());
+  return api.getUnitMapping(mapping => {
+    dispatch(unitMappingSuccess(mapping));
+    if (cb) {
+      cb(mapping);
+    }
+  });
+};
+
+export const replInput = (component, value) => (dispatch, getState) => {
+  // MAINT: this leverages redux-thunk to allow dispatching of async actions
+  // from unit operations.
+
+  // check to see if the input is a unit command, if so we 
+  const input = value.trim();
+  if (input.startsWith(";")) {
+    dispatch(replEcho(component, input));
+    const state = getState().repl;
+    console.log("state: ", state)
+    const operation = input.slice(1);
+    const unitName = state.units.get(component);
+    api.doUnitOperation(unitName, operation, response => {
+      if (response.result) {
+        const endpoint = state.endpoints.get(component);
+        dispatch(replConnect(component, endpoint));
+        dispatch(replEcho(component, input + " => " + response.result));
+      }
+      else {
+        dispatch(replEcho(component, input + " => " + response.error));
+      }
+    });
+  }
+  else {
+    // nothing special 
+    dispatch(replSend(component, value));
+  }
+}

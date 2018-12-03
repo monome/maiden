@@ -93,6 +93,23 @@ class API {
     });
   }
 
+  static getUnitMapping(cb) {
+    fetch('units.json').then(response => {
+      response.json().then(data => {
+        cb(new Map(Object.entries(data.units)));
+      })
+    })
+  }
+
+  static doUnitOperation(unit, operation, cb) {
+    const url = `${API_ROOT}/unit/${unit}?do=${operation}`;
+    fetch(url).then(response => {
+      response.json().then(body => {
+        cb(body)
+      });
+    });
+  }
+
   static resourceForScript(name, path) {
     // TODO: would be good to clean up and normalize urls
     if (path) {

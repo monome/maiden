@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import ReplActivity from './repl-activity';
 
-import { replSend, replClear, replConnect, replSelect } from './model/repl-actions';
+import { replInput, replClear, replConnect, replSelect, unitMapping } from './model/repl-actions';
 
 const isConnected = state => component => {
   const conn = state.repl.connections.get(component);
@@ -28,8 +28,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  replSend: (component, value) => {
-    dispatch(replSend(component, value));
+  replInput: (component, value) => {
+    dispatch(replInput(component, value));
   },
   replClear: component => {
     dispatch(replClear(component));
@@ -40,6 +40,9 @@ const mapDispatchToProps = dispatch => ({
   replSelect: component => {
     dispatch(replSelect(component));
   },
+  unitMapping: cb => {
+    dispatch(unitMapping(cb));
+  }
 });
 
 const BoundReplActivity = connect(mapStateToProps, mapDispatchToProps)(ReplActivity);

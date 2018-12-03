@@ -7,8 +7,10 @@ import {
   REPL_CONNECT_CLOSE,
   REPL_RECEIVE,
   REPL_SEND,
+  REPL_ECHO,
   REPL_SELECT,
   REPL_CLEAR,
+  REPL_UNIT_MAP_SUCCESS,
 } from './repl-actions';
 
 /*
@@ -37,6 +39,48 @@ export const outputAppend = (buffer, limit, line) => {
   return newbuffer.size > limit ? newbuffer.shift() : newbuffer;
 };
 
+const handleReplEcho = (action, state, input) => {
+  // add command to history list
+  let history = state.history.get(action.component).unshift(input);
+  // echo command to output buffer
+  let buffer = state.buffers.get(action.component);
+  buffer = outputAppend(buffer, state.scrollbackLimit, input);
+
+  return {
+    ...state,
+    history: state.history.set(action.component, history),
+    buffers: state.buffers.set(action.component, buffer),
+  };
+};
+
+const handleReplRecieve = (action, state) => {
+  let buffer = state.buffers.get(action.component);
+  action.data.split('\n').forEach(line => {
+    buffer = outputAppend(buffer, state.scrollbackLimit, line);
+  });
+
+  return {
+    ...state,
+    buffers: state.buffers.set(action.component, buffer),
+  };
+};
+
+const handleReplSend = (action, state, conn) => {
+  const socket = conn.get('socket');
+  if (!socket) {
+    console.log("No socket; can't send", action.value, 'to', action.component);
+    return state;
+  }
+  if (action.component === 'sc') {
+    // lame, sclang expects commands to be terminated with special command bytes
+    socket.send(`${action.value}\x1b`);
+  } else {
+    socket.send(`${action.value}\n`);
+  }
+
+  return handleReplEcho(action, state, action.value);
+};
+
 const initialReplState = {
   scrollbackLimit: 200,
   activeRepl: 'matron',
@@ -44,13 +88,12 @@ const initialReplState = {
   connections: new Map(),
   buffers: new Map(),
   history: new Map(),
+  units: new Map(),
 };
 
 const repl = (state = initialReplState, action) => {
   const conn = state.connections.get(action.component);
   let changes;
-  let history;
-  let buffer;
 
   switch (action.type) {
     case REPL_ENDPOINTS_SUCCESS:
@@ -100,37 +143,13 @@ const repl = (state = initialReplState, action) => {
       };
 
     case REPL_RECEIVE:
-      buffer = state.buffers.get(action.component);
-      action.data.split('\n').forEach(line => {
-        buffer = outputAppend(buffer, state.scrollbackLimit, line);
-      });
-      return {
-        ...state,
-        buffers: state.buffers.set(action.component, buffer),
-      };
+      return handleReplRecieve(action, state);
 
     case REPL_SEND:
-      const socket = conn.get('socket');
-      if (!socket) {
-        console.log("No socket; can't send", action.value, 'to', action.component);
-        return state;
-      }
-      if (action.component === 'sc') {
-        // lame, sclang expects commands to be terminated with special command bytes
-        socket.send(`${action.value}\x1b`);
-      } else {
-        socket.send(`${action.value}\n`);
-      }
-      // add command to history list
-      history = state.history.get(action.component).unshift(action.value);
-      // echo command to output buffer
-      buffer = state.buffers.get(action.component);
-      buffer = outputAppend(buffer, state.scrollbackLimit, action.value);
-      return {
-        ...state,
-        history: state.history.set(action.component, history),
-        buffers: state.buffers.set(action.component, buffer),
-      };
+      return handleReplSend(action, state, conn);
+
+    case REPL_ECHO:
+      return handleReplEcho(action, state, action.value);
 
     case REPL_SELECT:
       return { ...state, activeRepl: action.component };
@@ -139,6 +158,13 @@ const repl = (state = initialReplState, action) => {
       return {
         ...state,
         buffers: state.buffers.set(action.component, new List()),
+      };
+
+    case REPL_UNIT_MAP_SUCCESS:
+      console.log('Units:', action.units);
+      return {
+        ...state,
+        units: action.units,
       };
 
     default:

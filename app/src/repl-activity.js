@@ -124,7 +124,7 @@ const ReplSwitcher = props => {
         activeRepl={activeRepl}
         buffers={props.buffers}
         history={props.history}
-        replSend={props.replSend}
+        replSend={props.replInput}
       />
     );
   } else {
@@ -145,6 +145,11 @@ const ReplSwitcher = props => {
 
 class ReplActivity extends Component {
   TOOLBAR_WIDTH = 50;
+
+  componentWillMount() {
+    // get the unit mapping so that the unit commands know what to do
+    this.props.unitMapping();
+  }
 
   handleToolInvoke = name => {
     if (name === 'clear') {
