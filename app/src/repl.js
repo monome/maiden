@@ -114,6 +114,7 @@ class ReplInput extends Component {
     );
   }
 }
+
 class Repl extends Component {
   sendCommand = text => {
     this.props.replSend(this.props.activeRepl, text);
@@ -129,9 +130,17 @@ class Repl extends Component {
       height: this.props.height,
       width: this.props.width,
     };
+
+    let content;
+    if (this.props.renderChild) {
+      content = this.props.children;
+    } else {
+      content = <ReplOutput lines={lines} />
+    }
+    
     return (
       <div className="repl" style={style}>
-        <ReplOutput lines={lines} />
+        {content}        
         <ReplInput sendCommand={this.sendCommand} history={history} />
       </div>
     );

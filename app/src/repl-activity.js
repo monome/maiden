@@ -115,9 +115,11 @@ const ReplSwitcher = props => {
     height: height - switcherSize.height,
   };
 
-  let replView;
-  if (props.isConnected(activeRepl)) {
-    replView = (
+  return (
+    <div>
+      <div className="repl-switcher-tabs" style={switcherSize}>
+        {tabs}
+      </div>
       <Repl
         className="repl-container"
         {...contentSize}
@@ -125,20 +127,11 @@ const ReplSwitcher = props => {
         buffers={props.buffers}
         history={props.history}
         replSend={props.replInput}
-      />
-    );
-  } else {
-    replView = (
-      <ReplConnect {...contentSize} activeRepl={activeRepl} connectAction={props.handleConnect} />
-    );
-  }
+        renderChild={!props.isConnected(activeRepl)}
+      >
+        <ReplConnect {...contentSize} activeRepl={activeRepl} connectAction={props.handleConnect} />
+      </Repl>
 
-  return (
-    <div>
-      <div className="repl-switcher-tabs" style={switcherSize}>
-        {tabs}
-      </div>
-      {replView}
     </div>
   );
 };

@@ -81,14 +81,21 @@ export const replEndpoints = cb => dispatch => {
   });
 };
 
-export const replConnect = (component, endpoint) => dispatch => {
+export const replConnect = (component, endpoint, retryCount) => dispatch => {
   dispatch(replConnectDial(component, endpoint));
   const socket = new WebSocket(endpoint, ['bus.sp.nanomsg.org']);
   socket.onopen = () => {
     dispatch(replConnectSuccess(component, socket));
   };
   socket.onerror = error => {
-    dispatch(replConnectFailure(component, error));
+    if (retryCount && retryCount > 0) {
+      let attempt = new Promise(resolve => setTimeout(resolve, 250));
+      attempt.then(() => {
+        dispatch(replConnect(component, endpoint, retryCount - 1));
+      });
+    } else {
+      dispatch(replConnectFailure(component, error));
+    }
   };
   socket.onclose = () => {
     dispatch(replConnectClose(component));
@@ -119,9 +126,9 @@ export const replInput = (component, value) => (dispatch, getState) => {
     const operation = input.slice(1);
     const unitName = state.units.get(component);
     api.doUnitOperation(unitName, operation, response => {
-      if (response.result) {
+      if (response.result === "done") {
         const endpoint = state.endpoints.get(component);
-        dispatch(replConnect(component, endpoint));
+        dispatch(replConnect(component, endpoint, 4));
         dispatch(replEcho(component, input + " => " + response.result));
       }
       else {
