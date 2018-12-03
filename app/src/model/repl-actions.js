@@ -110,14 +110,12 @@ export const unitMapping = cb => dispatch => {
 
 export const replInput = (component, value) => (dispatch, getState) => {
   // MAINT: this leverages redux-thunk to allow dispatching of async actions
-  // from unit operations.
+  // from unit operations and accessing state
 
-  // check to see if the input is a unit command, if so we 
+  // check to see if the input is a unit command, if so fire off async actions
   const input = value.trim();
   if (input.startsWith(";")) {
-    dispatch(replEcho(component, input));
     const state = getState().repl;
-    console.log("state: ", state)
     const operation = input.slice(1);
     const unitName = state.units.get(component);
     api.doUnitOperation(unitName, operation, response => {
