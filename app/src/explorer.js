@@ -62,14 +62,8 @@ const SectionHeader = props => {
     ));
   }
 
-  const handleDoubleClick = event => {
-    if (props.headerDoubleClickAction) {
-      props.headerDoubleClickAction(event);
-    }
-  };
-
   return (
-    <div className="explorer-header" onDoubleClick={handleDoubleClick}>
+    <div className="explorer-header">
       <span className="section-name">{props.name}</span>
       <span className={cx('section-tools', { opaque: props.showTools })}>{buttons}</span>
     </div>
@@ -302,16 +296,25 @@ class Section extends Component {
       );
     }
 
+    let headerHeight = 17;  // FIXME: this hardcodes .explorer-header.height
+    let treeHeight = this.props.style.height - headerHeight - 20;  // FIXME: where the heck is this -20 coming from 
+    // console.log("treeHeight=", headerHeight, treeHeight, this.props.style);
+
     return (
       <div className="explorer-section" ref={elem => (this.section = elem)}>
         <SectionHeader
+          style={{height: headerHeight}}
           name={this.props.name}
           tools={this.props.tools}
           buttonAction={this.onToolClick}
           headerDoubleClickAction={this.onHeaderToggle}
           showTools={!isCollapsed && this.state.showTools}
         />
-        {tree}
+        <div
+          className="explorer-section-tree"
+          style={{height: treeHeight}}>
+          {tree}
+        </div>
       </div>
     );
   }
@@ -348,12 +351,11 @@ const fileTools = [
 
 class Explorer extends Component {
   render() {
-    const { width, height } = this.props;
+    const sectionStyle = { height: this.props.style.height };
 
     return (
       <div
         className={`explorer${this.props.hidden ? ' hidden' : ''}`} // FIXME: change this to use classname
-        style={{ width, height }}
         ref={elem => (this.explorer = elem)}
       >
         <Section
@@ -361,6 +363,7 @@ class Explorer extends Component {
           dataRootPath={USER_DATA_PATH}
           data={this.props.data}
           tools={fileTools}
+          style={sectionStyle}
           buttonAction={this.onToolClick}
           collapsedCategories={this.props.collapsedCategories}
           explorerToggleCategory={this.props.explorerToggleCategory}
