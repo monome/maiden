@@ -40,5 +40,11 @@
     "eslint-plugin-prettier": "^2.6.0",
     "prettier": "1.12.1",
     "redux-devtools": "^3.4.1"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

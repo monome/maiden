@@ -26,11 +26,8 @@ class Workspace extends Component {
       });
     });
 
-    // trigger initial read of top level scripts
-    this.props.scriptList();
-    this.props.luaLibList();
-    this.props.dataList();
-    this.props.audioList();
+    // trigger initial read of top level of dust
+    this.props.userDataList();
 
     // register workspace commands
     this.registerCommands();

@@ -11,7 +11,4 @@ export const CONFIG_COMPONENT = 'config';
 
 export const INVALID_NAME_CHARS = new Set(['/']);
 
-export const DUST_SCRIPT_PATH = 'dust/scripts';
-export const DUST_DATA_PATH = 'dust/data';
-export const DUST_AUDIO_PATH = 'dust/audio';
-export const DUST_LUA_LIB_PATH = 'dust/lib/lua';
+export const USER_DATA_PATH = 'dust';
