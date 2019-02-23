@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/gin-gonic/gin"
@@ -364,11 +365,13 @@ func handleDirRead(path string, entries *[]os.FileInfo, resourcePath prefixFunc)
 		if entry.IsDir() {
 			children = &[]fileInfo{}
 		}
-		files = append(files, fileInfo{
-			entry.Name(),
-			resourcePath(entry.Name()),
-			children,
-		})
+		if !strings.HasPrefix(entry.Name(), ".") {
+			files = append(files, fileInfo{
+				entry.Name(),
+				resourcePath(entry.Name()),
+				children,
+			})
+		}
 	}
 	return &dirInfo{
 		path,
