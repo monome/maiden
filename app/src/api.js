@@ -67,7 +67,7 @@ class API {
   }
 
   static createFolder(resource, cb) {
-    const url = new URL(resource, document.origin);
+    const url = new URL(resource, document.location.origin);
     url.searchParams.append('kind', 'directory');
     fetch(url, {
       method: 'PUT',
