@@ -60,6 +60,10 @@ class ModalGetName extends Component {
       this.setState({
         errorMessage: 'name already in use',
       });
+    } else if (this.textArea.value.startsWith(".")) {
+      this.setState({
+        errorMessage: 'name cannot start with "."'
+      });
     } else {
       this.setState({
         errorMessage: '',
@@ -67,7 +71,7 @@ class ModalGetName extends Component {
     }
   };
 
-  isValidName = name => !this.siblingNames.has(name);
+  isValidName = name => !this.siblingNames.has(name) && !name.startsWith(".");
 
   complete = choice => {
     const name = this.textArea.value;
