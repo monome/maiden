@@ -8,7 +8,7 @@ import { toggleComponent } from './model/ui-actions';
 import { replEndpoints, replConnect } from './model/repl-actions';
 
 import { rootList } from './model/edit-actions';
-import { DUST_SCRIPT_PATH, DUST_DATA_PATH, DUST_AUDIO_PATH, DUST_LUA_LIB_PATH } from './constants';
+import { USER_DATA_PATH } from './constants';
 
 const mapStateToProps = state => {
   const selected = state.activity.selected;
@@ -30,17 +30,8 @@ const mapDispatchToProps = dispatch => ({
   replConnect: (component, endpoint) => {
     dispatch(replConnect(component, endpoint));
   },
-  scriptList: () => {
-    dispatch(rootList(DUST_SCRIPT_PATH));
-  },
-  dataList: () => {
-    dispatch(rootList(DUST_DATA_PATH));
-  },
-  audioList: () => {
-    dispatch(rootList(DUST_AUDIO_PATH));
-  },
-  luaLibList: () => {
-    dispatch(rootList(DUST_LUA_LIB_PATH));
+  userDataList: () => {
+    dispatch(rootList(USER_DATA_PATH));
   },
 });
 

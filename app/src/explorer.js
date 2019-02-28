@@ -10,7 +10,7 @@ import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import api from './api';
-import { DUST_SCRIPT_PATH, DUST_LUA_LIB_PATH, DUST_AUDIO_PATH, DUST_DATA_PATH } from './constants';
+import { USER_DATA_PATH } from './constants';
 
 const TreeHeader = props => {
   const className = cx(
@@ -62,14 +62,8 @@ const SectionHeader = props => {
     ));
   }
 
-  const handleDoubleClick = event => {
-    if (props.headerDoubleClickAction) {
-      props.headerDoubleClickAction(event);
-    }
-  };
-
   return (
-    <div className="explorer-header" onDoubleClick={handleDoubleClick}>
+    <div className="explorer-header">
       <span className="section-name">{props.name}</span>
       <span className={cx('section-tools', { opaque: props.showTools })}>{buttons}</span>
     </div>
@@ -103,7 +97,7 @@ class Section extends Component {
   onToggle = (node, toggled) => {
     if (node.children) {
       this.props.explorerToggleNode(node, toggled);
-      if (toggled) {
+      if (toggled && node.children.length === 0) {
         this.props.directoryRead(node.url);
       }
     } else {
@@ -302,36 +296,45 @@ class Section extends Component {
       );
     }
 
+    let headerHeight = 17;  // FIXME: this hardcodes .explorer-header.height
+    let treeHeight = this.props.style.height - headerHeight - 20;  // FIXME: where the heck is this -20 coming from 
+    // console.log("treeHeight=", headerHeight, treeHeight, this.props.style);
+
     return (
       <div className="explorer-section" ref={elem => (this.section = elem)}>
         <SectionHeader
+          style={{height: headerHeight}}
           name={this.props.name}
           tools={this.props.tools}
           buttonAction={this.onToolClick}
           headerDoubleClickAction={this.onHeaderToggle}
           showTools={!isCollapsed && this.state.showTools}
         />
-        {tree}
+        <div
+          className="explorer-section-tree"
+          style={{height: treeHeight}}>
+          {tree}
+        </div>
       </div>
     );
   }
 }
 
-const scriptTools = [
+const fileTools = [
   {
     name: 'add',
     icon: ICONS.plus,
-    tooltipMessage: 'new script',
+    tooltipMessage: 'new file',
   },
   {
     name: 'remove',
     icon: ICONS.minus,
-    tooltipMessage: 'delete script',
+    tooltipMessage: 'delete file',
   },
   {
     name: 'duplicate',
     icon: ICONS.copy,
-    tooltipMessage: 'duplicate script',
+    tooltipMessage: 'duplicate file',
   },
   {
     name: 'new-folder',
@@ -345,67 +348,22 @@ const scriptTools = [
   },
 ];
 
-const audioTools = [
-  {
-    name: 'remove',
-    icon: ICONS.minus,
-    tooltipMessage: 'delete audio file',
-  },
-  {
-    name: 'new-folder',
-    icon: ICONS['folder-plus'],
-    tooltipMessage: 'new folder',
-  },
-  {
-    name: 'rename',
-    icon: ICONS.pencil,
-    tooltipMessage: 'rename file/folder',
-  },
-];
-
-const dataTools = [
-  {
-    name: 'add',
-    icon: ICONS.plus,
-    tooltipMessage: 'new data file',
-  },
-  {
-    name: 'remove',
-    icon: ICONS.minus,
-    tooltipMessage: 'delete data file',
-  },
-  {
-    name: 'duplicate',
-    icon: ICONS.copy,
-    tooltipMessage: 'duplicate data file',
-  },
-  {
-    name: 'new-folder',
-    icon: ICONS['folder-plus'],
-    tooltipMessage: 'new folder',
-  },
-  {
-    name: 'rename',
-    icon: ICONS.pencil,
-    tooltipMessage: 'rename file/folder',
-  },
-];
 
 class Explorer extends Component {
   render() {
-    const { width, height } = this.props;
+    const sectionStyle = { height: this.props.style.height };
 
     return (
       <div
         className={`explorer${this.props.hidden ? ' hidden' : ''}`} // FIXME: change this to use classname
-        style={{ width, height }}
         ref={elem => (this.explorer = elem)}
       >
         <Section
-          name="scripts"
-          dataRootPath={DUST_SCRIPT_PATH}
+          name="files"
+          dataRootPath={USER_DATA_PATH}
           data={this.props.data}
-          tools={scriptTools}
+          tools={fileTools}
+          style={sectionStyle}
           buttonAction={this.onToolClick}
           collapsedCategories={this.props.collapsedCategories}
           explorerToggleCategory={this.props.explorerToggleCategory}
@@ -416,72 +374,6 @@ class Explorer extends Component {
           directoryCreate={this.props.directoryCreate}
           scriptCreate={this.props.scriptCreate}
           scriptDuplicate={this.props.scriptDuplicate}
-          resourceDelete={this.props.resourceDelete}
-          resourceRename={this.props.resourceRename}
-          showModal={this.props.showModal}
-          hideModal={this.props.hideModal}
-          activeBuffer={this.props.activeBuffer}
-          activeNode={this.props.activeNode}
-        />
-        <Section
-          name="lib"
-          dataRootPath={DUST_LUA_LIB_PATH}
-          data={this.props.data}
-          tools={scriptTools}
-          buttonAction={this.onToolClick}
-          collapsedCategories={this.props.collapsedCategories}
-          explorerToggleCategory={this.props.explorerToggleCategory}
-          explorerToggleNode={this.props.explorerToggleNode}
-          explorerActiveNode={this.props.explorerActiveNode}
-          bufferSelect={this.props.bufferSelect}
-          directoryRead={this.props.directoryRead}
-          directoryCreate={this.props.directoryCreate}
-          scriptCreate={this.props.scriptCreate}
-          scriptDuplicate={this.props.scriptDuplicate}
-          resourceDelete={this.props.resourceDelete}
-          resourceRename={this.props.resourceRename}
-          showModal={this.props.showModal}
-          hideModal={this.props.hideModal}
-          activeBuffer={this.props.activeBuffer}
-          activeNode={this.props.activeNode}
-        />
-        <Section
-          name="audio"
-          dataRootPath={DUST_AUDIO_PATH}
-          data={this.props.data}
-          tools={audioTools}
-          buttonAction={this.onToolClick}
-          collapsedCategories={this.props.collapsedCategories}
-          explorerToggleCategory={this.props.explorerToggleCategory}
-          explorerToggleNode={this.props.explorerToggleNode}
-          explorerActiveNode={this.props.explorerActiveNode}
-          bufferSelect={this.props.bufferSelect}
-          scriptCreate={this.props.scriptCreate}
-          scriptDuplicate={this.props.scriptDuplicate}
-          directoryRead={this.props.directoryRead}
-          directoryCreate={this.props.directoryCreate}
-          resourceDelete={this.props.resourceDelete}
-          resourceRename={this.props.resourceRename}
-          showModal={this.props.showModal}
-          hideModal={this.props.hideModal}
-          activeBuffer={this.props.activeBuffer}
-          activeNode={this.props.activeNode}
-        />
-        <Section
-          name="data"
-          dataRootPath={DUST_DATA_PATH}
-          data={this.props.data}
-          tools={dataTools}
-          buttonAction={this.onToolClick}
-          collapsedCategories={this.props.collapsedCategories}
-          explorerToggleCategory={this.props.explorerToggleCategory}
-          explorerToggleNode={this.props.explorerToggleNode}
-          explorerActiveNode={this.props.explorerActiveNode}
-          bufferSelect={this.props.bufferSelect}
-          scriptCreate={this.props.scriptCreate}
-          scriptDuplicate={this.props.scriptDuplicate}
-          directoryRead={this.props.directoryRead}
-          directoryCreate={this.props.directoryCreate}
           resourceDelete={this.props.resourceDelete}
           resourceRename={this.props.resourceRename}
           showModal={this.props.showModal}

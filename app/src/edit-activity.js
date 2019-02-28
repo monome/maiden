@@ -250,6 +250,10 @@ class EditActivity extends Component {
       position: 'relative', // must be inline to override library behavior
     };
 
+    const explorerStyle = {
+      height: this.props.height,
+    }
+
     return (
       <SplitPane
         split="vertical"
@@ -262,6 +266,7 @@ class EditActivity extends Component {
         <Explorer
           className="explorer-container"
           hidden={this.props.ui.sidebarHidden}
+          style={explorerStyle}
           data={this.props.explorerData}
           bufferSelect={this.props.bufferSelect}
           directoryRead={this.props.directoryRead}

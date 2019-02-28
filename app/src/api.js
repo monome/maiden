@@ -67,7 +67,7 @@ class API {
   }
 
   static createFolder(resource, cb) {
-    const url = new URL(resource, document.origin);
+    const url = new URL(resource, document.location.origin);
     url.searchParams.append('kind', 'directory');
     fetch(url, {
       method: 'PUT',
@@ -120,7 +120,7 @@ class API {
 
   static fileFromResource(resource) {
     // MAINT: this totally breaks the encapsulation of script resources and returns what matron would see as the script path
-    const prefix = apiPath('dust/scripts/');
+    const prefix = apiPath('dust/');
     return resource.split(prefix)[1];
   }
 
