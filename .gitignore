@@ -9,6 +9,7 @@ maiden
 maiden.arm
 
 # releases
+dist/
 maiden-v*.tgz
 
 # misc stuff
