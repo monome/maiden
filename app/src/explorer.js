@@ -97,7 +97,7 @@ class Section extends Component {
   onToggle = (node, toggled) => {
     if (node.children) {
       this.props.explorerToggleNode(node, toggled);
-      if (toggled) {
+      if (toggled && node.children.length === 0) {
         this.props.directoryRead(node.url);
       }
     } else {
