@@ -9,5 +9,6 @@ release:
 clean:
 	rm -rf dist
 	rm -f maiden maiden.arm
+	rm -rf web/build
 
 .PHONY: clean release build default

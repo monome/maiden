@@ -18,7 +18,7 @@ cp -v tool/start.sh $REL_DIR
 # app
 echo -e "\nbuilding app"
 echo "====================="
-cmd='(cd web; yarn install && yarn build)'
+cmd='(cd web; rm -rf build && yarn install && yarn build)'
 echo $cmd
 eval $cmd
 mkdir -pv ${REL_DIR}/app
