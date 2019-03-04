@@ -13,16 +13,16 @@ cmd='GOOS=linux GOARCH=arm go build -o maiden.arm'
 echo $cmd
 eval $cmd
 cp -v maiden.arm $REL_DIR
-cp -v start.sh $REL_DIR
+cp -v tool/start.sh $REL_DIR
 
 # app
 echo -e "\nbuilding app"
 echo "====================="
-cmd='(cd app; yarn build)'
+cmd='(cd web; yarn build)'
 echo $cmd
 eval $cmd
 mkdir -pv ${REL_DIR}/app
-cp -rv ./app/build ${REL_DIR}/app
+cp -rv ./web/build ${REL_DIR}/app
 
 # tarball
 echo -e "\nmaking release"
