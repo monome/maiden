@@ -1,8 +1,0 @@
-package: github.com/monome/maiden
-import:
-- package: github.com/gin-gonic/gin
-  version: 6ad7b9c9d382844036334ad061b832e56269e14f
-- package: github.com/coreos/go-systemd
-  version: ^18.0.0
-- package: github.com/godbus/dbus
-  version: ^5.0.1
