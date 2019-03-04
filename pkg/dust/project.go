@@ -1,8 +1,11 @@
 package dust
 
 import (
+	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/pierrre/archivefile/zip"
 )
 
 // Project encapsulates a dust project
@@ -26,4 +29,9 @@ func (p *Project) IsManaged() bool {
 		return true
 	}
 	return false
+}
+
+// Archive creates a zip archive of the project outputting it to the given writer
+func (p *Project) Archive(out io.Writer, progress zip.ProgressFunc) error {
+	return zip.Archive(p.Root, out, progress)
 }

@@ -21,7 +21,7 @@ type Layout struct {
 func DefaultDustRoot() string {
 	value, exists := os.LookupEnv("HOME")
 	if !exists {
-		log.Fatal("Unable to ")
+		log.Fatalf("HOME env not set, unable to determine default dust directory")
 	}
 	return filepath.Join(value, "dust")
 }
