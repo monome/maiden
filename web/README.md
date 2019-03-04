@@ -22,7 +22,7 @@ npm | 6.1.0
 yarn | 1.7.0
 
 ## to build
-from the `app/` directory within the `maiden` source tree (likely `$GOPATH/src/github.com/monome/maiden/app/`)
+from the `web/` directory within the `maiden` source tree:
 
 ```
 yarn install
@@ -40,7 +40,7 @@ installing both the `reactjs` and `redux` devtools browser extensions is highly 
 
 ## repl connection
 
-the `maiden` repl uses websockets to directly connect to the `matron` (lua) and `crone` (supercollider) consoles bypassing the http backend. in order to determine which host/ip and socket to connect to `maiden` reads the `repl-endpoints.json` file (`app/public/repl-endpoints.json`) from the http backend.
+the `maiden` repl uses websockets to directly connect to the `matron` (lua) and `crone` (supercollider) consoles bypassing the http backend. in order to determine which host/ip and socket to connect to `maiden` reads the `repl-endpoints.json` file (`web/public/repl-endpoints.json`) from the http backend.
 
 when running both the frontend and backend locally during development it is still possible to make the repl work by locally editing `repl-endpoints.json`, the default configuration looks like:
 
@@ -67,5 +67,5 @@ a very quick/iterative development configuration can be achieved by:
 * enabling wifi on norns
 * using `sshfs` to mount the `we` home directory locally - `sshfs we@norns.local: ~/norns`
 * editing `repl-endpoints.json` to point at the norns device
-* starting the backend locally - `go build && ./maiden -app app/build/ -data ~/norns/dust -doc ~/norns/norns/doc -debug`
-* starting the yarns development server `cd app; yarn start`
+* starting the backend locally - `go build && ./maiden -app web/build/ -data ~/norns/dust -doc ~/norns/norns/doc -debug`
+* starting the yarns development server `cd web; yarn start`
