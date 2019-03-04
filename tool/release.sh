@@ -9,10 +9,11 @@ mkdir -pv $REL_DIR
 # maiden
 echo -e "building maiden"
 echo "====================="
-cmd='GOOS=linux GOARCH=arm go build -o maiden.arm'
+cmd='GOOS=linux GOARCH=arm go build -o $REL_DIR/maiden'
 echo $cmd
 eval $cmd
-cp -v maiden.arm $REL_DIR
+# for compatibility with old systemd unit setup
+(cd $REL_DIR/; ln -s maiden maiden.arm)
 cp -v tool/start.sh $REL_DIR
 
 # app
