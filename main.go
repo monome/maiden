@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/gin-gonic/gin"
+	flag "github.com/spf13/pflag"
 )
 
 var (
@@ -26,9 +26,9 @@ func main() {
 		httpPort = flag.Int("port", 5000, "HTTP `port`")
 		httpFD   = flag.Int("fd", 0, "file `descriptor` on which to serve HTTP (overrides -port)")
 
-		dataDir = flag.String("data", "data/", "path to user data directory")
-		appDir  = flag.String("app", "app/", "path to maiden app directory")
-		docDir  = flag.String("doc", "doc/", "path to matron lua docs")
+		dataDir = flag.String("data", "data/", "`path` to user data directory")
+		appDir  = flag.String("app", "app/", "`path` to maiden app directory")
+		docDir  = flag.String("doc", "doc/", "`path` to matron lua docs")
 
 		debug = flag.Bool("debug", false, "enable debug logging")
 	)

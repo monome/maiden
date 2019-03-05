@@ -10,6 +10,7 @@ require (
 	github.com/golang/protobuf v0.0.0-20180328163153-e09c5db29600
 	github.com/json-iterator/go v0.0.0-20180125064802-358cfc39298c
 	github.com/mattn/go-isatty v0.0.4
+	github.com/spf13/pflag v1.0.3
 	github.com/ugorji/go v0.0.0-20180407103000-f3cacc17c85e
 	golang.org/x/sys v0.0.0-20180126165840-ff2a66f350ce
 	gopkg.in/go-playground/validator.v8 v8.18.2

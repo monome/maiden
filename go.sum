@@ -11,6 +11,8 @@ github.com/golang/protobuf v0.0.0-20180328163153-e09c5db29600/go.mod h1:6lQm79b+
 github.com/json-iterator/go v0.0.0-20180125064802-358cfc39298c/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/mattn/go-isatty v0.0.4 h1:bnP0vzxcAdeI1zdubAl5PjU6zsERjGZb7raWodagDYs=
 github.com/mattn/go-isatty v0.0.4/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
+github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
+github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/ugorji/go v0.0.0-20180407103000-f3cacc17c85e h1:/05fozWUoGEHeSbx266tvzXxg4PWwQO+evvqB2uOuRY=
 github.com/ugorji/go v0.0.0-20180407103000-f3cacc17c85e/go.mod h1:hnLbHMwcvSihnDhEfx2/BzKp2xb0Y+ErdfYcrs9tkJQ=
 golang.org/x/sys v0.0.0-20180126165840-ff2a66f350ce/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
