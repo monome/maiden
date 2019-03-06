@@ -42,7 +42,7 @@ GOOS=linux GOARCH=arm go build -o maiden.arm
 ## testing
 
 ```
-./maiden -debug -app web/build/ -data <norns_repo>/lua
+./maiden server --debug --app web/build/ --data <norns_repo>/lua
 ```
 
 
