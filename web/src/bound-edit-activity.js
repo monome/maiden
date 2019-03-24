@@ -129,6 +129,9 @@ const mapDispatchToProps = dispatch => ({
       console.log('resource:', resource, 'cannot be run as a script');
     }
   },
+  selectionEval: code => {
+    dispatch(replSend(MATRON_COMPONENT, code));
+  },
 
   // ui
   sidebarToggle: () => {
