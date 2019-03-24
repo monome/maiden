@@ -9,7 +9,7 @@ import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
 
 import api from './api';
-import { editorService } from './services';
+import { commandService, editorService } from './services';
 
 import './editor.css';
 import './theme/norns_dark';
@@ -135,18 +135,10 @@ class Editor extends Component {
     this.props.bufferChange(this.props.bufferName, this.getValue());
   }
 
-  /*
-    componentDidMount = () => {
-        // this.editor.focus()
-        window.setTimeout(() => {
-            this.refs.ace.editor.focus();
-            console.log("CDM focused on", this.refs.ace.editor)
-        }, 3);
-
-        //this.refs.ace.editor.focus();
-
-    }
-    */
+  handleEval() {
+    const code = this.editor.getSelectedText();
+    this.props.selectionEval(code);
+  }
 
   render() {
     const width = `${this.props.width}px`;
@@ -156,6 +148,8 @@ class Editor extends Component {
     mode.onRender(this.editor);
 
     const theme = this.props.editorOptions.editorTheme || 'dawn';
+
+    commandService.registerCommand('eval', () => this.handleEval());
 
     return (
       <AceEditor
