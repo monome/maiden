@@ -309,7 +309,8 @@ func (s *server) renameHandler(ctx *gin.Context) {
 		return
 	}
 
-	info := patchInfo{s.resourcePath(rename)}
+	renameComponents := strings.Split(rename, string(os.PathSeparator))
+	info := patchInfo{s.resourcePath(renameComponents...)}
 	ctx.JSON(http.StatusOK, info)
 }
 
