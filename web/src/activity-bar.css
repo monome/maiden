@@ -18,3 +18,28 @@
 .activity-bar {
     margin: 0px;
 }
+
+.activity-bar-doc-menu {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: hsl(0, 0%, 59%);
+    text-align: center;
+    height: 24px;
+    width: 36px;
+    padding: 6px;
+}
+
+.activity-bar-popup {
+    /* color: red; */
+    /* background-color: black; */
+    /* opacity: 80%; */
+    padding-left: 10em;
+}
+
+.activity-bar-popup > a, a:visited {
+    color:#979797;
+}
+
+.activity-bar-popup > a:hover {
+    color: red;
+}

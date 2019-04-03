@@ -1,6 +1,6 @@
 import BoundEditActivity from './bound-edit-activity';
 import { ICONS } from './svg-icons';
-import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from './constants';
+import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT, DOC_COMPONENT } from './constants';
 import OS from './utils';
 
 const activities = [
@@ -21,6 +21,16 @@ const activities = [
     toggle: REPL_COMPONENT,
     view: BoundEditActivity,
     position: 'upper',
+  },
+  {
+    selector: 'editor',
+    tooltipMessage: `documentation`,
+    tooltipPosition: 'right',
+    icon: ICONS.book,
+    toggle: DOC_COMPONENT,
+    popup: true,
+    view: BoundEditActivity,
+    position: 'lower',
   },
   {
     selector: 'editor',
