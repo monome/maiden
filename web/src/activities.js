@@ -1,6 +1,7 @@
 import BoundEditActivity from './bound-edit-activity';
+import HelpButton from './help-button';
 import { ICONS } from './svg-icons';
-import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT, DOC_COMPONENT } from './constants';
+import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from './constants';
 import OS from './utils';
 
 const activities = [
@@ -23,13 +24,7 @@ const activities = [
     position: 'upper',
   },
   {
-    selector: 'editor',
-    tooltipMessage: `documentation`,
-    tooltipPosition: 'right',
-    icon: ICONS.book,
-    toggle: DOC_COMPONENT,
-    popup: true,
-    view: BoundEditActivity,
+    component: HelpButton,
     position: 'lower',
   },
   {
