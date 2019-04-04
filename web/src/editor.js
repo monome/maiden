@@ -136,7 +136,7 @@ class Editor extends Component {
   }
 
   handleEval() {
-    const code = this.editor.getSelectedText().replace(/\-\-.*\n/g,';').replace(/\n/g,';')
+    const code = this.editor.getSelectedText().replace(/--.*\n/g,';').replace(/\n/g,';')
     this.props.selectionEval(code);
   }
 
