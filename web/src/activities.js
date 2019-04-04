@@ -1,4 +1,5 @@
 import BoundEditActivity from './bound-edit-activity';
+import HelpButton from './help-button';
 import { ICONS } from './svg-icons';
 import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from './constants';
 import OS from './utils';
@@ -21,6 +22,10 @@ const activities = [
     toggle: REPL_COMPONENT,
     view: BoundEditActivity,
     position: 'upper',
+  },
+  {
+    component: HelpButton,
+    position: 'lower',
   },
   {
     selector: 'editor',

@@ -1,0 +1,19 @@
+.help-button-menu {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: hsl(0, 0%, 59%);
+    text-align: center;
+    height: 24px;
+    width: 36px;
+    padding: 6px;
+}
+
+.help-button-link, .help-botton-link:visited {
+    text-decoration: none;
+    color: #979797;
+}
+
+.help-button-link:hover {
+    color: hsl(0, 0%, 39%);
+
+}

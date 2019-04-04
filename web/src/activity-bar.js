@@ -9,17 +9,22 @@ class ActivityBar extends Component {
     const lowerItems = [];
 
     this.props.activities.forEach(activity => {
-      const button = (
-        <IconButton
-          key={activity.selector + activity.toggle}
-          action={() => this.props.buttonAction(activity)}
-          tooltipMessage={activity.tooltipMessage}
-          tooltipPosition={activity.tooltipPosition}
-          icon={activity.icon}
-          color="hsl(0, 0%, 59%)"
-          size="24"
-        />
-      );
+      let button;
+      
+      if (activity.component) {
+        button = <activity.component />
+      } else {
+        button = <IconButton
+                    key={activity.selector + activity.toggle}
+                    action={() => this.props.buttonAction(activity)}
+                    tooltipMessage={activity.tooltipMessage}
+                    tooltipPosition={activity.tooltipPosition}
+                    icon={activity.icon}
+                    color="hsl(0, 0%, 59%)"
+                    size="24"
+                  />
+      }
+
       if (activity.position && activity.position === 'lower') {
         lowerItems.push(button);
       } else {
