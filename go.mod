@@ -13,6 +13,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v0.0.0-20180125064802-358cfc39298c // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/monome/maiden/pkg/lines v0.0.0-00010101000000-000000000000
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect
@@ -25,3 +26,5 @@ require (
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
+
+replace github.com/monome/maiden/pkg/lines => ./pkg/lines
