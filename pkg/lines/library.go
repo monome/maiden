@@ -3,6 +3,8 @@ package lines
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strings"
 )
 
 // Category captures a subset of the properties of a Discourse category
@@ -127,4 +129,59 @@ func GetTopicDetails(client *Client, topicID int) (*Details, error) {
 	}
 
 	return &content.Details, nil
+}
+
+// ProjectNameFromTopicTitle attempts to determine the project name from topic title
+func ProjectNameFromTopicTitle(title string) string {
+	return strings.TrimSuffix(strings.ToLower(title), "(norns)")
+}
+
+// GuessProjectURLFromLinks attempts to find a URL for the project among the links posted in the topic
+func GuessProjectURLFromLinks(links []Link) (string, bool) {
+	// FIXME: this is really lame logic and not very robust
+	// TODO: look at link titles for semver info and use that to sort
+
+	// priority order:
+	// (1) git repos (github.com, gitlab.com, bitbucket.org)
+	// (2) zip archive attachments on lines
+	// (3) zip archive somewhere else
+
+	var candidates [3]string
+
+	for _, l := range links {
+		if strings.HasSuffix(l.URL, ".git") {
+			return l.URL, true
+		}
+		if strings.HasSuffix(l.URL, ".zip") {
+			if l.IsAttachment {
+				candidates[1] = l.URL
+			} else {
+				candidates[2] = l.URL
+			}
+			continue
+		}
+		if l.Domain == "github.com" || l.Domain == "gitlab.com" || l.Domain == "bitbucket.org" {
+			return extractRepoURL(l.URL), true
+		}
+	}
+	for _, u := range candidates {
+		if u != "" {
+			return u, true
+		}
+	}
+	return "", false
+}
+
+func extractRepoURL(rawURL string) string {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return rawURL
+	}
+	// log.Printf("extract path: %s", u.Path)
+	parts := strings.Split(u.Path, "/")
+	// log.Printf("parts: %+v", parts[:3])
+	repoPath := strings.Join(parts[:3], "/")
+	// log.Printf("repo path: %s", repoPath)
+	u.Path = repoPath
+	return u.String()
 }

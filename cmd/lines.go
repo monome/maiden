@@ -45,24 +45,46 @@ func linesRun() {
 	if err != nil {
 		log.Fatalf("failed to get topics: %v", err)
 	}
-	for _, t := range topics {
-		if lines.TopicHasTag(&t, "norns") {
-			log.Printf("candidate: %+v (%d)", t.Title, t.ID)
-			details, err := lines.GetTopicDetails(client, t.ID)
-			if details == nil || err != nil {
-				log.Printf("\tfailed to get details (%s)", err)
-				continue
+
+	type result struct {
+		Name    string
+		Details *lines.Details
+	}
+
+	d := make(chan result, 10)
+
+	go func() {
+		for _, t := range topics {
+			if lines.TopicHasTag(&t, "norns") {
+				//log.Printf("candidate: %+v (%d)", lines.ProjectNameFromTopicTitle(t.Title), t.ID)
+				details, err := lines.GetTopicDetails(client, t.ID)
+				if details == nil || err != nil {
+					log.Printf("\tfailed to get details (%s)", err)
+					continue
+				}
+				d <- result{
+					lines.ProjectNameFromTopicTitle(t.Title),
+					details,
+				}
 			}
-			log.Printf("\tcreator: %s (%s)", details.CreatedBy.Name, details.CreatedBy.Username)
-			log.Printf("\tlinks:")
-			for i, l := range details.Links {
-				log.Printf("\t%d:", i)
-				log.Printf("\t\ttitle: %s", l.Title)
-				log.Printf("\t\tURL: %s", l.URL)
-				log.Printf("\t\tdomain: %s", l.Domain)
-				log.Printf("\t\tattachment: %t", l.IsAttachment)
-			}
-			log.Printf("")
 		}
+		close(d)
+	}()
+
+	for r := range d {
+		log.Printf("candidate: %+v", r.Name)
+		log.Printf("\tcreator: %s (%s)", r.Details.CreatedBy.Name, r.Details.CreatedBy.Username)
+		url, _ := lines.GuessProjectURLFromLinks(r.Details.Links)
+		log.Printf("\tURL: %s", url)
+
+		// log.Printf("\tlinks:")
+		// for i, l := range details.Links {
+		// 	log.Printf("\t%d:", i)
+		// 	log.Printf("\t\ttitle: %s", l.Title)
+		// 	log.Printf("\t\tURL: %s", l.URL)
+		// 	log.Printf("\t\tdomain: %s", l.Domain)
+		// 	log.Printf("\t\tattachment: %t", l.IsAttachment)
+		// }
+		log.Printf("")
 	}
 }
