@@ -133,7 +133,8 @@ func GetTopicDetails(client *Client, topicID int) (*Details, error) {
 
 // ProjectNameFromTopicTitle attempts to determine the project name from topic title
 func ProjectNameFromTopicTitle(title string) string {
-	return strings.TrimSuffix(strings.ToLower(title), "(norns)")
+	n := strings.TrimSpace(strings.TrimSuffix(strings.ToLower(title), "(norns)"))
+	return strings.Replace(n, " ", "_", -1)
 }
 
 // GuessProjectURLFromLinks attempts to find a URL for the project among the links posted in the topic

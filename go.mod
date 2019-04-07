@@ -13,6 +13,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/json-iterator/go v0.0.0-20180125064802-358cfc39298c // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/monome/maiden/pkg/catalog v0.0.0-00010101000000-000000000000
 	github.com/monome/maiden/pkg/lines v0.0.0-00010101000000-000000000000
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/cobra v0.0.3
@@ -28,3 +29,5 @@ require (
 )
 
 replace github.com/monome/maiden/pkg/lines => ./pkg/lines
+
+replace github.com/monome/maiden/pkg/catalog => ./pkg/catalog
