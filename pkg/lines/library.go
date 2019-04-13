@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -64,6 +65,12 @@ type Details struct {
 
 type getTopicPostsResponse struct {
 	Details Details `json:"details"`
+}
+
+var namePattern *regexp.Regexp
+
+func init() {
+	namePattern = regexp.MustCompile(`^\s*([\w\s]+)`)
 }
 
 func GetCategories(client *Client) ([]Category, error) {
@@ -133,7 +140,12 @@ func GetTopicDetails(client *Client, topicID int) (*Details, error) {
 
 // ProjectNameFromTopicTitle attempts to determine the project name from topic title
 func ProjectNameFromTopicTitle(title string) string {
-	n := strings.TrimSpace(strings.TrimSuffix(strings.ToLower(title), "(norns)"))
+	n := title
+	m := namePattern.FindString(title)
+	if m != "" {
+		n = m
+	}
+	n = strings.TrimSpace(strings.ToLower(n))
 	return strings.Replace(n, " ", "_", -1)
 }
 
