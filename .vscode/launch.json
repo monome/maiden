@@ -2,6 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "maiden gather catalog",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["catalog", "gather", "./catalog.json"]
+        },
+        {
             "name": "Chrome",
             "type": "chrome",
             "request": "launch",
