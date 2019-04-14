@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -26,8 +27,18 @@ var catalogListCmd = &cobra.Command{
 	},
 }
 
+var catalogInitCmd = &cobra.Command{
+	Use:   "init",
+	Short: "init an empty catalog file",
+	Args:  cobra.RangeArgs(1, 1),
+	Run: func(cmd *cobra.Command, args []string) {
+		catalogInitRun(args)
+	},
+}
+
 func init() {
 	catalogCmd.AddCommand(catalogListCmd)
+	catalogCmd.AddCommand(catalogInitCmd)
 	rootCmd.AddCommand(catalogCmd)
 }
 
@@ -62,7 +73,18 @@ func catalogListRun(args []string) {
 			for _, entry := range catalog.Entries() {
 				fmt.Fprintf(w, "%s\t%s\t\n", entry.ProjectName, entry.URL)
 			}
+			w.Flush()
 		}
 	}
-	w.Flush()
+}
+
+func catalogInitRun(args []string) {
+	c := catalog.New()
+	f, err := os.Create(args[0])
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer f.Close()
+	c.Store(f)
+	fmt.Printf("Wrote: %s\n", args[0])
 }
