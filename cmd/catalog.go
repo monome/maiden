@@ -68,10 +68,10 @@ func catalogListRun(args []string) {
 			}
 
 			fmt.Fprintf(os.Stdout, "[ %s ]\n", path)
-			fmt.Fprintln(w, "project\turl\t")
-			fmt.Fprintln(w, "-------\t---\t")
+			fmt.Fprintln(w, "project\tsource\turl\t")
+			fmt.Fprintln(w, "-------\t------\t---\t")
 			for _, entry := range catalog.Entries() {
-				fmt.Fprintf(w, "%s\t%s\t\n", entry.ProjectName, entry.URL)
+				fmt.Fprintf(w, "%s\t%s\t%s\t\n", entry.ProjectName, entry.Origin, entry.URL)
 			}
 			w.Flush()
 		}
