@@ -89,6 +89,14 @@ func (c *Catalog) Insert(entry *Entry) {
 	c.content.Entries[entry.ProjectName] = *entry
 }
 
+// Get returns the first matching entry found in the catalog or nil
+func (c *Catalog) Get(name string) *Entry {
+	if e, ok := c.content.Entries[name]; ok {
+		return &e
+	}
+	return nil
+}
+
 // Entries returns all the entries in the catalog
 func (c *Catalog) Entries() []Entry {
 	es := make([]Entry, len(c.content.Entries))

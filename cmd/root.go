@@ -22,9 +22,6 @@ func Execute() {
 	viper.AddConfigPath(".")
 
 	viper.ReadInConfig()
-	// if err != nil {
-	// 	panic(fmt.Errorf("config file error: %s", err))
-	// }
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)

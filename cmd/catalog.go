@@ -43,6 +43,9 @@ func init() {
 }
 
 func catalogListRun(args []string) {
+	// FIXME: refactor this in terms of GetCatalogs after figuring out how to
+	// retain the filename info
+
 	catalogPatterns := viper.GetStringSlice("catalogs")
 
 	w := new(tabwriter.Writer)
@@ -87,4 +90,45 @@ func catalogInitRun(args []string) {
 	defer f.Close()
 	c.Store(f)
 	fmt.Printf("Wrote: %s\n", args[0])
+}
+
+// GetCatalogs loads all catalogs specified in the config
+func GetCatalogs() []*catalog.Catalog {
+	catalogs := make([]*catalog.Catalog, 0)
+
+	catalogPatterns := viper.GetStringSlice("catalogs")
+	for _, pattern := range catalogPatterns {
+		matches, err := filepath.Glob(pattern)
+		if err != nil {
+			fmt.Printf("WARN: bad pattern %s\n", err)
+			continue
+		}
+		for _, path := range matches {
+			f, err := os.Open(path)
+			if err != nil {
+				fmt.Printf("WARN: %s\n", err)
+				continue
+			}
+			catalog, err := catalog.Load(f)
+			f.Close()
+			if err != nil {
+				fmt.Printf("WARN: load error: %s (%s)\n", err, path)
+				continue
+			}
+			catalogs = append(catalogs, catalog)
+		}
+	}
+
+	return catalogs
+}
+
+// SearchCatalogs looks for an Entry which matches the given name
+func SearchCatalogs(catalogs []*catalog.Catalog, projectName string) *catalog.Entry {
+	for _, c := range catalogs {
+		// log.Printf("cat [%d]: %+v\n", n, *c)
+		if e := c.Get(projectName); e != nil {
+			return e
+		}
+	}
+	return nil
 }

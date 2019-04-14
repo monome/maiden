@@ -153,6 +153,7 @@ func ProjectNameFromTopicTitle(title string) string {
 func GuessProjectURLFromLinks(links []Link) (string, bool) {
 	// FIXME: this is really lame logic and not very robust
 	// TODO: look at link titles for semver info and use that to sort
+	// TODO: deal with conflicting links like doc link in `takt` topic
 
 	// priority order:
 	// (1) git repos (github.com, gitlab.com, bitbucket.org)

@@ -3,6 +3,7 @@ module github.com/monome/maiden
 go 1.12
 
 require (
+	github.com/BurntSushi/toml v0.3.1 // indirect
 	github.com/coreos/go-systemd v0.0.0-20181031085051-9002847aa142
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20180417025440-6ad7b9c9d382
@@ -13,6 +14,7 @@ require (
 	github.com/json-iterator/go v0.0.0-20180125064802-358cfc39298c // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/monome/maiden/pkg/catalog v0.0.0-00010101000000-000000000000
+	github.com/monome/maiden/pkg/dust v0.0.0-00010101000000-000000000000
 	github.com/monome/maiden/pkg/lines v0.0.0-00010101000000-000000000000
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
@@ -26,3 +28,5 @@ require (
 replace github.com/monome/maiden/pkg/lines => ./pkg/lines
 
 replace github.com/monome/maiden/pkg/catalog => ./pkg/catalog
+
+replace github.com/monome/maiden/pkg/dust => ./pkg/dust
