@@ -1,16 +1,16 @@
 # generated catalog source, destination
 sources:
-  lines: lines-catalog.json
+  lines: catalogs/lines.json
 
 # catalog file paths; can be glob patterns
 catalogs:
-  - ./*.json
+  - catalogs/*.json
   - ./personal-catalog.json
 
 # dust directory details
 dust:
-  path: ~/dust
+  path: $HOME/dust
 
 # matron ldoc path
 doc:
-  path: ~/norns/doc
+  path: $HOME/norns/doc
