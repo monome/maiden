@@ -75,7 +75,7 @@ func (c *Catalog) Store(w io.Writer) error {
 	if c.content.Header != defaultHeader {
 		return errors.New("catalog header version/kind does not match")
 	}
-	data, err := json.Marshal(c.content)
+	data, err := json.MarshalIndent(c.content, "", "  ")
 	if err != nil {
 		return err
 	}
