@@ -125,20 +125,14 @@ func updateProjectRun(args []string) {
 		fmt.Printf("Updating: %s ... ", p.Name)
 		if p.IsManaged() {
 			err = p.Update(true)
-			if !CheckErrorWarn(err) {
-				fmt.Printf("done.\n")
-			}
+			CheckErrorNonFatal(err, "done.")
 		} else {
 			// assume zip
 			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
 				// TODO: only remove if download succeds?
 				os.RemoveAll(p.Root)
 				err = dust.Install(dustRoot, p.Name, entry.URL)
-				if err != nil {
-					fmt.Printf("failed: %s\n", err)
-				} else {
-					fmt.Printf("done.\n")
-				}
+				CheckErrorNonFatal(err, "done.")
 			} else {
 				fmt.Printf("failed: cannot find in catalog")
 			}

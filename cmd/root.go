@@ -37,11 +37,12 @@ func CheckErrorFatal(e error) {
 	}
 }
 
-// CheckErrorWarn logs the error if error value is non-nil, returning true if there was an error
-func CheckErrorWarn(e error) bool {
+// CheckErrorNonFatal logs the error if error value is non-nil, returning true if there was an error
+func CheckErrorNonFatal(e error, ok string) bool {
 	if e != nil {
-		log.Println("WARN", e)
+		log.Println(e)
 		return true
 	}
+	log.Println(ok)
 	return false
 }
