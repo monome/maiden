@@ -1,0 +1,5 @@
+sources:
+  lines: lines-catalog.json
+catalogs:
+  - ./*.json
+  - ./personal-catalog.json
