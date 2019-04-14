@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -12,9 +13,9 @@ import (
 var catalogGatherCmd = &cobra.Command{
 	Use:   "gather",
 	Short: "gather script details from various sources",
-	Args:  cobra.NoArgs,
+	Args:  cobra.MaximumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		catalogGatherRun()
+		catalogGatherRun(args)
 	},
 }
 
@@ -23,12 +24,26 @@ var (
 )
 
 func init() {
-	catalogGatherCmd.Flags().BoolVar(&gatherLines, "lines", true, "examine llllllll.co library topics")
+	catalogGatherCmd.Flags().BoolVar(&gatherLines, "lines", false, "examine llllllll.co library topics")
 
 	catalogCmd.AddCommand(catalogGatherCmd)
 }
 
-func catalogGatherRun() {
+func catalogGatherRun(args []string) {
+	var destination *os.File
+	var err error
+
+	s := len(args)
+	if s == 0 || args[0] == "-" {
+		destination = os.Stdout
+	} else {
+		destination, err = os.Create(args[0])
+		if err != nil {
+			log.Fatalf("%s", err)
+		}
+		defer destination.Close()
+	}
+
 	catalog := catalog.New()
 
 	if gatherLines {
@@ -38,5 +53,12 @@ func catalogGatherRun() {
 		}
 	}
 
-	catalog.Store(os.Stdout)
+	err = catalog.Store(destination)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if destination == os.Stdout {
+		fmt.Println("")
+	}
 }
