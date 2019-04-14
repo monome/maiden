@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -27,4 +28,20 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+// CheckErrorFatal logs a fatal error if error value is non-nil
+func CheckErrorFatal(e error) {
+	if e != nil {
+		log.Fatal(e)
+	}
+}
+
+// CheckErrorWarn logs the error if error value is non-nil, returning true if there was an error
+func CheckErrorWarn(e error) bool {
+	if e != nil {
+		log.Println("WARN", e)
+		return true
+	}
+	return false
 }

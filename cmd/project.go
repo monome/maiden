@@ -43,7 +43,13 @@ var pushProjectCmd = &cobra.Command{
 	},
 }
 
+var (
+	updateAllProjects bool
+)
+
 func init() {
+	updateProjectCmd.Flags().BoolVar(&updateAllProjects, "all", false, "update all installed projects")
+
 	projectCmd.AddCommand(installProjectCmd)
 	projectCmd.AddCommand(updateProjectCmd)
 	projectCmd.AddCommand(pushProjectCmd)
@@ -86,8 +92,58 @@ func installProjectRun(args []string) {
 }
 
 func updateProjectRun(args []string) {
-	log.Printf("args: %+v", args)
+	dustRoot := ensureDustRoot()
 
+	// load catalog(s)
+	catalogs := GetCatalogs()
+	if catalogs == nil {
+		log.Fatalf("unable to load script catalog(s)")
+	}
+
+	// load projects
+	projects, err := dust.GetProjects(dustRoot)
+	CheckErrorFatal(err)
+
+	// select which projects to update
+	var candidates []*dust.Project
+	candidates = make([]*dust.Project, 0)
+	// if all, _ := updateProjectCmd.Flags().GetBool("all"); all {
+	if updateAllProjects {
+		candidates = projects
+	} else {
+		for _, name := range args {
+			if p := dust.SearchProjects(projects, name); p != nil {
+				candidates = append(candidates, p)
+			} else {
+				fmt.Println("Unknown project:", name)
+			}
+		}
+	}
+
+	// do the work
+	for _, p := range candidates {
+		fmt.Printf("Updating: %s ... ", p.Name)
+		if p.IsManaged() {
+			err = p.Update(true)
+			if !CheckErrorWarn(err) {
+				fmt.Printf("done.\n")
+			}
+		} else {
+			// assume zip
+			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
+				// TODO: only remove if download succeds?
+				os.RemoveAll(p.Root)
+				err = dust.Install(dustRoot, p.Name, entry.URL)
+				if err != nil {
+					fmt.Printf("failed: %s\n", err)
+				} else {
+					fmt.Printf("done.\n")
+				}
+			} else {
+				fmt.Printf("failed: cannot find in catalog")
+			}
+		}
+	}
 }
 
 func pushProjectRun(args []string) {

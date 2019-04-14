@@ -2,7 +2,6 @@ package dust
 
 import (
 	"archive/zip"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -156,6 +155,16 @@ func GetProjects(root string) ([]*Project, error) {
 	return projects, nil
 }
 
+// SearchProjects returns a pointer to the project matching name or nil
+func SearchProjects(projects []*Project, name string) *Project {
+	for _, p := range projects {
+		if p.Name == name {
+			return p
+		}
+	}
+	return nil
+}
+
 // NewProject creates a Project for the given name and root directory
 func NewProject(name string, root string) *Project {
 	return &Project{
@@ -175,7 +184,21 @@ func (p *Project) IsManaged() bool {
 
 // Update pulls down any changes for the project if it is managed via git
 func (p *Project) Update(force bool) error {
-	return errors.New("not implemented")
+	// https://github.com/src-d/go-git/blob/master/_examples/pull/main.go
+	r, err := git.PlainOpen(p.Root)
+	if err != nil {
+		return err
+	}
+
+	w, err := r.Worktree()
+	if err != nil {
+		return err
+	}
+
+	return w.Pull(&git.PullOptions{
+		RemoteName: "origin",
+		Force:      force,
+	})
 }
 
 /*
