@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -44,6 +45,11 @@ func init() {
 	serverCmd.Flags().StringVar(&appDir, "app", "app/", "`path` to maiden web app directory")
 	serverCmd.Flags().StringVar(&docDir, "doc", "doc/", "`path` to matron lua docs")
 
+	// allow config file values to be overriden by command line
+	viper.BindPFlag("dust.path", serverCmd.Flags().Lookup("data"))
+	viper.BindPFlag("web.path", serverCmd.Flags().Lookup("app"))
+	viper.BindPFlag("doc.path", serverCmd.Flags().Lookup("doc"))
+
 	serverCmd.Flags().SortFlags = false
 
 	rootCmd.AddCommand(serverCmd)
@@ -54,6 +60,11 @@ func serverRun() {
 	if httpFD > 0 {
 		httpLocation = fmt.Sprintf("fd %d", httpFD)
 	}
+
+	// (re)populate to ensure config file values are used
+	appDir = os.ExpandEnv(viper.GetString("web.path"))
+	dataDir = os.ExpandEnv(viper.GetString("dust.path"))
+	docDir = os.ExpandEnv(viper.GetString("doc.path"))
 
 	// FIXME: pull in git version
 	log.Printf("maiden (%s)", version)
