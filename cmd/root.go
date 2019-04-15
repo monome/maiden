@@ -14,6 +14,12 @@ var rootCmd = &cobra.Command{
 	Short: "web editor for norns scripts",
 }
 
+var debug bool
+
+func init() {
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug logging")
+}
+
 // Execute add all child commands to the root command and defaults flags
 // appropriately (called from main.main())
 func Execute() {

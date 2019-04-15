@@ -25,8 +25,6 @@ var (
 	dataDir string
 	appDir  string
 	docDir  string
-
-	debug bool
 )
 
 var serverCmd = &cobra.Command{
@@ -45,8 +43,6 @@ func init() {
 	serverCmd.Flags().StringVar(&dataDir, "data", "data/", "`path` to user data directory (dust)")
 	serverCmd.Flags().StringVar(&appDir, "app", "app/", "`path` to maiden web app directory")
 	serverCmd.Flags().StringVar(&docDir, "doc", "doc/", "`path` to matron lua docs")
-
-	serverCmd.Flags().BoolVar(&debug, "debug", false, "enable debug logging")
 
 	serverCmd.Flags().SortFlags = false
 
