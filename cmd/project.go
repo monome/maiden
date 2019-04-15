@@ -56,9 +56,9 @@ func init() {
 	rootCmd.AddCommand(projectCmd)
 }
 
-func ensureDustRoot() string {
+func ensureDustCodeRoot() string {
 	// ensure dust dir
-	p := os.ExpandEnv(viper.GetString("dust.path"))
+	p := os.ExpandEnv(viper.GetString("dust.code"))
 
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		log.Fatalf("dust directory %s does not exist", p)
@@ -73,7 +73,7 @@ func installProjectRun(args []string) {
 		log.Fatalf("unable to load script catalog(s)")
 	}
 
-	root := ensureDustRoot()
+	root := ensureDustCodeRoot()
 
 	// install projects
 	for _, name := range args {
@@ -92,7 +92,7 @@ func installProjectRun(args []string) {
 }
 
 func updateProjectRun(args []string) {
-	dustRoot := ensureDustRoot()
+	dustRoot := ensureDustCodeRoot()
 
 	// load catalog(s)
 	catalogs := GetCatalogs()

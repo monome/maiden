@@ -16,6 +16,8 @@ catalogs:
 # dust directory details
 dust:
   path: $HOME/dust
+  code: $HOME/dust/code
+
 
 # matron ldoc path
 doc:
