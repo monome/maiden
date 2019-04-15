@@ -1,6 +1,12 @@
 # generated catalog source, destination
 sources:
-  lines: catalogs/lines.json
+  lines:
+      kind: lines
+      output: catalogs/lines.json
+  community:
+      kind: download
+      url: blah
+      output: catalogs/community.json
 
 # catalog file paths; can be glob patterns
 catalogs:

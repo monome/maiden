@@ -107,7 +107,6 @@ func updateProjectRun(args []string) {
 	// select which projects to update
 	var candidates []*dust.Project
 	candidates = make([]*dust.Project, 0)
-	// if all, _ := updateProjectCmd.Flags().GetBool("all"); all {
 	if updateAllProjects {
 		candidates = projects
 	} else {

@@ -25,23 +25,46 @@ func init() {
 }
 
 func catalogUpdateRun(args []string) {
-	if viper.IsSet("sources.lines") {
-		fmt.Println("Fetching topics from lines... ")
-		catalog := catalog.New()
-		err := lines.GatherProjects(catalog)
-		if err != nil {
-			log.Fatalf("failed while gathering project: %s", err)
+	sources := viper.GetStringMap("sources")
+	for key, v := range sources {
+		source := v.(map[string]interface{})
+
+		kind, ok := source["kind"]
+		if !ok {
+			// FIXME: should probably log that the configuration is malformed
+			continue
 		}
-		path := viper.GetString("sources.lines")
-		destination, err := os.Create(path)
-		if err != nil {
-			log.Fatalf("%s", err)
+
+		fmt.Printf("Updating: %s; ", key)
+		switch kind {
+		case "lines":
+			path, ok := source["output"]
+			if !ok {
+				fmt.Println("missing 'output' value config for source: ", key)
+				break
+			}
+			fmt.Printf("fetching topics from lines... ")
+			catalog := catalog.New()
+			err := lines.GatherProjects(catalog)
+			if err != nil {
+				log.Fatalf("failed while gathering project: %s", err)
+			}
+			destination, err := os.Create(path.(string))
+			if err != nil {
+				log.Fatalf("%s", err)
+			}
+			defer destination.Close()
+			err = catalog.Store(destination)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("wrote: %s\n", path)
+
+		case "download":
+			fmt.Println("to be implemented")
+
+		default:
+			fmt.Println("unrecognized catalog source:", kind)
 		}
-		defer destination.Close()
-		err = catalog.Store(destination)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("Wrote: %s\n", path)
 	}
 }
