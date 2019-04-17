@@ -52,7 +52,7 @@ func catalogListRun(args []string) {
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
 
 	for _, pattern := range catalogPatterns {
-		matches, err := filepath.Glob(pattern)
+		matches, err := filepath.Glob(os.ExpandEnv(pattern))
 		if err != nil {
 			fmt.Printf("WARN: bad pattern %s\n", err)
 			continue
@@ -98,7 +98,7 @@ func GetCatalogs() []*catalog.Catalog {
 
 	catalogPatterns := viper.GetStringSlice("catalogs")
 	for _, pattern := range catalogPatterns {
-		matches, err := filepath.Glob(pattern)
+		matches, err := filepath.Glob(os.ExpandEnv(pattern))
 		if err != nil {
 			fmt.Printf("WARN: bad pattern %s\n", err)
 			continue

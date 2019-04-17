@@ -43,6 +43,15 @@ var pushProjectCmd = &cobra.Command{
 	},
 }
 
+var removeProjectCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "remove a project dir",
+	Args:  cobra.MinimumNArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		removeProjectRun(args)
+	},
+}
+
 var (
 	updateAllProjects bool
 )
@@ -53,6 +62,7 @@ func init() {
 	projectCmd.AddCommand(installProjectCmd)
 	projectCmd.AddCommand(updateProjectCmd)
 	projectCmd.AddCommand(pushProjectCmd)
+	projectCmd.AddCommand(removeProjectCmd)
 	rootCmd.AddCommand(projectCmd)
 }
 
@@ -61,7 +71,7 @@ func ensureDustCodeRoot() string {
 	p := os.ExpandEnv(viper.GetString("dust.code"))
 
 	if _, err := os.Stat(p); os.IsNotExist(err) {
-		log.Fatalf("dust directory %s does not exist", p)
+		log.Fatalf("dust directory '%s' does not exist", p)
 	}
 	return p
 }
@@ -141,4 +151,20 @@ func updateProjectRun(args []string) {
 
 func pushProjectRun(args []string) {
 	log.Printf("args: %+v", args)
+}
+
+func removeProjectRun(args []string) {
+	dustRoot := ensureDustCodeRoot()
+	projects, err := dust.GetProjects(dustRoot)
+	CheckErrorFatal(err)
+
+	for _, name := range args {
+		if project := dust.SearchProjects(projects, name); project != nil {
+			fmt.Printf("Removing: %s (%s)... ", project.Name, project.Root)
+			os.RemoveAll(project.Root)
+			fmt.Println("done.")
+		} else {
+			fmt.Printf("Unknown project: '%s'\n", name)
+		}
+	}
 }

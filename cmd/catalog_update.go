@@ -38,18 +38,19 @@ func catalogUpdateRun(args []string) {
 		fmt.Printf("Updating: %s; ", key)
 		switch kind {
 		case "lines":
-			path, ok := source["output"]
+			rawpath, ok := source["output"]
 			if !ok {
 				fmt.Println("missing 'output' value config for source: ", key)
 				break
 			}
+			path := os.ExpandEnv(rawpath.(string))
 			fmt.Printf("fetching topics from lines... ")
 			catalog := catalog.New()
 			err := lines.GatherProjects(catalog)
 			if err != nil {
 				log.Fatalf("failed while gathering project: %s", err)
 			}
-			destination, err := os.Create(path.(string))
+			destination, err := os.Create(path)
 			if err != nil {
 				log.Fatalf("%s", err)
 			}
