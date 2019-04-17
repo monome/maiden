@@ -25,10 +25,19 @@ func init() {
 func Execute() {
 	viper.SetConfigName("maiden")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.maidenconfig")
+
+	// config seach path; ordered from strongest to weakest
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("$HOME/maiden")
+	viper.AddConfigPath("$HOME/.config/maiden")
+	viper.AddConfigPath("/etc")
 
 	viper.ReadInConfig()
+
+	/*
+		fmt.Println(viper.ConfigFileUsed())
+		viper.Debug()
+	*/
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
