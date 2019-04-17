@@ -2,16 +2,15 @@
 sources:
   lines:
       kind: lines
-      output: catalogs/lines.json
+      output: $HOME/catalogs/lines.json
   community:
       kind: download
-      url: blah
-      output: catalogs/community.json
+      url: https://raw.githubusercontent.com/ngwese/norns-community/master/community.json
+      output: $HOME/catalogs/community.json
 
 # catalog file paths; can be glob patterns
 catalogs:
-  - catalogs/*.json
-  - ./personal-catalog.json
+  - $HOME/catalogs/*.json
 
 # dust directory details
 dust:

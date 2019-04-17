@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/monome/maiden/pkg/catalog"
@@ -24,6 +26,25 @@ func init() {
 	catalogCmd.AddCommand(catalogUpdateCmd)
 }
 
+// FIXME: merge this with pkg/dust/project.go:downloadURL
+func downloadURLToFile(filepath string, url string) error {
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	f, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	_, err = io.Copy(f, resp.Body)
+	return err
+}
+
+// FIXME: refactor this to remove duplicate logic
 func catalogUpdateRun(args []string) {
 	sources := viper.GetStringMap("sources")
 	for key, v := range sources {
@@ -62,7 +83,23 @@ func catalogUpdateRun(args []string) {
 			fmt.Printf("wrote: %s\n", path)
 
 		case "download":
-			fmt.Println("to be implemented")
+			rawpath, ok := source["output"]
+			if !ok {
+				fmt.Println("missing 'output' value config for source: ", key)
+				break
+			}
+			path := os.ExpandEnv(rawpath.(string))
+			rawurl, ok := source["url"]
+			if !ok {
+				fmt.Println("missing 'url' value config for source: ", key)
+				break
+			}
+			url := rawurl.(string)
+			fmt.Printf("fetching %s... ", url)
+			if err := downloadURLToFile(path, url); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("wrote: %s\n", path)
 
 		default:
 			fmt.Println("unrecognized catalog source:", kind)
