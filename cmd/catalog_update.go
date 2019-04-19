@@ -16,7 +16,6 @@ import (
 var catalogUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update configured catalogs",
-	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		catalogUpdateRun(args)
 	},
@@ -44,11 +43,24 @@ func downloadURLToFile(filepath string, url string) error {
 	return err
 }
 
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
+
 // FIXME: refactor this to remove duplicate logic
 func catalogUpdateRun(args []string) {
 	sources := viper.GetStringMap("sources")
 	for key, v := range sources {
 		source := v.(map[string]interface{})
+
+		if len(args) > 0 && !contains(args, key) {
+			continue
+		}
 
 		kind, ok := source["kind"]
 		if !ok {
