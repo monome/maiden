@@ -16,6 +16,7 @@ require (
 	github.com/monome/maiden/pkg/catalog v0.0.0-00010101000000-000000000000
 	github.com/monome/maiden/pkg/dust v0.0.0-00010101000000-000000000000
 	github.com/monome/maiden/pkg/lines v0.0.0-00010101000000-000000000000
+	github.com/sirupsen/logrus v1.4.1
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/ugorji/go/codec v0.0.0-20190204201341-e444a5086c43 // indirect

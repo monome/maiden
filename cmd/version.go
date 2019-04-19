@@ -13,6 +13,7 @@ var versionCmd = &cobra.Command{
 	Short: "print maiden version",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		fmt.Println(version)
 	},
 }

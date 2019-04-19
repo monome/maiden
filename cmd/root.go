@@ -5,19 +5,39 @@ import (
 	"log"
 	"os"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
+
+// TextFormatter defines a trivial log entry formatter
+type TextFormatter struct {
+}
+
+// Format performs basic formatting on log entries
+func (f *TextFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+	return []byte(fmt.Sprintf("[%s] %s\n", entry.Level, entry.Message)), nil
+}
 
 var rootCmd = &cobra.Command{
 	Use:   "maiden",
 	Short: "web editor for norns scripts",
 }
 
-var debug bool
+var (
+	debug  bool
+	logger *logrus.Logger
+)
 
 func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug logging")
+
+	// initialize default logging configuration
+	logger = logrus.New()
+	logger.SetOutput(os.Stdout)
+	logger.SetLevel(logrus.InfoLevel)
+	logger.SetFormatter(&TextFormatter{})
 }
 
 // Execute add all child commands to the root command and defaults flags
@@ -60,4 +80,12 @@ func CheckErrorNonFatal(e error, ok string) bool {
 	}
 	log.Println(ok)
 	return false
+}
+
+// ConfigureLogger tweaks the configuration of the global logger based on parsed
+// command line flags
+func ConfigureLogger() {
+	if debug {
+		logger.SetLevel(logrus.DebugLevel)
+	}
 }

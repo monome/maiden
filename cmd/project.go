@@ -21,6 +21,7 @@ var installProjectCmd = &cobra.Command{
 	Short: "install a script/project",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		installProjectRun(args)
 	},
 }
@@ -30,6 +31,7 @@ var updateProjectCmd = &cobra.Command{
 	Short: "install a script/project",
 	// Args:  cobra.,
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		updateProjectRun(args)
 	},
 }
@@ -39,6 +41,7 @@ var pushProjectCmd = &cobra.Command{
 	Short: "push a git based project",
 	// Args:  cobra.,
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		pushProjectRun(args)
 	},
 }
@@ -48,6 +51,7 @@ var removeProjectCmd = &cobra.Command{
 	Short: "remove a project dir",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		removeProjectRun(args)
 	},
 }
@@ -69,9 +73,10 @@ func init() {
 func ensureDustCodeRoot() string {
 	// ensure dust dir
 	p := os.ExpandEnv(viper.GetString("dust.code"))
+	logger.Debug("using configured dust dir: ", p)
 
 	if _, err := os.Stat(p); os.IsNotExist(err) {
-		log.Fatalf("dust directory '%s' does not exist", p)
+		logger.Fatalf("dust directory '%s' does not exist", p)
 	}
 	return p
 }
@@ -96,7 +101,7 @@ func installProjectRun(args []string) {
 				fmt.Printf("done.\n")
 			}
 		} else {
-			log.Printf("Unknown project: %s", name)
+			fmt.Printf("Unknown project: %s\n", name)
 		}
 	}
 }
@@ -107,10 +112,11 @@ func updateProjectRun(args []string) {
 	// load catalog(s)
 	catalogs := GetCatalogs()
 	if catalogs == nil {
-		log.Fatalf("unable to load script catalog(s)")
+		logger.Fatal("unable to load script catalog(s)")
 	}
 
 	// load projects
+	logger.Debug("getting projects from: ", dustRoot)
 	projects, err := dust.GetProjects(dustRoot)
 	CheckErrorFatal(err)
 
@@ -155,6 +161,7 @@ func pushProjectRun(args []string) {
 
 func removeProjectRun(args []string) {
 	dustRoot := ensureDustCodeRoot()
+	logger.Debug("getting projects from: ", dustRoot)
 	projects, err := dust.GetProjects(dustRoot)
 	CheckErrorFatal(err)
 

@@ -17,6 +17,7 @@ var catalogUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "update configured catalogs",
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		catalogUpdateRun(args)
 	},
 }
@@ -27,19 +28,23 @@ func init() {
 
 // FIXME: merge this with pkg/dust/project.go:downloadURL
 func downloadURLToFile(filepath string, url string) error {
+	logger.Debug("downloading: ", url)
 	resp, err := http.Get(url)
 	if err != nil {
+		logger.Debug("url get failed: ", err)
 		return err
 	}
 	defer resp.Body.Close()
 
+	logger.Debug("creating file: ", filepath)
 	f, err := os.Create(filepath)
 	if err != nil {
 		return err
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, resp.Body)
+	n, err := io.Copy(f, resp.Body)
+	logger.Debugf("wrote %d bytes, error = %s", n, err)
 	return err
 }
 
@@ -59,12 +64,13 @@ func catalogUpdateRun(args []string) {
 		source := v.(map[string]interface{})
 
 		if len(args) > 0 && !contains(args, key) {
+			logger.Debugf("source '%s' not in update list, skipping", key)
 			continue
 		}
 
 		kind, ok := source["kind"]
 		if !ok {
-			// FIXME: should probably log that the configuration is malformed
+			logger.Warnf("source 'kind' not specified for '%s', skipping", key)
 			continue
 		}
 
@@ -73,21 +79,25 @@ func catalogUpdateRun(args []string) {
 		case "lines":
 			rawpath, ok := source["output"]
 			if !ok {
-				fmt.Println("missing 'output' value config for source: ", key)
+				logger.Warnf("missing 'output' value config for source: %s, skipping.", key)
 				break
 			}
-			path := os.ExpandEnv(rawpath.(string))
+
 			fmt.Printf("fetching topics from lines... ")
 			catalog := catalog.New()
 			err := lines.GatherProjects(catalog)
 			if err != nil {
 				log.Fatalf("failed while gathering project: %s", err)
 			}
+
+			path := os.ExpandEnv(rawpath.(string))
+			logger.Debug("creating file: ", path)
 			destination, err := os.Create(path)
 			if err != nil {
 				log.Fatalf("%s", err)
 			}
 			defer destination.Close()
+
 			err = catalog.Store(destination)
 			if err != nil {
 				log.Fatal(err)
@@ -97,19 +107,19 @@ func catalogUpdateRun(args []string) {
 		case "download":
 			rawpath, ok := source["output"]
 			if !ok {
-				fmt.Println("missing 'output' value config for source: ", key)
+				logger.Warnf("missing 'output' value config for source: %s, skipping.", key)
 				break
 			}
 			path := os.ExpandEnv(rawpath.(string))
 			rawurl, ok := source["url"]
 			if !ok {
-				fmt.Println("missing 'url' value config for source: ", key)
+				logger.Warnf("missing 'url' value config for source: %s, skipping.", key)
 				break
 			}
 			url := rawurl.(string)
 			fmt.Printf("fetching %s... ", url)
 			if err := downloadURLToFile(path, url); err != nil {
-				log.Fatal(err)
+				logger.Fatal(err)
 			}
 			fmt.Printf("wrote: %s\n", path)
 

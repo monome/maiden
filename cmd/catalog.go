@@ -23,6 +23,7 @@ var catalogListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list projects",
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		catalogListRun(args)
 	},
 }
@@ -32,6 +33,7 @@ var catalogInitCmd = &cobra.Command{
 	Short: "init an empty catalog file",
 	Args:  cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		catalogInitRun(args)
 	},
 }
@@ -47,42 +49,53 @@ func catalogListRun(args []string) {
 	// retain the filename info
 
 	catalogPatterns := viper.GetStringSlice("catalogs")
+	logger.Debug("configured catalog locations: ", catalogPatterns)
 
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
 
 	for _, pattern := range catalogPatterns {
+		logger.Debug("loading catalog(s) matching: ", pattern)
 		matches, err := filepath.Glob(os.ExpandEnv(pattern))
 		if err != nil {
-			fmt.Printf("WARN: bad pattern %s\n", err)
+			// fmt.Printf("WARN: bad pattern %s\n", err)
+			logger.Warn("bad pattern ", err)
 			continue
 		}
-		for _, path := range matches {
-			f, err := os.Open(path)
-			if err != nil {
-				fmt.Printf("WARN: %s\n", err)
-				continue
-			}
-			catalog, err := catalog.Load(f)
-			f.Close()
-			if err != nil {
-				fmt.Printf("WARN: load error: %s (%s)\n", err, path)
-				continue
-			}
+		if len(matches) > 0 {
+			for _, path := range matches {
+				f, err := os.Open(path)
+				if err != nil {
+					// fmt.Printf("WARN: %s\n", err)
+					logger.Warn(err)
+					continue
+				}
+				catalog, err := catalog.Load(f)
+				f.Close()
+				if err != nil {
+					// fmt.Printf("WARN: load error: %s (%s)\n", err,
+					// path)
+					logger.Warnf("failed to load catalog %s (%s), skipping.", err, path)
+					continue
+				}
 
-			fmt.Fprintf(os.Stdout, "[ %s ]\n", path)
-			fmt.Fprintln(w, "project\tsource\turl\ttags\t")
-			fmt.Fprintln(w, "-------\t------\t---\t----\t")
-			for _, entry := range catalog.Entries() {
-				fmt.Fprintf(w, "%s\t%s\t%s\t%s\t\n", entry.ProjectName, entry.Origin, entry.URL, entry.Tags)
+				fmt.Fprintf(os.Stdout, "[ %s ]\n", path)
+				fmt.Fprintln(w, "project\tsource\turl\ttags\t")
+				fmt.Fprintln(w, "-------\t------\t---\t----\t")
+				for _, entry := range catalog.Entries() {
+					fmt.Fprintf(w, "%s\t%s\t%s\t%s\t\n", entry.ProjectName, entry.Origin, entry.URL, entry.Tags)
+				}
+				w.Flush()
 			}
-			w.Flush()
+		} else {
+			logger.Warn("no catalog files matched pattern: ", pattern)
 		}
 	}
 }
 
 func catalogInitRun(args []string) {
 	c := catalog.New()
+	logger.Debug("creating file: ", args[0])
 	f, err := os.Create(args[0])
 	if err != nil {
 		log.Fatalln(err)
@@ -100,19 +113,19 @@ func GetCatalogs() []*catalog.Catalog {
 	for _, pattern := range catalogPatterns {
 		matches, err := filepath.Glob(os.ExpandEnv(pattern))
 		if err != nil {
-			fmt.Printf("WARN: bad pattern %s\n", err)
+			logger.Warn("bad pattern ", err)
 			continue
 		}
 		for _, path := range matches {
 			f, err := os.Open(path)
 			if err != nil {
-				fmt.Printf("WARN: %s\n", err)
+				logger.Warn(err)
 				continue
 			}
 			catalog, err := catalog.Load(f)
 			f.Close()
 			if err != nil {
-				fmt.Printf("WARN: load error: %s (%s)\n", err, path)
+				logger.Warnf("failed to load catalog %s (%s), skipping.", err, path)
 				continue
 			}
 			catalogs = append(catalogs, catalog)
