@@ -9,12 +9,15 @@ import (
 
 // Entry contains the properties of a project which are recorded as part of the catalog
 type Entry struct {
-	Origin      string   `json:"origin"`
 	ProjectName string   `json:"project_name"`
+	URL         string   `json:"project_url"`
 	Author      string   `json:"author"`
-	URL         string   `json:"url"`
+	Homepage    string   `json:"home_page"`
 	Description string   `json:"description"`
+	Discussion  string   `json:"discussion_url"`
 	Tags        []string `json:"tags"`
+	Version     string   `json:"version"`
+	Origin      string   `json:"origin"`
 }
 
 // Header describes the file type and schema version for compatibility purposes
