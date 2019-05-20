@@ -120,6 +120,8 @@ func serverRun() {
 		devicePath:   makeDevicePath(dataDir),
 		resourcePath: makeResourcePath(apiPrefix),
 		dbusConn:     dbusConn,
+
+		catalogs: make(map[string]*loadedCatalog),
 	}
 
 	api.GET("/dust", s.rootListingHandler)
@@ -151,6 +153,12 @@ func serverRun() {
 	}
 }
 
+type loadedCatalog struct {
+	Catalog  *catalog.Catalog
+	FileInfo os.FileInfo
+	Path     string
+}
+
 type server struct {
 	logger       io.Writer
 	apiPrefix    string
@@ -162,9 +170,8 @@ type server struct {
 	dbusConn *dbus.Conn
 
 	// catalog management
-	catalogs         []*catalog.Catalog
-	catalogRefreshed time.Time
-	catalogMutex     sync.Mutex
+	catalogs      map[string]*loadedCatalog
+	catalogsMutex sync.Mutex
 }
 
 func (s *server) logf(format string, args ...interface{}) {
@@ -369,47 +376,85 @@ type catalogsInfo struct {
 	Self     string           `json:"url"`
 }
 
-func (s *server) loadCatalogs() {
-	// FIXME: only load the catalogs if they have changed on disk
-	s.catalogMutex.Lock()
-	defer s.catalogMutex.Unlock()
+func (s *server) loadCatalog(path string, info os.FileInfo) (*loadedCatalog, error) {
+	var err error
 
-	catalogs := make([]*catalog.Catalog, 0)
+	// gather stat info if not provided
+	if info == nil {
+		if info, err = os.Stat(path); os.IsNotExist(err) {
+			return nil, err
+		}
+	}
+
+	f, err := os.Open(path)
+	defer f.Close()
+	if err != nil {
+		s.logf("error: %s", err.Error())
+		return nil, err
+	}
+
+	catalog, err := catalog.Load(f)
+	if err != nil {
+		s.logf("uname to load catalog: %s (%s)\n", err, path)
+		return nil, err
+	}
+
+	s.logf("loaded catalog: %s\n", path)
+	return &loadedCatalog{
+		FileInfo: info,
+		Catalog:  catalog,
+		Path:     path,
+	}, nil
+}
+
+func (s *server) refreshCatalogs() {
+	// FIXME: only load the catalogs if they have changed on disk
+	s.catalogsMutex.Lock()
+	defer s.catalogsMutex.Unlock()
 
 	catalogPatterns := viper.GetStringSlice("catalogs")
 	for _, pattern := range catalogPatterns {
 		matches, _ := filepath.Glob(os.ExpandEnv(pattern))
 		for _, path := range matches {
-			f, err := os.Open(path)
-			if err != nil {
-				s.logf("error: %s", err.Error())
-				continue
+			if existing := s.catalogs[path]; existing != nil {
+				// already loaded; reload if it has changed
+				fileInfo, err := os.Stat(path)
+				if os.IsNotExist(err) {
+					// ...glob found a match but it doesn't exist, it must have been quickly removed
+					delete(s.catalogs, path)
+					continue
+				}
+				if fileInfo.ModTime().Unix() > existing.FileInfo.ModTime().Unix() {
+					fresh, err := s.loadCatalog(path, fileInfo)
+					if err != nil {
+						s.logf("failed reloading: %s\n", err)
+						continue
+					}
+					s.catalogs[path] = fresh
+				}
+			} else {
+				// new file, load it
+				fresh, err := s.loadCatalog(path, nil)
+				if err != nil {
+					s.logf("failed loading: %s\n", err)
+					continue
+				}
+				s.catalogs[path] = fresh
 			}
-			catalog, err := catalog.Load(f)
-			f.Close()
-			if err != nil {
-				s.logf("uname to load catalog: %s (%s)", err, path)
-				continue
-			}
-			catalogs = append(catalogs, catalog)
 		}
 	}
-
-	// save loaded catalog info for use in other calls
-	s.catalogs = catalogs
-	s.catalogRefreshed = time.Now()
 }
 
 func (s *server) getCatalogsHandler(ctx *gin.Context) {
-	s.loadCatalogs()
+	s.refreshCatalogs()
 
 	summary := make([]catalogSummary, 0)
 
-	for _, c := range s.catalogs {
+	for _, loaded := range s.catalogs {
 		summary = append(summary, catalogSummary{
-			Name: c.Name(),
-			Date: c.Updated(),
-			URL:  s.apiPath("catalog", c.Name()),
+			Name: loaded.Catalog.Name(),
+			Date: loaded.Catalog.Updated(),
+			URL:  s.apiPath("catalog", loaded.Catalog.Name()),
 		})
 	}
 
@@ -427,15 +472,15 @@ type catalogContent struct {
 }
 
 func (s *server) getCatalogHandler(ctx *gin.Context) {
-	s.loadCatalogs()
+	s.refreshCatalogs()
 
 	which := ctx.Param("name")
-	for _, c := range s.catalogs {
-		if c.Name() == which {
+	for _, loaded := range s.catalogs {
+		if loaded.Catalog.Name() == which {
 			ctx.JSON(http.StatusOK, catalogContent{
-				Name:    c.Name(),
-				Updated: c.Updated(),
-				Entries: c.Entries(),
+				Name:    loaded.Catalog.Name(),
+				Updated: loaded.Catalog.Updated(),
+				Entries: loaded.Catalog.Entries(),
 				URL:     ctx.Request.URL.String(),
 			})
 			return
