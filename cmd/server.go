@@ -11,9 +11,12 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/gin-gonic/gin"
+	"github.com/monome/maiden/pkg/catalog"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -113,6 +116,7 @@ func serverRun() {
 	s := server{
 		logger:       os.Stderr,
 		apiPrefix:    apiPrefix,
+		apiPath:      makeResourcePath(apiRoot),
 		devicePath:   makeDevicePath(dataDir),
 		resourcePath: makeResourcePath(apiPrefix),
 		dbusConn:     dbusConn,
@@ -125,6 +129,11 @@ func serverRun() {
 	api.DELETE("/dust/*name", s.deleteHandler)
 
 	api.GET("/unit/:name", s.unitHandler)
+
+	api.GET("/catalogs", s.getCatalogsHandler)
+	api.GET("/catalog/:name", s.getCatalogHandler)
+	api.POST("/catalog/:name", s.createCatalogHandler)
+	api.DELETE("/catalog/:name", s.deleteCatalogHandler)
 
 	var l net.Listener
 	if httpFD > 0 {
@@ -145,9 +154,17 @@ func serverRun() {
 type server struct {
 	logger       io.Writer
 	apiPrefix    string
+	apiPath      prefixFunc
 	devicePath   devicePathFunc
 	resourcePath prefixFunc
-	dbusConn     *dbus.Conn
+
+	// unit management
+	dbusConn *dbus.Conn
+
+	// catalog management
+	catalogs         []*catalog.Catalog
+	catalogRefreshed time.Time
+	catalogMutex     sync.Mutex
 }
 
 func (s *server) logf(format string, args ...interface{}) {
@@ -339,6 +356,98 @@ func (s *server) deleteHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("deleted %s", path)})
+}
+
+type catalogSummary struct {
+	Name string    `json:"name"`
+	Date time.Time `json:"date"`
+	URL  string    `json:"url"`
+}
+
+type catalogsInfo struct {
+	Catalogs []catalogSummary `json:"catalogs"`
+	Self     string           `json:"url"`
+}
+
+func (s *server) loadCatalogs() {
+	// FIXME: only load the catalogs if they have changed on disk
+	s.catalogMutex.Lock()
+	defer s.catalogMutex.Unlock()
+
+	catalogs := make([]*catalog.Catalog, 0)
+
+	catalogPatterns := viper.GetStringSlice("catalogs")
+	for _, pattern := range catalogPatterns {
+		matches, _ := filepath.Glob(os.ExpandEnv(pattern))
+		for _, path := range matches {
+			f, err := os.Open(path)
+			if err != nil {
+				s.logf("error: %s", err.Error())
+				continue
+			}
+			catalog, err := catalog.Load(f)
+			f.Close()
+			if err != nil {
+				s.logf("uname to load catalog: %s (%s)", err, path)
+				continue
+			}
+			catalogs = append(catalogs, catalog)
+		}
+	}
+
+	// save loaded catalog info for use in other calls
+	s.catalogs = catalogs
+	s.catalogRefreshed = time.Now()
+}
+
+func (s *server) getCatalogsHandler(ctx *gin.Context) {
+	s.loadCatalogs()
+
+	summary := make([]catalogSummary, 0)
+
+	for _, c := range s.catalogs {
+		summary = append(summary, catalogSummary{
+			Name: c.Name(),
+			Date: c.Updated(),
+			URL:  s.apiPath("catalog", c.Name()),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, catalogsInfo{
+		Catalogs: summary,
+		Self:     ctx.Request.URL.String(),
+	})
+}
+
+type catalogContent struct {
+	Name    string          `json:"name"`
+	Updated time.Time       `json:"updated,omitempty"`
+	Entries []catalog.Entry `json:"entries"`
+	URL     string          `json:"url"`
+}
+
+func (s *server) getCatalogHandler(ctx *gin.Context) {
+	s.loadCatalogs()
+
+	which := ctx.Param("name")
+	for _, c := range s.catalogs {
+		if c.Name() == which {
+			ctx.JSON(http.StatusOK, catalogContent{
+				Name:    c.Name(),
+				Updated: c.Updated(),
+				Entries: c.Entries(),
+				URL:     ctx.Request.URL.String(),
+			})
+			return
+		}
+	}
+	ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown catalog: %s", which)})
+}
+
+func (s *server) createCatalogHandler(ctx *gin.Context) {
+}
+
+func (s *server) deleteCatalogHandler(ctx *gin.Context) {
 }
 
 type devicePathFunc func(name string) string

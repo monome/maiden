@@ -1,12 +1,16 @@
 # generated catalog source, destination
+# sources:
+#   lines:
+#       kind: lines
+#       output: $HOME/catalogs/lines.json
+#   community:
+#       kind: download
+#       url: https://raw.githubusercontent.com/ngwese/norns-community/master/community.json
+#       output: $HOME/catalogs/community.json
+
 sources:
-  lines:
-      kind: lines
-      output: $HOME/catalogs/lines.json
-  community:
-      kind: download
-      url: https://raw.githubusercontent.com/ngwese/norns-community/master/community.json
-      output: $HOME/catalogs/community.json
+  - ./sources/*.json
+
 
 # catalog file paths; can be glob patterns
 catalogs:
