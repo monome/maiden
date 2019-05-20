@@ -121,7 +121,7 @@ func serverRun() {
 		resourcePath: makeResourcePath(apiPrefix),
 		dbusConn:     dbusConn,
 
-		catalogs: make(map[string]*loadedCatalog),
+		catalogs: make(map[string]*LoadedCatalog),
 	}
 
 	api.GET("/dust", s.rootListingHandler)
@@ -153,12 +153,6 @@ func serverRun() {
 	}
 }
 
-type loadedCatalog struct {
-	Catalog  *catalog.Catalog
-	FileInfo os.FileInfo
-	Path     string
-}
-
 type server struct {
 	logger       io.Writer
 	apiPrefix    string
@@ -170,7 +164,7 @@ type server struct {
 	dbusConn *dbus.Conn
 
 	// catalog management
-	catalogs      map[string]*loadedCatalog
+	catalogs      map[string]*LoadedCatalog
 	catalogsMutex sync.Mutex
 }
 
@@ -376,7 +370,7 @@ type catalogsInfo struct {
 	Self     string           `json:"url"`
 }
 
-func (s *server) loadCatalog(path string, info os.FileInfo) (*loadedCatalog, error) {
+func (s *server) loadCatalog(path string, info os.FileInfo) (*LoadedCatalog, error) {
 	var err error
 
 	// gather stat info if not provided
@@ -400,7 +394,7 @@ func (s *server) loadCatalog(path string, info os.FileInfo) (*loadedCatalog, err
 	}
 
 	s.logf("loaded catalog: %s\n", path)
-	return &loadedCatalog{
+	return &LoadedCatalog{
 		FileInfo: info,
 		Catalog:  catalog,
 		Path:     path,

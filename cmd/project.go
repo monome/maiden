@@ -83,7 +83,7 @@ func ensureDustCodeRoot() string {
 
 func installProjectRun(args []string) {
 	// load catalog(s)
-	catalogs := GetCatalogs()
+	catalogs := LoadCatalogs()
 	if catalogs == nil {
 		log.Fatalf("unable to load script catalog(s)")
 	}
@@ -110,7 +110,7 @@ func updateProjectRun(args []string) {
 	dustRoot := ensureDustCodeRoot()
 
 	// load catalog(s)
-	catalogs := GetCatalogs()
+	catalogs := LoadCatalogs()
 	if catalogs == nil {
 		logger.Fatal("unable to load script catalog(s)")
 	}

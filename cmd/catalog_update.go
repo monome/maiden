@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"path/filepath"
 	"os"
 
 	"github.com/monome/maiden/pkg/catalog"
@@ -18,7 +19,7 @@ var catalogUpdateCmd = &cobra.Command{
 	Short: "update configured catalogs",
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
-		catalogUpdateRun(args)
+		CatalogUpdateRun(args)
 	},
 }
 
@@ -57,74 +58,79 @@ func contains(arr []string, str string) bool {
 	return false
 }
 
-// FIXME: refactor this to remove duplicate logic
-func catalogUpdateRun(args []string) {
-	sources := viper.GetStringMap("sources")
-	for key, v := range sources {
-		source := v.(map[string]interface{})
+// CatalogUpdateRun updates the specified catalogs based on their source configuration
+func CatalogUpdateRun(args []string) {
+	sources := LoadSources()
+	if sources == nil {
+		logger.Fatalf("unable to load catalog sources")
+	}
 
-		if len(args) > 0 && !contains(args, key) {
-			logger.Debugf("source '%s' not in update list, skipping", key)
+	for _, loaded := range sources {
+		sourceName := loaded.Source.Name
+
+		// filter out sources if an explicit list is provided
+		if len(args) > 0 && !contains(args, sourceName) {
+			logger.Debugf("source '%s' not in update list, skipping", sourceName)
 			continue
 		}
 
-		kind, ok := source["kind"]
-		if !ok {
-			logger.Warnf("source 'kind' not specified for '%s', skipping", key)
+		// ensure we have a method
+		sourceMethod := loaded.Source.Method
+		if sourceMethod == "" {
+			logger.Warnf("source 'method' not specified for '%s', skipping", sourceName)
 			continue
 		}
 
-		fmt.Printf("Updating: %s; ", key)
-		switch kind {
+		// compute output path
+		outputDir := viper.GetString("catalogOutputDir")
+		outputPath := os.ExpandEnv(filepath.Join(outputDir, sourceName + ".json"))
+
+		fmt.Printf("Updating: %s; ", sourceName)
+		switch sourceMethod {
 		case "lines":
-			rawpath, ok := source["output"]
-			if !ok {
-				logger.Warnf("missing 'output' value config for source: %s, skipping.", key)
-				break
-			}
-
-			fmt.Printf("fetching topics from lines... ")
-			catalog := catalog.New()
-			err := lines.GatherProjects(catalog)
-			if err != nil {
-				log.Fatalf("failed while gathering project: %s", err)
-			}
-
-			path := os.ExpandEnv(rawpath.(string))
-			logger.Debug("creating file: ", path)
-			destination, err := os.Create(path)
-			if err != nil {
-				log.Fatalf("%s", err)
-			}
-			defer destination.Close()
-
-			err = catalog.Store(destination)
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf("wrote: %s\n", path)
-
+			GenerateCatalogFromLines(loaded.Source, outputPath)
 		case "download":
-			rawpath, ok := source["output"]
-			if !ok {
-				logger.Warnf("missing 'output' value config for source: %s, skipping.", key)
-				break
-			}
-			path := os.ExpandEnv(rawpath.(string))
-			rawurl, ok := source["url"]
-			if !ok {
-				logger.Warnf("missing 'url' value config for source: %s, skipping.", key)
-				break
-			}
-			url := rawurl.(string)
-			fmt.Printf("fetching %s... ", url)
-			if err := downloadURLToFile(path, url); err != nil {
-				logger.Fatal(err)
-			}
-			fmt.Printf("wrote: %s\n", path)
-
+			DownloadCatalog(loaded.Source, outputPath)
 		default:
-			fmt.Println("unrecognized catalog source:", kind)
+			fmt.Println("unrecognize catalog source:", sourceMethod)
 		}
 	}
+}
+
+// GenerateCatalogFromLines constructs a new catalog by gathering project information from lines and writes it to the given path
+func GenerateCatalogFromLines(source *catalog.Source, outputPath string) {
+	fmt.Printf("fetching topics from lines... ")
+	catalog := catalog.New()
+	err := lines.GatherProjects(catalog)
+	if err != nil {
+		log.Fatalf("failed while gathering project: %s", err)
+	}
+
+	logger.Debug("creating file: ", outputPath)
+	destination, err := os.Create(outputPath)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
+	defer destination.Close()
+
+	err = catalog.Store(destination)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("wrote: %s\n", outputPath)
+}
+
+// DownloadCatalog downloads the catalog from the location given in the source and writes it to the given path
+func DownloadCatalog(source *catalog.Source, outputPath string) {
+	url, ok := source.Parameters["url"]
+	if !ok {
+		logger.Warnf("missing 'url' value config for source: %s, skipping.", source.Name)
+		return
+	}
+
+	fmt.Printf("fetching %s... ", url)
+	if err := downloadURLToFile(outputPath, url); err != nil {
+		logger.Fatal(err)
+	}
+	fmt.Printf("wrote: %s\n", outputPath)
 }
