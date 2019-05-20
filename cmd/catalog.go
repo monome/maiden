@@ -52,13 +52,12 @@ func catalogListRun(args []string) {
 	logger.Debug("configured catalog locations: ", catalogPatterns)
 
 	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	w.Init(os.Stdout, 0, 8, 0, '\t', 0) // FIXME: magic numbers?
 
 	for _, pattern := range catalogPatterns {
 		logger.Debug("loading catalog(s) matching: ", pattern)
 		matches, err := filepath.Glob(os.ExpandEnv(pattern))
 		if err != nil {
-			// fmt.Printf("WARN: bad pattern %s\n", err)
 			logger.Warn("bad pattern ", err)
 			continue
 		}
@@ -66,7 +65,6 @@ func catalogListRun(args []string) {
 			for _, path := range matches {
 				f, err := os.Open(path)
 				if err != nil {
-					// fmt.Printf("WARN: %s\n", err)
 					logger.Warn(err)
 					continue
 				}
@@ -144,4 +142,40 @@ func SearchCatalogs(catalogs []*catalog.Catalog, projectName string) *catalog.En
 		}
 	}
 	return nil
+}
+
+// GetCatalogPaths returns
+// func GetCatalogPaths() map[string]string {
+// 	paths := make([]string, 0)
+
+// }
+
+// GetCatalogSources returns
+func GetCatalogSources() []*catalog.Source {
+	sources := make([]*catalog.Source, 0)
+
+	sourcesPatterns := viper.GetStringSlice("sources")
+	for _, pattern := range sourcesPatterns {
+		matches, err := filepath.Glob(os.ExpandEnv(pattern))
+		if err != nil {
+			logger.Warn("bad pattern ", err)
+			continue
+		}
+		for _, path := range matches {
+			f, err := os.Open(path)
+			if err != nil {
+				logger.Warn(err)
+				continue
+			}
+			sourceFile, err := catalog.LoadSource(f)
+			f.Close()
+			if err != nil {
+				logger.Warnf("failed to load catalog source info %s (%s), skipping.", err, path)
+				continue
+			}
+			sources = append(sources, sourceFile.Source())
+		}
+	}
+
+	return sources
 }

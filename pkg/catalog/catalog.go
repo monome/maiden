@@ -5,30 +5,27 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"time"
 )
 
 // Entry contains the properties of a project which are recorded as part of the catalog
 type Entry struct {
 	ProjectName string   `json:"project_name"`
-	URL         string   `json:"project_url"`
-	Author      string   `json:"author"`
-	Homepage    string   `json:"home_page"`
+	URL         string   `json:"project_url,omitempty"`
+	Author      string   `json:"author,omitempty"`
+	Homepage    string   `json:"home_page,omitempty"`
 	Description string   `json:"description"`
-	Discussion  string   `json:"discussion_url"`
-	Tags        []string `json:"tags"`
-	Version     string   `json:"version"`
-	Origin      string   `json:"origin"`
-}
-
-// Header describes the file type and schema version for compatibility purposes
-type Header struct {
-	Version int    `json:"version"`
-	Kind    string `json:"kind"`
+	Discussion  string   `json:"discussion_url,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
+	Version     string   `json:"version,omitempty"`
+	Origin      string   `json:"origin,omitempty"`
 }
 
 // catalogContent represents the contents of a catalog file
 type catalogContent struct {
 	Header  Header           `json:"file_info"`
+	Name    string           `json:"catalog_name"`
+	Date    time.Time        `json:"date,omitempty"`
 	Entries map[string]Entry `json:"entries"`
 }
 
@@ -38,11 +35,11 @@ type Catalog struct {
 }
 
 var (
-	defaultHeader Header
+	catalogDefaultHeader Header
 )
 
 func init() {
-	defaultHeader = Header{
+	catalogDefaultHeader = Header{
 		Version: 1,
 		Kind:    "script_catalog",
 	}
@@ -52,7 +49,7 @@ func init() {
 func New() *Catalog {
 	return &Catalog{
 		content: &catalogContent{
-			Header:  defaultHeader,
+			Header:  catalogDefaultHeader,
 			Entries: make(map[string]Entry),
 		},
 	}
@@ -77,7 +74,7 @@ func Load(r io.Reader) (*Catalog, error) {
 
 // Store writes the catalog in json form to the given writer
 func (c *Catalog) Store(w io.Writer) error {
-	if c.content.Header != defaultHeader {
+	if c.content.Header != catalogDefaultHeader {
 		return errors.New("catalog header version/kind does not match")
 	}
 	data, err := json.MarshalIndent(c.content, "", "  ")
@@ -111,4 +108,14 @@ func (c *Catalog) Entries() []Entry {
 		i++
 	}
 	return es
+}
+
+// Name returns the name of the catalog
+func (c *Catalog) Name() string {
+	return c.content.Name
+}
+
+// Data returns the update time for catalog
+func (c *Catalog) Updated() time.Time {
+	return c.content.Date
 }
