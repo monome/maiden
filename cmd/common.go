@@ -37,6 +37,12 @@ func GetPathsForPatterns(pathPatterns []string) []string {
 	return paths
 }
 
+// GetCatalogPaths returns paths to all files matching the catalog search pattern(s)
+func GetCatalogPaths() []string {
+	catalogPatterns := viper.GetStringSlice("catalogs")
+	return GetPathsForPatterns(catalogPatterns)
+}
+
 // LoadCatalogFile reads in the catalog for the given path
 func LoadCatalogFile(path string) (*LoadedCatalog, error) {
 	fileInfo, err := os.Stat(path)
@@ -51,6 +57,8 @@ func LoadCatalogFile(path string) (*LoadedCatalog, error) {
 		return nil, err
 	}
 
+	logger.Debugf("loaded catalog: %s", path)
+
 	return &LoadedCatalog{
 		Path: path,
 		FileInfo: fileInfo,
@@ -61,9 +69,8 @@ func LoadCatalogFile(path string) (*LoadedCatalog, error) {
 // LoadCatalogs loads all catalogs specified in the config
 func LoadCatalogs() []*LoadedCatalog {
 	catalogs := make([]*LoadedCatalog, 0)
-	catalogPatterns := viper.GetStringSlice("catalogs")
 	
-	for _, path := range GetPathsForPatterns(catalogPatterns) {
+	for _, path := range GetCatalogPaths() {
 		loaded, err := LoadCatalogFile(path)
 		if err != nil {
 			logger.Warnf("failed to load catalog %s (%s), skipping.", err, path)
@@ -83,6 +90,12 @@ func SearchCatalogs(catalogs []*LoadedCatalog, projectName string) *catalog.Entr
 		}
 	}
 	return nil
+}
+
+// GetSourcePaths returns paths to all files matching the catalog source search pattern(s)
+func GetSourcePaths() []string {
+	sourcePatterns := viper.GetStringSlice("sources")
+	return GetPathsForPatterns(sourcePatterns)
 }
 
 // LoadSourceFile reads in a catalog source config from the given file path
@@ -108,9 +121,7 @@ func LoadSourceFile(path string) (*LoadedSource, error) {
 // LoadSources loads in all catalog sources specified in the config
 func LoadSources() []*LoadedSource {
 	sources := make([]*LoadedSource, 0)
-	sourcesPatterns := viper.GetStringSlice("sources")
-	logger.Debugf("configured sources: %+v", sourcesPatterns)
-	for _, path := range GetPathsForPatterns(sourcesPatterns) {
+	for _, path := range GetSourcePaths() {
 		logger.Debugf("loading source config from: %s", path)
 		loaded, err := LoadSourceFile(path)
 		if err != nil {
