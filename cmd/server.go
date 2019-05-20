@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -114,7 +113,6 @@ func serverRun() {
 	}
 
 	s := server{
-		logger:       os.Stderr,
 		apiPrefix:    apiPrefix,
 		apiPath:      makeResourcePath(apiRoot),
 		devicePath:   makeDevicePath(dataDir),
@@ -154,7 +152,6 @@ func serverRun() {
 }
 
 type server struct {
-	logger       io.Writer
 	apiPrefix    string
 	apiPath      prefixFunc
 	devicePath   devicePathFunc
@@ -166,10 +163,6 @@ type server struct {
 	// catalog management
 	catalogs      map[string]*LoadedCatalog
 	catalogsMutex sync.Mutex
-}
-
-func (s *server) logf(format string, args ...interface{}) {
-	fmt.Fprintf(s.logger, format, args...)
 }
 
 func (s *server) unitHandler(ctx *gin.Context) {
@@ -241,8 +234,8 @@ func (s *server) listingHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(name)
 
-	s.logf("get of name: %s\n", name)
-	s.logf("device path: %s\n", path)
+	logger.Debugf("get of name: %s", name)
+	logger.Debugf("device path: %s", path)
 
 	// figure out if this is a file or not
 	info, err := os.Stat(path)
@@ -292,8 +285,8 @@ func (s *server) writeHandler(ctx *gin.Context) {
 			return
 		}
 
-		s.logf("save path: %s\n", path)
-		s.logf("content type: %s\n", file.Header["Content-Type"])
+		logger.Debugf("save path: %s", path)
+		logger.Debugf("content type: %s", file.Header["Content-Type"])
 
 		// size, err := io.Copy(out, file)
 		if err := ctx.SaveUploadedFile(file, path); err != nil {
@@ -326,7 +319,7 @@ func (s *server) renameHandler(ctx *gin.Context) {
 	rename := filepath.Join(filepath.Dir(name), newName)
 	renamePath := s.devicePath(rename)
 
-	s.logf("going to rename: %s to: %s\n", path, renamePath)
+	logger.Debugf("going to rename: %s to: %s", path, renamePath)
 
 	err = os.Rename(path, renamePath)
 	if err != nil {
@@ -343,7 +336,7 @@ func (s *server) deleteHandler(ctx *gin.Context) {
 	name := ctx.Param("name")
 	path := s.devicePath(name)
 
-	s.logf("going to delete: %s\n", path)
+	logger.Debugf("going to delete: %s", path)
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
@@ -383,17 +376,17 @@ func (s *server) loadCatalog(path string, info os.FileInfo) (*LoadedCatalog, err
 	f, err := os.Open(path)
 	defer f.Close()
 	if err != nil {
-		s.logf("error: %s", err.Error())
+		logger.Warnf("error: %s", err.Error())
 		return nil, err
 	}
 
 	catalog, err := catalog.Load(f)
 	if err != nil {
-		s.logf("uname to load catalog: %s (%s)\n", err, path)
+		logger.Warnf("uname to load catalog: %s (%s)", err, path)
 		return nil, err
 	}
 
-	s.logf("loaded catalog: %s\n", path)
+	logger.Infof("loaded catalog: %s", path)
 	return &LoadedCatalog{
 		FileInfo: info,
 		Catalog:  catalog,
@@ -421,7 +414,7 @@ func (s *server) refreshCatalogs() {
 				if fileInfo.ModTime().Unix() > existing.FileInfo.ModTime().Unix() {
 					fresh, err := s.loadCatalog(path, fileInfo)
 					if err != nil {
-						s.logf("failed reloading: %s\n", err)
+						logger.Warnf("failed reloading: %s", err)
 						continue
 					}
 					s.catalogs[path] = fresh
@@ -430,7 +423,7 @@ func (s *server) refreshCatalogs() {
 				// new file, load it
 				fresh, err := s.loadCatalog(path, nil)
 				if err != nil {
-					s.logf("failed loading: %s\n", err)
+					logger.Warnf("failed loading: %s", err)
 					continue
 				}
 				s.catalogs[path] = fresh
