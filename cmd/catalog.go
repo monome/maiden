@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 
 	"text/tabwriter"
 
@@ -64,7 +65,12 @@ func catalogListRun(args []string) {
 }
 
 func catalogInitRun(args []string) {
-	c := catalog.New()
+	// default the catalog name to the base name of the file minus extension
+	name := filepath.Base(args[0])
+	extension := filepath.Ext(name)
+	name = name[0:len(name)-len(extension)]
+
+	c := catalog.New(name)
 	logger.Debug("creating file: ", args[0])
 	f, err := os.Create(args[0])
 	if err != nil {

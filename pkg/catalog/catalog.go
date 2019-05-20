@@ -46,9 +46,10 @@ func init() {
 }
 
 // New creates a new empty catalog
-func New() *Catalog {
+func New(name string) *Catalog {
 	return &Catalog{
 		content: &catalogContent{
+			Name: name,
 			Header:  catalogDefaultHeader,
 			Entries: make(map[string]Entry),
 		},
@@ -115,7 +116,7 @@ func (c *Catalog) Name() string {
 	return c.content.Name
 }
 
-// Data returns the update time for catalog
+// Updated returns the update time for catalog
 func (c *Catalog) Updated() time.Time {
 	return c.content.Date
 }

@@ -35,6 +35,7 @@ var serverCmd = &cobra.Command{
 	Short: "run the backend server for maiden",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
 		serverRun()
 	},
 }
@@ -363,73 +364,42 @@ type catalogsInfo struct {
 	Self     string           `json:"url"`
 }
 
-func (s *server) loadCatalog(path string, info os.FileInfo) (*LoadedCatalog, error) {
-	var err error
-
-	// gather stat info if not provided
-	if info == nil {
-		if info, err = os.Stat(path); os.IsNotExist(err) {
-			return nil, err
-		}
-	}
-
-	f, err := os.Open(path)
-	defer f.Close()
-	if err != nil {
-		logger.Warnf("error: %s", err.Error())
-		return nil, err
-	}
-
-	catalog, err := catalog.Load(f)
-	if err != nil {
-		logger.Warnf("uname to load catalog: %s (%s)", err, path)
-		return nil, err
-	}
-
-	logger.Infof("loaded catalog: %s", path)
-	return &LoadedCatalog{
-		FileInfo: info,
-		Catalog:  catalog,
-		Path:     path,
-	}, nil
-}
-
 func (s *server) refreshCatalogs() {
 	// FIXME: only load the catalogs if they have changed on disk
 	s.catalogsMutex.Lock()
 	defer s.catalogsMutex.Unlock()
 
-	catalogPatterns := viper.GetStringSlice("catalogs")
-	for _, pattern := range catalogPatterns {
-		matches, _ := filepath.Glob(os.ExpandEnv(pattern))
-		for _, path := range matches {
-			if existing := s.catalogs[path]; existing != nil {
-				// already loaded; reload if it has changed
-				fileInfo, err := os.Stat(path)
-				if os.IsNotExist(err) {
-					// ...glob found a match but it doesn't exist, it must have been quickly removed
-					delete(s.catalogs, path)
-					continue
-				}
-				if fileInfo.ModTime().Unix() > existing.FileInfo.ModTime().Unix() {
-					fresh, err := s.loadCatalog(path, fileInfo)
-					if err != nil {
-						logger.Warnf("failed reloading: %s", err)
-						continue
-					}
-					s.catalogs[path] = fresh
-				}
-			} else {
-				// new file, load it
-				fresh, err := s.loadCatalog(path, nil)
+	logger.Debug("refreshing catalogs...")
+
+	for _, path := range GetCatalogPaths() {
+		if existing := s.catalogs[path]; existing != nil {
+			// already loaded; reload if it has changed
+			fileInfo, err := os.Stat(path)
+			if os.IsNotExist(err) {
+				// ...glob found a match but it doesn't exist, it must have been quickly removed
+				delete(s.catalogs, path)
+				continue
+			}
+			if fileInfo.ModTime().Unix() > existing.FileInfo.ModTime().Unix() {
+				fresh, err := LoadCatalogFile(path)
 				if err != nil {
-					logger.Warnf("failed loading: %s", err)
+					logger.Warnf("failed reloading: %s", err)
 					continue
 				}
 				s.catalogs[path] = fresh
 			}
+		} else {
+			// new file, load it
+			fresh, err := LoadCatalogFile(path)
+			if err != nil {
+				logger.Warnf("failed loading: %s", err)
+				continue
+			}
+			s.catalogs[path] = fresh
 		}
 	}
+
+	logger.Debug("finished refreshing catalogs...")
 }
 
 func (s *server) getCatalogsHandler(ctx *gin.Context) {
@@ -437,11 +407,12 @@ func (s *server) getCatalogsHandler(ctx *gin.Context) {
 
 	summary := make([]catalogSummary, 0)
 
-	for _, loaded := range s.catalogs {
+	for _, value := range s.catalogs {
+		name := value.Catalog.Name()
 		summary = append(summary, catalogSummary{
-			Name: loaded.Catalog.Name(),
-			Date: loaded.Catalog.Updated(),
-			URL:  s.apiPath("catalog", loaded.Catalog.Name()),
+			Name: name,
+			Date: value.Catalog.Updated(),
+			URL: s.apiPath("catalog", name),
 		})
 	}
 

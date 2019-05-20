@@ -99,8 +99,13 @@ func CatalogUpdateRun(args []string) {
 
 // GenerateCatalogFromLines constructs a new catalog by gathering project information from lines and writes it to the given path
 func GenerateCatalogFromLines(source *catalog.Source, outputPath string) {
+	// default the catalog name to the base name of the file minus extension
+	name := filepath.Base(outputPath)
+	extension := filepath.Ext(name)
+	name = name[0:len(name)-len(extension)]
+
 	fmt.Printf("fetching topics from lines... ")
-	catalog := catalog.New()
+	catalog := catalog.New(name)
 	err := lines.GatherProjects(catalog)
 	if err != nil {
 		log.Fatalf("failed while gathering project: %s", err)
