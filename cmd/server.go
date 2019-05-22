@@ -518,20 +518,55 @@ func (s *server) getProjectsHandler(ctx *gin.Context) {
 
 func (s *server) getProjectHandler(ctx *gin.Context) {
 	projectDir := s.devicePath("code")
+	which := ctx.Param("name")
+
+	// TODO: refactor this whole thing to remove duplicate (re)install logic
+
+	//
+	// install logic
+	//
+	_, exists := ctx.GetQuery("install")
+	if exists {
+		// load catalog(s)
+		catalogs := LoadCatalogs()
+		if catalogs == nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": "unable to load script catalog(s)",
+			})
+			return
+		}
+
+		// TODO: restrict search to the specified catalog
+		if entry := SearchCatalogs(catalogs, which); entry != nil {
+			if err := dust.Install(projectDir, entry.ProjectName, entry.URL); err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": fmt.Sprintf("install failed: %s", err),
+				})
+				return
+			}
+		} else {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "cannot find in catalog"})
+			return
+		}
+	}
+
+	// look for the existing project
 	projects, err := dust.GetProjects(projectDir)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed loading projects: %s", err)})
 		return
 	}
 
-	which := ctx.Param("name")
 	p := dust.SearchProjects(projects, which)
 	if p == nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown project: %s", which)})
 		return
 	}
 
-	_, exists := ctx.GetQuery("update")
+	//
+	// update logic
+	//
+	_, exists = ctx.GetQuery("update")
 	if exists {
 		// ignore the value for now but it could be a commit or version in the future?
 		if p.IsManaged() {
