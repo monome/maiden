@@ -44,6 +44,7 @@ var pushProjectCmd = &cobra.Command{
 	// Args:  cobra.,
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		pushProjectRun(args)
 	},
 }
@@ -54,6 +55,7 @@ var removeProjectCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		removeProjectRun(args)
 	},
 }
