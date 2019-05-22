@@ -26,12 +26,14 @@ var rootCmd = &cobra.Command{
 }
 
 var (
-	debug  bool
-	logger *logrus.Logger
+	configPath string
+	debug      bool
+	logger     *logrus.Logger
 )
 
 func init() {
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "enable debug logging")
+	rootCmd.PersistentFlags().StringVar(&configPath, "config", "", "use specific config file")
 
 	// initialize default logging configuration
 	logger = logrus.New()
@@ -43,22 +45,6 @@ func init() {
 // Execute add all child commands to the root command and defaults flags
 // appropriately (called from main.main())
 func Execute() {
-	viper.SetConfigName("maiden")
-	viper.SetConfigType("yaml")
-
-	// config seach path; ordered from strongest to weakest
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("$HOME/maiden")
-	viper.AddConfigPath("$HOME/.config/maiden")
-	viper.AddConfigPath("/etc")
-
-	viper.ReadInConfig()
-
-	/*
-		fmt.Println(viper.ConfigFileUsed())
-		viper.Debug()
-	*/
-
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -88,4 +74,28 @@ func ConfigureLogger() {
 	if debug {
 		logger.SetLevel(logrus.DebugLevel)
 	}
+}
+
+// LoadConfiguration attempts to load in external configuration if possible, this function must be called in each commands execute function (after argument processing) because its behavior is influenced by the command line itself
+func LoadConfiguration() {
+	if configPath == "" {
+		viper.SetConfigName("maiden")
+		viper.SetConfigType("yaml")
+
+		// config seach path; ordered from strongest to weakest
+		viper.AddConfigPath(".")
+		viper.AddConfigPath("$HOME/maiden")
+		viper.AddConfigPath("$HOME/.config/maiden")
+		viper.AddConfigPath("/etc")
+	} else {
+
+		viper.SetConfigFile(configPath)
+	}
+
+	viper.ReadInConfig()
+
+	logger.Debugf("used confg: %s", viper.ConfigFileUsed())
+	// 	if debug {
+	// 		viper.Debug()
+	// 	}
 }

@@ -23,6 +23,7 @@ var catalogListCmd = &cobra.Command{
 	Short: "list projects",
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		catalogListRun(args)
 	},
 }
@@ -33,6 +34,7 @@ var catalogInitCmd = &cobra.Command{
 	Args:  cobra.RangeArgs(1, 1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		catalogInitRun(args)
 	},
 }
@@ -68,7 +70,7 @@ func catalogInitRun(args []string) {
 	// default the catalog name to the base name of the file minus extension
 	name := filepath.Base(args[0])
 	extension := filepath.Ext(name)
-	name = name[0:len(name)-len(extension)]
+	name = name[0 : len(name)-len(extension)]
 
 	c := catalog.New(name)
 	logger.Debug("creating file: ", args[0])
@@ -80,4 +82,3 @@ func catalogInitRun(args []string) {
 	c.Store(f)
 	fmt.Printf("Wrote: %s\n", args[0])
 }
-

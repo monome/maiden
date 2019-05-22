@@ -5,8 +5,8 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"path/filepath"
 	"os"
+	"path/filepath"
 
 	"github.com/monome/maiden/pkg/catalog"
 	"github.com/monome/maiden/pkg/lines"
@@ -19,6 +19,7 @@ var catalogUpdateCmd = &cobra.Command{
 	Short: "update configured catalogs",
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		CatalogUpdateRun(args)
 	},
 }
@@ -83,7 +84,7 @@ func CatalogUpdateRun(args []string) {
 
 		// compute output path
 		outputDir := viper.GetString("catalogOutputDir")
-		outputPath := os.ExpandEnv(filepath.Join(outputDir, sourceName + ".json"))
+		outputPath := os.ExpandEnv(filepath.Join(outputDir, sourceName+".json"))
 
 		fmt.Printf("Updating: %s; ", sourceName)
 		switch sourceMethod {
@@ -102,7 +103,7 @@ func GenerateCatalogFromLines(source *catalog.Source, outputPath string) {
 	// default the catalog name to the base name of the file minus extension
 	name := filepath.Base(outputPath)
 	extension := filepath.Ext(name)
-	name = name[0:len(name)-len(extension)]
+	name = name[0 : len(name)-len(extension)]
 
 	fmt.Printf("fetching topics from lines... ")
 	catalog := catalog.New(name)

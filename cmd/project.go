@@ -22,6 +22,7 @@ var installProjectCmd = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		installProjectRun(args)
 	},
 }
@@ -32,6 +33,7 @@ var updateProjectCmd = &cobra.Command{
 	// Args:  cobra.,
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		updateProjectRun(args)
 	},
 }

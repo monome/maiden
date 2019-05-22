@@ -36,6 +36,7 @@ var serverCmd = &cobra.Command{
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
+		LoadConfiguration()
 		serverRun()
 	},
 }
@@ -412,7 +413,7 @@ func (s *server) getCatalogsHandler(ctx *gin.Context) {
 		summary = append(summary, catalogSummary{
 			Name: name,
 			Date: value.Catalog.Updated(),
-			URL: s.apiPath("catalog", name),
+			URL:  s.apiPath("catalog", name),
 		})
 	}
 
