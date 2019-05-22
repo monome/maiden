@@ -140,7 +140,7 @@ func serverRun() {
 
 	api.GET("/projects", s.getProjectsHandler)
 	api.GET("/project/:name", s.getProjectHandler)
-	api.POST("/project/:name", s.postProjectHandler)
+	api.DELETE("/project/:name", s.deleteProjectHandler)
 
 	var l net.Listener
 	if httpFD > 0 {
@@ -517,9 +517,91 @@ func (s *server) getProjectsHandler(ctx *gin.Context) {
 }
 
 func (s *server) getProjectHandler(ctx *gin.Context) {
+	projectDir := s.devicePath("code")
+	projects, err := dust.GetProjects(projectDir)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed loading projects: %s", err)})
+		return
+	}
+
+	which := ctx.Param("name")
+	p := dust.SearchProjects(projects, which)
+	if p == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown project: %s", which)})
+		return
+	}
+
+	_, exists := ctx.GetQuery("update")
+	if exists {
+		// ignore the value for now but it could be a commit or version in the future?
+		if p.IsManaged() {
+			if err := p.Update(true); err != nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": fmt.Sprintf("update failed: %s", err),
+				})
+				return
+			}
+		} else {
+			// load catalog(s)
+			catalogs := LoadCatalogs()
+			if catalogs == nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "unable to load script catalog(s)",
+				})
+				return
+			}
+
+			// assume zip
+			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
+				// TODO: only remove if download succeds?
+				os.RemoveAll(p.Root)
+				if err = dust.Install(projectDir, p.Name, entry.URL); err != nil {
+					ctx.JSON(http.StatusInternalServerError, gin.H{
+						"error": fmt.Sprintf("(re)install failed: %s", err),
+					})
+					return
+				}
+			} else {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "cannot find in catalog"})
+				return
+			}
+		}
+	}
+
+	// MAINT: this is redudant with the 'projects' handler but could be expanded to include more detail in the future
+	version := ""
+	managed := p.IsManaged()
+	if managed {
+		version, _ = p.GetVersion()
+	}
+	ctx.JSON(http.StatusOK, projectSummary{
+		Name:    p.Name,
+		Managed: managed,
+		Version: version,
+		URL:     s.apiPath("project", p.Name),
+	})
 }
 
-func (s *server) postProjectHandler(ctx *gin.Context) {
+func (s *server) deleteProjectHandler(ctx *gin.Context) {
+	projects, err := dust.GetProjects(s.devicePath("code"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed loading projects: %s", err)})
+		return
+	}
+
+	which := ctx.Param("name")
+	p := dust.SearchProjects(projects, which)
+	if p == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown project: %s", which)})
+		return
+	}
+
+	if err := os.RemoveAll(p.Root); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("removed %s", which)})
 }
 
 type devicePathFunc func(name string) string
