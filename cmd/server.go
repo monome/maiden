@@ -16,6 +16,7 @@ import (
 	"github.com/coreos/go-systemd/dbus"
 	"github.com/gin-gonic/gin"
 	"github.com/monome/maiden/pkg/catalog"
+	"github.com/monome/maiden/pkg/dust"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -137,6 +138,10 @@ func serverRun() {
 	api.POST("/catalog/:name", s.createCatalogHandler)
 	api.DELETE("/catalog/:name", s.deleteCatalogHandler)
 
+	api.GET("/projects", s.getProjectsHandler)
+	api.GET("/project/:name", s.getProjectHandler)
+	api.POST("/project/:name", s.postProjectHandler)
+
 	var l net.Listener
 	if httpFD > 0 {
 		l, err = net.FileListener(os.NewFile(uintptr(httpFD), "http"))
@@ -165,6 +170,10 @@ type server struct {
 	// catalog management
 	catalogs      map[string]*LoadedCatalog
 	catalogsMutex sync.Mutex
+}
+
+func (s *server) dustRoot() string {
+	return s.devicePath("")
 }
 
 func (s *server) unitHandler(ctx *gin.Context) {
@@ -221,8 +230,7 @@ func (s *server) unitHandler(ctx *gin.Context) {
 }
 
 func (s *server) rootListingHandler(ctx *gin.Context) {
-	top := "" // MAINT: get rid of this
-	entries, err := ioutil.ReadDir(s.devicePath(top))
+	entries, err := ioutil.ReadDir(s.dustRoot())
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -466,6 +474,52 @@ func (s *server) createCatalogHandler(ctx *gin.Context) {
 }
 
 func (s *server) deleteCatalogHandler(ctx *gin.Context) {
+}
+
+type projectSummary struct {
+	Name    string `json:"name"`
+	Managed bool   `json:"managed"`
+	Version string `json:"version"`
+	URL     string `json:"url"`
+}
+
+type projectsInfo struct {
+	Projects []projectSummary `json:"projects"`
+	Self     string           `json:"url"`
+}
+
+func (s *server) getProjectsHandler(ctx *gin.Context) {
+	projects, err := dust.GetProjects(s.devicePath("code"))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed loading projects: %s", err)})
+		return
+	}
+
+	listing := make([]projectSummary, 0)
+	for _, p := range projects {
+		version := ""
+		managed := p.IsManaged()
+		if managed {
+			version, _ = p.GetVersion()
+		}
+		listing = append(listing, projectSummary{
+			Name:    p.Name,
+			Managed: managed,
+			Version: version,
+			URL:     s.apiPath("project", p.Name),
+		})
+	}
+
+	ctx.JSON(http.StatusOK, projectsInfo{
+		Projects: listing,
+		Self:     ctx.Request.URL.String(), // MAINT: this includes query args...
+	})
+}
+
+func (s *server) getProjectHandler(ctx *gin.Context) {
+}
+
+func (s *server) postProjectHandler(ctx *gin.Context) {
 }
 
 type devicePathFunc func(name string) string

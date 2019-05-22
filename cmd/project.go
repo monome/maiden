@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -14,6 +15,16 @@ import (
 var projectCmd = &cobra.Command{
 	Use:   "project",
 	Short: "manage dust projects",
+}
+
+var listProjectsCmd = &cobra.Command{
+	Use:   "list",
+	Short: "list installed script/project(s)",
+	Run: func(cmd *cobra.Command, args []string) {
+		ConfigureLogger()
+		LoadConfiguration()
+		listProjectsRun(args)
+	},
 }
 
 var installProjectCmd = &cobra.Command{
@@ -67,6 +78,7 @@ var (
 func init() {
 	updateProjectCmd.Flags().BoolVar(&updateAllProjects, "all", false, "update all installed projects")
 
+	projectCmd.AddCommand(listProjectsCmd)
 	projectCmd.AddCommand(installProjectCmd)
 	projectCmd.AddCommand(updateProjectCmd)
 	projectCmd.AddCommand(pushProjectCmd)
@@ -83,6 +95,47 @@ func ensureDustCodeRoot() string {
 		logger.Fatalf("dust directory '%s' does not exist", p)
 	}
 	return p
+}
+
+func listProjectsRun(args []string) {
+	dustRoot := ensureDustCodeRoot()
+
+	// load projects
+	projects, err := dust.GetProjects(dustRoot)
+	CheckErrorFatal(err)
+
+	// select which projects to list
+	var candidates []*dust.Project
+	candidates = make([]*dust.Project, 0)
+	if len(args) == 0 {
+		candidates = projects
+	} else {
+		for _, name := range args {
+			if p := dust.SearchProjects(projects, name); p != nil {
+				candidates = append(candidates, p)
+			} else {
+				logger.Warning("Unknown project: ", name)
+			}
+		}
+	}
+
+	if len(candidates) > 0 {
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 0, 8, 0, '\t', 0) // FIXME: magic numbers?
+		fmt.Fprintln(w, "project\tgit\tversion\tdir\t")
+		fmt.Fprintln(w, "-------\t---\t-------\t---\t")
+
+		// do the work
+		for _, p := range candidates {
+			if p.IsManaged() {
+				version, _ := p.GetVersion()
+				fmt.Fprintf(w, "%s\t%v\t%s\t%s\t\n", p.Name, true, version, p.Root)
+			} else {
+				fmt.Fprintf(w, "%s\t%v\t%s\t%s\t\n", p.Name, false, "", p.Root)
+			}
+		}
+		w.Flush()
+	}
 }
 
 func installProjectRun(args []string) {

@@ -4,8 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/spf13/viper"
 	"github.com/monome/maiden/pkg/catalog"
+	"github.com/spf13/viper"
 )
 
 // LoadedCatalog contains the parsed contents of a catalog file along with its path and stat info
@@ -17,7 +17,7 @@ type LoadedCatalog struct {
 
 // LoadedSource contains the parsed contents of a catalog source config file along with its path and stat info
 type LoadedSource struct {
-	Source  *catalog.Source
+	Source   *catalog.Source
 	FileInfo os.FileInfo
 	Path     string
 }
@@ -28,7 +28,7 @@ func GetPathsForPatterns(pathPatterns []string) []string {
 	for _, pattern := range pathPatterns {
 		expanded := os.ExpandEnv(pattern)
 		logger.Debugf("globbing against: %s", expanded)
-		matches, _ := filepath.Glob(expanded) 
+		matches, _ := filepath.Glob(expanded)
 		for _, match := range matches {
 			logger.Debugf("found match: %s", match)
 			paths = append(paths, match)
@@ -50,7 +50,7 @@ func LoadCatalogFile(path string) (*LoadedCatalog, error) {
 	defer f.Close()
 	if err != nil {
 		return nil, err
-		
+
 	}
 	catalog, err := catalog.Load(f)
 	if err != nil {
@@ -60,16 +60,16 @@ func LoadCatalogFile(path string) (*LoadedCatalog, error) {
 	logger.Debugf("loaded catalog: %s", path)
 
 	return &LoadedCatalog{
-		Path: path,
+		Path:     path,
 		FileInfo: fileInfo,
-		Catalog: catalog,
+		Catalog:  catalog,
 	}, nil
 }
 
 // LoadCatalogs loads all catalogs specified in the config
 func LoadCatalogs() []*LoadedCatalog {
 	catalogs := make([]*LoadedCatalog, 0)
-	
+
 	for _, path := range GetCatalogPaths() {
 		loaded, err := LoadCatalogFile(path)
 		if err != nil {
@@ -112,9 +112,9 @@ func LoadSourceFile(path string) (*LoadedSource, error) {
 	}
 
 	return &LoadedSource{
-		Path: path,
+		Path:     path,
 		FileInfo: fileInfo,
-		Source: source.Source(),
+		Source:   source.Source(),
 	}, nil
 }
 

@@ -40,6 +40,10 @@ func downloadURL(url string) (string, error) {
 	return f.Name(), nil
 }
 
+func shortHash(hash string) string {
+	return hash[0:7]
+}
+
 // Unzip will decompress a zip archive, moving all files and folders
 // within the zip file (parameter 1) to an output directory (parameter 2).
 func Unzip(src string, dest string, removeArchiveRoot bool) ([]string, error) {
@@ -180,6 +184,27 @@ func (p *Project) IsManaged() bool {
 		return true
 	}
 	return false
+}
+
+// GetVersion returns the name of the tag at the current HEAD or the commit hash
+func (p *Project) GetVersion() (string, error) {
+	r, err := git.PlainOpen(p.Root)
+	if err != nil {
+		return "", err
+	}
+
+	ref, err := r.Head()
+	if err != nil {
+		return "", err
+	}
+
+	// FIXME: this doesn't seem to be working
+	if tag, err := r.TagObject(ref.Hash()); err == nil {
+		fmt.Printf("tag: %+v", tag)
+		return tag.Name, nil
+	}
+
+	return shortHash(ref.Hash().String()), nil
 }
 
 // Update pulls down any changes for the project if it is managed via git
