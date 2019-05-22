@@ -404,6 +404,20 @@ func (s *server) refreshCatalogs() {
 }
 
 func (s *server) getCatalogsHandler(ctx *gin.Context) {
+	// FIXME: this probably makes more sense to expose update logic on the
+	// /catalog/:name handlers and the refreshCatalogs() function refactored.
+	update, exists := ctx.GetQuery("update")
+	if exists {
+		if update == "all" {
+			logger.Debug("updating all catalogs...")
+			CatalogUpdateRun(nil)
+		} else {
+			logger.Debugf("updating catalog: %s", update)
+			CatalogUpdateRun([]string{update})
+		}
+	}
+
+	// (re)load anything which has changed
 	s.refreshCatalogs()
 
 	summary := make([]catalogSummary, 0)
@@ -419,7 +433,7 @@ func (s *server) getCatalogsHandler(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, catalogsInfo{
 		Catalogs: summary,
-		Self:     ctx.Request.URL.String(),
+		Self:     ctx.Request.URL.String(), // MAINT: this includes query args...
 	})
 }
 
