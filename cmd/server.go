@@ -71,11 +71,11 @@ func serverRun() {
 	docDir = os.ExpandEnv(viper.GetString("doc.path"))
 
 	// FIXME: pull in git version
-	log.Printf("maiden (%s)", version)
-	log.Printf("  http: %s", httpLocation)
-	log.Printf("   app: %s", appDir)
-	log.Printf("  data: %s", dataDir)
-	log.Printf("   doc: %s", docDir)
+	logger.Infof("maiden (%s)", version)
+	logger.Infof("  http: %s", httpLocation)
+	logger.Infof("   app: %s", appDir)
+	logger.Infof("  data: %s", dataDir)
+	logger.Infof("   doc: %s", docDir)
 
 	if debug {
 		gin.SetMode(gin.DebugMode)
@@ -111,7 +111,7 @@ func serverRun() {
 	// dbus connection for process management
 	dbusConn, err := dbus.NewSystemConnection()
 	if err != nil {
-		log.Printf("dbus connection error: %v", err)
+		logger.Warnf("dbus connection error: %v", err)
 	}
 
 	s := server{
