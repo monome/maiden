@@ -89,7 +89,7 @@ export const replConnect = (component, endpoint, retryCount) => dispatch => {
   };
   socket.onerror = error => {
     if (retryCount && retryCount > 0) {
-      let attempt = new Promise(resolve => setTimeout(resolve, 250));
+      const attempt = new Promise(resolve => setTimeout(resolve, 250));
       attempt.then(() => {
         dispatch(replConnect(component, endpoint, retryCount - 1));
       });
@@ -121,23 +121,21 @@ export const replInput = (component, value) => (dispatch, getState) => {
 
   // check to see if the input is a unit command, if so fire off async actions
   const input = value.trim();
-  if (input.startsWith(";")) {
+  if (input.startsWith(';')) {
     const state = getState().repl;
     const operation = input.slice(1);
     const unitName = state.units.get(component);
     api.doUnitOperation(unitName, operation, response => {
-      if (response.result === "done") {
+      if (response.result === 'done') {
         const endpoint = state.endpoints.get(component);
         dispatch(replConnect(component, endpoint, 4));
-        dispatch(replEcho(component, input + " => " + response.result));
-      }
-      else {
-        dispatch(replEcho(component, input + " => " + response.error));
+        dispatch(replEcho(component, `${input} => ${response.result}`));
+      } else {
+        dispatch(replEcho(component, `${input} => ${response.error}`));
       }
     });
-  }
-  else {
-    // nothing special 
+  } else {
+    // nothing special
     dispatch(replSend(component, value));
   }
-}
+};
