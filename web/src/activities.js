@@ -1,7 +1,13 @@
 import BoundEditActivity from './bound-edit-activity';
+import BoundProjectActivity from './bound-project-activity';
 import HelpButton from './help-button';
 import { ICONS } from './svg-icons';
-import { SIDEBAR_COMPONENT, REPL_COMPONENT, CONFIG_COMPONENT } from './constants';
+import {
+  SIDEBAR_COMPONENT,
+  REPL_COMPONENT,
+  CONFIG_COMPONENT,
+  PROJECT_COMPONENT,
+} from './constants';
 import OS from './utils';
 
 const activities = [
@@ -21,6 +27,13 @@ const activities = [
     icon: ICONS.terminal,
     toggle: REPL_COMPONENT,
     view: BoundEditActivity,
+    position: 'upper',
+  },
+  {
+    selector: 'project', // ????
+    icon: ICONS.books,
+    toggle: PROJECT_COMPONENT,
+    view: BoundProjectActivity,
     position: 'upper',
   },
   {

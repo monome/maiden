@@ -1,4 +1,3 @@
-// import React, { Component } from 'react';
 import React, { Component } from 'react';
 import cx from 'classname';
 import { VERSION, COMMIT } from './version';

@@ -133,6 +133,42 @@ class API {
   static editorConfigResource() {
     return API.resourceForScript('editor.json', 'dust/data');
   }
+
+  static getCatalogSummary(cb) {
+    const url = `${API_ROOT}/catalogs`;
+    fetch(url).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static getCatalog(catalogName, cb) {
+    const url = `${API_ROOT}/catalog/${encodeURIComponent(catalogName)}`;
+    fetch(url).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static getProjectSummary(cb) {
+    const url = `${API_ROOT}/projects`;
+    fetch(url).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static getProject(projectName, cb) {
+    const url = `${API_ROOT}/project/${encodeURIComponent(projectName)}`;
+    fetch(url).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
 }
 
 export default API;
