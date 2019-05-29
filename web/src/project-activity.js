@@ -4,7 +4,10 @@ class ProjectActivity extends Component {
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
       // summary.get('catalogs').map(description => this.props.getCatalog(description.get('name')));
-      console.log(summary.toJS());
+      console.log(summary.get('catalogs'));
+      summary.get('catalogs').forEach(detail => {
+        this.props.getCatalog(detail.get('name'));
+      });
     });
     this.props.getProjectSummary();
   }

@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { fromJS } from 'immutable';
 import API from '../api';
 
 export const CATALOG_SUMMARY_REQUEST = 'CATALOG_SUMMARY_REQUEST';
@@ -48,7 +48,7 @@ export const projectViewSelect = component => ({ type: PROJECT_VIEW_SELECT, comp
 export const getCatalogSummary = cb => dispatch => {
   dispatch(catalogSummaryRequest());
   return API.getCatalogSummary(catalogs => {
-    const cs = new Map(catalogs);
+    const cs = fromJS(catalogs);
     dispatch(catalogSummarySuccess(cs));
     if (cb) {
       cb(cs);
@@ -59,7 +59,7 @@ export const getCatalogSummary = cb => dispatch => {
 export const getCatalog = cb => dispatch => {
   dispatch(catalogRequest());
   return API.getCatalog(catalog => {
-    const c = new Map(catalog);
+    const c = fromJS(catalog);
     dispatch(catalogSuccess(c));
     if (cb) {
       cb(c);
@@ -70,7 +70,7 @@ export const getCatalog = cb => dispatch => {
 export const getProjectSummary = cb => dispatch => {
   dispatch(projectSummaryRequest());
   return API.getProjectSummary(projects => {
-    const ps = new Map(projects);
+    const ps = fromJS(projects);
     dispatch(projectSummarySuccess(ps));
     if (cb) {
       cb(ps);
@@ -81,7 +81,7 @@ export const getProjectSummary = cb => dispatch => {
 export const getProject = cb => dispatch => {
   dispatch(projectRequest());
   return API.getProject(project => {
-    const p = new Map(project);
+    const p = fromJS(project);
     dispatch(projectSuccess(p));
     if (cb) {
       cb(p);

@@ -97,15 +97,15 @@ class API {
     fetch('units.json').then(response => {
       response.json().then(data => {
         cb(new Map(Object.entries(data.units)));
-      })
-    })
+      });
+    });
   }
 
   static doUnitOperation(unit, operation, cb) {
     const url = `${API_ROOT}/unit/${unit}?do=${operation}`;
     fetch(url).then(response => {
       response.json().then(body => {
-        cb(body)
+        cb(body);
       });
     });
   }
@@ -144,7 +144,8 @@ class API {
   }
 
   static getCatalog(catalogName, cb) {
-    const url = `${API_ROOT}/catalog/${encodeURIComponent(catalogName)}`;
+    const name = encodeURIComponent(catalogName);
+    const url = `${API_ROOT}/catalog/${name}`;
     fetch(url).then(response => {
       response.json().then(body => {
         cb(body);
@@ -162,7 +163,8 @@ class API {
   }
 
   static getProject(projectName, cb) {
-    const url = `${API_ROOT}/project/${encodeURIComponent(projectName)}`;
+    const name = encodeURIComponent(projectName);
+    const url = `${API_ROOT}/project/${name}`;
     fetch(url).then(response => {
       response.json().then(body => {
         cb(body);
