@@ -56,9 +56,9 @@ export const getCatalogSummary = cb => dispatch => {
   });
 };
 
-export const getCatalog = cb => dispatch => {
+export const getCatalog = (name, cb) => dispatch => {
   dispatch(catalogRequest());
-  return API.getCatalog(catalog => {
+  return API.getCatalog(name, catalog => {
     const c = fromJS(catalog);
     dispatch(catalogSuccess(c));
     if (cb) {
@@ -78,9 +78,9 @@ export const getProjectSummary = cb => dispatch => {
   });
 };
 
-export const getProject = cb => dispatch => {
+export const getProject = (name, cb) => dispatch => {
   dispatch(projectRequest());
-  return API.getProject(project => {
+  return API.getProject(name, project => {
     const p = fromJS(project);
     dispatch(projectSuccess(p));
     if (cb) {

@@ -6,7 +6,8 @@ class ProjectActivity extends Component {
       // summary.get('catalogs').map(description => this.props.getCatalog(description.get('name')));
       console.log(summary.get('catalogs'));
       summary.get('catalogs').forEach(detail => {
-        this.props.getCatalog(detail.get('name'));
+        const name = detail.get('name');
+        this.props.getCatalog(name);
       });
     });
     this.props.getProjectSummary();

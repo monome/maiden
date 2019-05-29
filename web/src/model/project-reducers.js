@@ -38,14 +38,16 @@ const projects = (state = initialProjectState, action) => {
       return { ...state, catalogSummary: action.catalogs };
 
     case CATALOG_SUCCESS:
-      const newCatalogs = state.catalogs.set(action.catalog.name, action.catalog);
+      const catalogName = action.catalog.get('name');
+      const newCatalogs = state.catalogs.set(catalogName, action.catalog);
       return { ...state, catalogs: newCatalogs };
 
     case PROJECT_SUMMARY_SUCCESS:
       return { ...state, projectSummary: action.projects };
 
     case PROJECT_SUCCESS:
-      const newProjects = state.projects.set(action.project.name, action.project);
+      const projectName = action.project.get('name');
+      const newProjects = state.projects.set(projectName, action.project);
       return { ...state, projects: newProjects };
 
     default:
