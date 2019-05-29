@@ -1,0 +1,10 @@
+{
+  "file_info": {
+    "version": 1,
+    "kind": "catalog_source"
+  },
+  "source": {
+      "name": "lines",
+      "method": "lines"
+  }
+}
