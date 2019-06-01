@@ -10,8 +10,9 @@ import {
 } from './model/project-actions';
 
 const mapStateToProps = state => {
-  const { catalogSummary, catalogs, projectSummary, projects } = state;
+  const { activeComponent, catalogSummary, catalogs, projectSummary, projects } = state;
   return {
+    activeComponent,
     catalogSummary,
     catalogs,
     projectSummary,

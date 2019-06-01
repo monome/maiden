@@ -4,6 +4,7 @@ import {
   CATALOG_SUCCESS,
   PROJECT_SUMMARY_SUCCESS,
   PROJECT_SUCCESS,
+  PROJECT_VIEW_SELECT,
 } from './project-actions';
 
 /*
@@ -25,7 +26,7 @@ project: {
 */
 
 const initialProjectState = {
-  activeComponent: 'installed',
+  activeComponent: 'project',
   catalogSummary: new Map(),
   catalogs: new Map(),
   projectSummary: new Map(),
@@ -50,7 +51,10 @@ const projects = (state = initialProjectState, action) => {
       const newProjects = state.projects.set(projectName, action.project);
       return { ...state, projects: newProjects };
 
-    default:
+    case PROJECT_VIEW_SELECT:
+      return { ...state, activeComponent: action.component };
+
+      default:
       return state;
   }
 };
