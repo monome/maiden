@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { fromJS } from 'immutable';
+
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 //import { linkTo } from '@storybook/addon-links';
@@ -9,8 +11,8 @@ import TextButton from '../src/components/text-button';
 import ProjectInfo from '../src/components/project-info';
 import ProjectControl from '../src/components/project-control';
 
-const mockProject = {
-  'name': 'meso',
+const mockProject = fromJS({
+  'project_name': 'meso',
   'description': 'abstractions to build on',
   'tags': [
     'midi',
@@ -18,10 +20,9 @@ const mockProject = {
     'lib'
   ],
   'version': "1.3.2",
-};
+});
 
-
-storiesOf('Project', module)
+storiesOf('Projects', module)
   .add('text badges', () => (
     <span>
       <Badge>midi</Badge>

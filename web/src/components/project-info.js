@@ -4,11 +4,15 @@ import Badge from './badge';
 import './project-info.css';
 
 const ProjectInfo = (props) => {
-  const {name, description, version, tags} = props.project;
+  // NOTE: props.project is an immutablejs map
+  const name = props.project.get('project_name');
+  const description = props.project.get('description');
+  const version = props.project.get('version');
+  const tags = props.project.get('tags');
   
   let badges = undefined;
   if (tags) {
-    badges = tags.map(t => <Badge>{t}</Badge>)
+    badges = tags.map(t => <Badge key={t}>{t}</Badge>)
   }
 
   return (
