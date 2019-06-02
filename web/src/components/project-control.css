@@ -1,0 +1,17 @@
+.project-control {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  border-left: 4px solid #979797;
+  align-items: center;
+
+}
+
+.project-summary-container {
+  flex-grow: 1;
+}
+
+.project-control-container {
+  display: flex;
+  align-items: stretch;  
+}

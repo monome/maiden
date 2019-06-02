@@ -1,0 +1,16 @@
+.text-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+
+  font-family: monospace;
+  font-size: 110%;
+  flex-grow: 1;
+}
+
+.text-button:disabled {
+  cursor: not-allowed;
+}

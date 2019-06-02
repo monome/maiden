@@ -1,22 +1,16 @@
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
-import Icon from './icon';
-import './icon-button.css';
-
-// TODO:
-//  * add hover style
-//  * add selected style
+import './text-button.css';
 
 const hslRegex = /hsl\((\d{1,3}),\s?(\d{1,3})%,\s?(\d{1,3})%\)/;
 
-class IconButton extends Component {
+class TextButton extends Component {
   static defaultProps = {
     dark: true,
   };
 
-  constructor(props) {
-    super(props);
-
+  constructor (props) {
+    super(props)
+    
     // Parse the hsl values from props.color
     const [, h, s, l] = this.props.color.match(hslRegex);
     this.parsedColor = { h, s, l };
@@ -25,8 +19,7 @@ class IconButton extends Component {
       color: this.color,
     };
   }
-
-  // The default color for the icon
+  
   get color() {
     return this.props.disabled ? this.disabledColor : this.props.color;
   }
@@ -70,47 +63,21 @@ class IconButton extends Component {
       this.props.action();
     }
   };
-
+  
   render() {
-    const style = { padding: this.props.padding || 6 };
-    const tooltipPosition = this.props.tooltipPosition || 'bottom';
-
-    function guid() {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-    }
-
-    const uniqueId = guid();
-
+    const style = {color: this.state.color};
     return (
-      <button
-        className="icon-button"
+      <button className='text-button'
         onClick={this.handleClick}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        data-tip={this.props.tooltipMessage}
-        data-place={this.props.tooltipMessage && tooltipPosition}
-        data-for={this.props.tooltipMessage && uniqueId}
-        style={style}
         disabled={this.props.disabled}
+        style={style}
       >
-        <Icon icon={this.props.icon} size={this.props.size} color={this.state.color} />
-        {this.props.tooltipMessage && (
-          <ReactTooltip
-            id={uniqueId}
-            effect="solid"
-            delayShow={1000}
-            delayHide={500}
-            className="customTooltip"
-          />
-        )}
+        {this.props.children}
       </button>
     );
-  }
-}
+  };
+};
 
-export default IconButton;
+export default TextButton;

@@ -1,0 +1,35 @@
+.project-info {
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  background-color: #F9F9F9;
+  color: #979797;
+}
+
+.project-info-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.project-info-bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.project-info-name {
+  font-weight: bold;
+  font-size: 115%;
+}
+
+.project-info-description {
+  margin-left: 0.75em;
+}
+
+.project-info-version {
+  font-weight: bolder;
+  margin-right: 2px;
+}

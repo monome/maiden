@@ -1,0 +1,9 @@
+.badge {
+  margin: 0px 1px;
+  padding: 0px 6px 2px 6px;
+  color: white;
+  background-color: #979797;
+  border-radius: 5px;
+
+  font-family: monospace;
+}
