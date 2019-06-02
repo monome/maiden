@@ -1,0 +1,9 @@
+.catalog-list {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.catalog-list li {
+  margin: 0 0 8px 0;
+}

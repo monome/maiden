@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
-import { fromJS } from 'immutable';
+import { fromJS, Map } from 'immutable';
 
 import Catalog from '../src/components/catalog';
+import CatalogList from '../src/components/catalog-list';
 
 const mockLinesCatalog = fromJS({
   "entries": [
@@ -46,9 +47,21 @@ const mockLinesCatalog = fromJS({
   "url": "/api/v1/catalog/lines",
 });
 
+const mockCatalogs = Map({
+  "one": mockLinesCatalog,
+  "two": mockLinesCatalog,
+});
+
 storiesOf('Catalog', module)
   .add('single catalog', () => (
     <Catalog catalog={mockLinesCatalog}
+      installAction={(url, name) => {
+        action('do install', url, name);
+      }}
+    />
+  ))
+  .add('multiple catalogs', () => (
+    <CatalogList catalogs={mockCatalogs}
       installAction={(url, name) => {
         action('do install', url, name);
       }}
