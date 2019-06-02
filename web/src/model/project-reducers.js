@@ -26,7 +26,7 @@ project: {
 */
 
 const initialProjectState = {
-  activeComponent: 'project',
+  activeComponent: 'available',
   catalogSummary: new Map(),
   catalogs: new Map(),
   projectSummary: new Map(),
@@ -40,7 +40,15 @@ const projects = (state = initialProjectState, action) => {
 
     case CATALOG_SUCCESS:
       const catalogName = action.catalog.get('name');
-      const newCatalogs = state.catalogs.set(catalogName, action.catalog);
+      const sortedEntries = action.catalog.get('entries').sort((a, b) => {
+        const na = a.get('project_name');
+        const nb = b.get('project_name');
+        if (na < nb)   { return -1; }
+        if (na > nb)   { return 1; }
+        return 0;
+      });
+      const sortedCatalog = action.catalog.set('entries', sortedEntries);
+      const newCatalogs = state.catalogs.set(catalogName, sortedCatalog);
       return { ...state, catalogs: newCatalogs };
 
     case PROJECT_SUMMARY_SUCCESS:
