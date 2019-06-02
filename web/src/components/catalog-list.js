@@ -4,7 +4,7 @@ import './catalog-list.css';
 
 const CatalogList = props => {
   const catalogs = props.catalogs.valueSeq().map(c => (
-    <li>
+    <li key={c.get('name')}>
       <Catalog catalog={c} installAction={props.installAction} />
     </li>
   ));

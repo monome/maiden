@@ -13,9 +13,10 @@ const Catalog = (props) => {
   const entries = catalog.get('entries').map(e => {
     const projectName = e.get('project_name');
     const projectURL = e.get('project_url');
+    const key = `${projectName}-${projectURL || ""}`; // to silence warnings
     return (
-      <li>
-      <ProjectControl key={projectURL}>
+      <li key={key}>
+      <ProjectControl>
         <ProjectInfo project={e} />
         <TextButton color="hsl(0, 0%, 59%)"
           action={() => props.installAction(catalogURL, projectName)}
