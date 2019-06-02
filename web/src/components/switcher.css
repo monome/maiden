@@ -1,0 +1,31 @@
+.switcher-tab-container {
+  display: flex;
+  align-items: center;
+}
+
+.switcher-tab {
+  flex: 0 0 auto;
+  /* width: 14em; */
+  margin-right: 18px;
+  /* margin-left: 4em; */
+  padding-left: 0px;
+  padding-right: 0px;
+  background-color: Transparent;
+  background-repeat: no-repeat;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  outline: none;
+  font-family: monospace;
+  font-size: 120%;
+  color: #979797;
+  border-bottom: 1px solid #F4F4F4;  /* hack: match switcher background */
+}
+
+.switcher-active-tab {
+  border-bottom: 1px solid rgb(197, 197, 197);
+}
+
+.switcher-content-container {
+  margin-top: 4px;
+}
