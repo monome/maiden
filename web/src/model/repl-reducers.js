@@ -161,7 +161,7 @@ const repl = (state = initialReplState, action) => {
       };
 
     case REPL_UNIT_MAP_SUCCESS:
-      console.log('Units:', action.units);
+      //console.log('Units:', action.units);
       return {
         ...state,
         units: action.units,
