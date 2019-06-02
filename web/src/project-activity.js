@@ -1,98 +1,71 @@
 import React, { Component } from 'react';
-import cx from 'classname';
 
-// TEMP: break out and bind
-const ProjectView = props => {
-  return <div>installed</div>;
-}
+import Switcher from './components/switcher';
+import CatalogList from './components/catalog-list';
 
-// TEMP: break out and bind
-const CatalogView = props => {
-  return <div>available</div>
-}
-
-const ProjectSwitcherTab = props => {
-  const className = cx(
-    'project-switcher-tab',
-    { noselect: true },
-    { 'project-active-tab': props.isActive },
-  );
-
-  // TODO: add tooltip(s)
-  return (
-    <button 
-      className={className}
-      key={props.name}
-      onClick={props.onClick}
-    >
-      {props.name}
-    </button>
-  );
-};
-
-const ProjectViewSwitcher = props => {
-  const { selectedView, height, width } = props;
-
-  const switcherSize = {
-    width,
-    height: 30,
-  };
-
-  const contentSize = {
-    width,
-    height: height - switcherSize.height,
-  };
-
-  const tabs = [
-    <ProjectSwitcherTab
-      name='installed' 
-      isActive={selectedView === 'project'}
-      onClick={() => props.projectViewSelect('project')} />,
-    <ProjectSwitcherTab
-      name='available'
-      isActive={selectedView === 'catalog'}
-      onClick={() => props.projectViewSelect('catalog')} />,
-  ];
-
-  return (
-    <div>
-      <div className="project-view-tabs" style={switcherSize}>
-        {tabs}
-      </div>
-      <div className="project-something" style={contentSize}>
-        foo
-      </div>
-    </div>
-  )
-}
+import './project-activity.css';
 
 class ProjectActivity extends Component {
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
       // summary.get('catalogs').map(description => this.props.getCatalog(description.get('name')));
-      console.log(summary.get('catalogs'));
+      //console.log(summary.get('catalogs'));
       summary.get('catalogs').forEach(detail => {
         const name = detail.get('name');
         this.props.getCatalog(name);
       });
     });
     this.props.getProjectSummary();
-  }
+  };
+
+  handleTabSelection = name => {
+    //this.props.projectViewSelect(name);
+  };
+
+  handleInstallAction = (url, name) => {
+    console.log('doing install', url, name);
+  };
+
+  /*
+  render2() {
+    return (
+      <div className='project-activity-container'>
+        <Switcher
+          select={this.handleTabSelection}
+          activeTab={this.props.activeComponent}
+        >
+          <CatalogList
+            name="available"
+            catalogs={this.props.catalogs}
+            installAction={this.handleInstallAction}
+          />
+          <div name="installed">
+            something
+          </div>
+         </Switcher>
+      </div>
+    );
+  };
+  */
 
   render() {
-    let child = <ProjectView />;
-    if (this.props.activeComponent === 'catalog') {
-      child = <CatalogView />;
-    }
+    //console.log('PA this.props', this.props)
+    const style = {
+      height: this.props.height,
+      width: this.props.width,
+    };
+
     return (
-      <ProjectViewSwitcher
-        selectedView={this.props.activeComponent}
-        projectViewSelect={this.props.projectViewSelect}
-      >
-        {child}
-      </ProjectViewSwitcher>
+      <div className='project-activity-container' style={style}>
+        <CatalogList
+          name="available"
+          catalogs={this.props.catalogs}
+          installAction={this.handleInstallAction}
+        />
+      </div>
     );
-  }
+  };
+
 }
 
 export default ProjectActivity;

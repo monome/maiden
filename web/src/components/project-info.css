@@ -3,7 +3,8 @@
   display: flex;
   flex-direction: column;
   font-family: monospace;
-  background-color: #F9F9F9;
+  /* background-color: #F9F9F9; */
+  background-color: rgb(240, 240, 240);
   color: #979797;
 }
 

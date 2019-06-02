@@ -2,9 +2,9 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  border-left: 4px solid #979797;
+  background-color: #F9F9F9;
+  border-left: 2px solid #979797;
   align-items: center;
-
 }
 
 .project-summary-container {
@@ -13,5 +13,5 @@
 
 .project-control-container {
   display: flex;
-  align-items: stretch;  
+  align-items: stretch;
 }
