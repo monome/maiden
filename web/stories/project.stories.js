@@ -4,7 +4,6 @@ import { fromJS } from 'immutable';
 
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-//import { linkTo } from '@storybook/addon-links';
 
 import Badge from '../src/components/badge';
 import TextButton from '../src/components/text-button';
