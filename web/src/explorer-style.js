@@ -2,7 +2,7 @@ export default {
   tree: {
     base: {
       listStyle: 'none',
-      backgroundColor: '#F9F9F9',
+      backgroundColor: '#F4F4F4',
       margin: 0,
       padding: 0,
       color: '#90',

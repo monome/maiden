@@ -56,8 +56,8 @@ const SectionHeader = props => {
         icon={tool.icon}
         size="12"
         padding="1"
-        color="hsl(0, 0%, 89%)"
-        dark={false}
+        color="hsl(0, 0%, 59%)"
+        dark={true}
       />
     ));
   }

@@ -1,16 +1,22 @@
 .explorer {
-    background-color: #F9F9F9;
+    /* background-color: #F9F9F9; */
+    background-color: #F4F4F4;
     font-family: monospace;
 }
 
 .explorer-header {
-    background-color: #979797;
-    color: #e4e4e4;
+    /* background-color: #979797; */
+    /* color: #e4e4e4; */
     padding: 6px 8px;
     margin-bottom: 8px;
     height: 17px;
     display: flex;
     justify-content: space-between;
+
+    /* font-size: 110%; */
+    font-weight: bold;
+    color: rgb(117, 117, 117);
+    border-bottom: 1px solid rgb(230, 230, 230);
 }
 
 .explorer-section {
