@@ -1,15 +1,16 @@
 .switcher-tab-container {
   display: flex;
-  align-items: center;
+  flex-direction: row;
+  /* align-items: center; */
 }
 
 .switcher-tab {
-  flex: 0 0 auto;
+  /* flex: 0 0 auto; */
   /* width: 14em; */
-  margin-right: 18px;
+  /* margin-right: 18px; */
   /* margin-left: 4em; */
-  padding-left: 0px;
-  padding-right: 0px;
+  /* padding-left: 0px; */
+  /* padding-right: 0px; */
   background-color: Transparent;
   background-repeat: no-repeat;
   border: none;
@@ -17,9 +18,20 @@
   overflow: hidden;
   outline: none;
   font-family: monospace;
-  font-size: 120%;
-  color: #979797;
-  border-bottom: 1px solid #F4F4F4;  /* hack: match switcher background */
+  font-size: 100%;
+  /* color: #979797; */
+  color: rgb(117, 117, 117);
+
+  /*border-bottom: 1px solid #F4F4F4;*/  /* hack: match switcher background */
+  border-bottom: 1px solid rgb(230, 230, 230);
+
+
+  /* the properties below are to match the file explorer header */
+  height: 30px;
+  width: 10em;
+  margin-bottom: 8px;
+  font-weight: bold;
+  padding: 6px 8px;
 }
 
 .switcher-active-tab {
@@ -27,7 +39,7 @@
 }
 
 .switcher-content-container {
-  margin-top: 4px;
+  margin-top: 10px;
   overflow-y: auto;
   overflow-x: hidden;
 }

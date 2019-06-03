@@ -26,7 +26,7 @@ project: {
 */
 
 const initialProjectState = {
-  activeComponent: 'available',
+  activeComponent: 'installed',
   catalogSummary: new Map(),
   catalogs: new Map(),
   projectSummary: new Map(),

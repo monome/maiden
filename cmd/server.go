@@ -477,7 +477,7 @@ func (s *server) deleteCatalogHandler(ctx *gin.Context) {
 }
 
 type projectSummary struct {
-	Name    string `json:"name"`
+	Name    string `json:"project_name"`
 	Managed bool   `json:"managed"`
 	Version string `json:"version"`
 	URL     string `json:"url"`

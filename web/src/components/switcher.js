@@ -23,7 +23,7 @@ const Tab = props => {
 const Switcher = props => {
   const { activeTab, children, size } = props;
 
-  const tabContinerHeight = { height: 30 };
+  const tabContinerHeight = { height: 38 }; // FIXME: this is tightly coupled to the css
   const childContentSize = {
     height: size.height - tabContinerHeight.height,
     width: size.width,
@@ -36,7 +36,7 @@ const Switcher = props => {
       name={c.props.name}
       isActive={c.props.name === activeTab}
       key={c.props.name}
-      onClick={props.select(c.props.name)}
+      onClick={() => props.select(c.props.name)}
     />
   ));
 

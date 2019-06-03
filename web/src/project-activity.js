@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import Switcher from './components/switcher';
 import CatalogList from './components/catalog-list';
+import ProjectList from './components/project-list';
 
 import './project-activity.css';
 
@@ -19,11 +20,19 @@ class ProjectActivity extends Component {
   };
 
   handleTabSelection = name => {
-    //this.props.projectViewSelect(name);
+    this.props.projectViewSelect(name);
   };
 
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
+  };
+
+  handleUpdateAction = url => {
+    console.log('doing update', url);
+  };
+
+  handleRemoveAction = url => {
+    console.log('doing remove', url);
   };
 
   render() {
@@ -39,11 +48,14 @@ class ProjectActivity extends Component {
           select={this.handleTabSelection}
           activeTab={this.props.activeComponent}
         >
-          <div name='installed'>
-            something
-          </div>
+          <ProjectList
+            name='installed'
+            projects={this.props.projectSummary}
+            updateAction={this.handleUpdateAction}
+            removeAction={this.handleRemoveAction}
+          />
           <CatalogList
-            name='available'
+            name='catalog'
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
           />
