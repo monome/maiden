@@ -26,29 +26,34 @@ class ProjectActivity extends Component {
     console.log('doing install', url, name);
   };
 
-  /*
-  render2() {
+  render() {
+    const switcherSize = {
+      height: this.props.height,
+      width: this.props.width,
+    };
+
     return (
       <div className='project-activity-container'>
         <Switcher
+          size={switcherSize}
           select={this.handleTabSelection}
           activeTab={this.props.activeComponent}
         >
+          <div name='installed'>
+            something
+          </div>
           <CatalogList
-            name="available"
+            name='available'
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
           />
-          <div name="installed">
-            something
-          </div>
          </Switcher>
       </div>
     );
   };
-  */
 
-  render() {
+
+  render2() {
     //console.log('PA this.props', this.props)
     const style = {
       height: this.props.height,

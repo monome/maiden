@@ -28,4 +28,6 @@
 
 .switcher-content-container {
   margin-top: 4px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

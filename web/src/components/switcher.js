@@ -21,9 +21,15 @@ const Tab = props => {
 };
 
 const Switcher = props => {
-  const { activeTab, children } = props;
+  const { activeTab, children, size } = props;
 
-  console.log('children', children);
+  const tabContinerHeight = { height: 30 };
+  const childContentSize = {
+    height: size.height - tabContinerHeight.height,
+    width: size.width,
+  };
+
+  //console.log('children', children);
 
   const tabs = children.map(c => (
     <Tab
@@ -38,14 +44,15 @@ const Switcher = props => {
     c.props.name === activeTab
   ));
 
-  console.log('which', which);
+  //console.log('which', which);
+  
   
   return (
     <div>
-      <div className="switcher-tab-container">
+      <div className="switcher-tab-container" style={tabContinerHeight}>
         {tabs}
       </div>
-      <div className="switcher-content-container">
+      <div className="switcher-content-container" style={childContentSize}>
         {which}
       </div>
     </div>
