@@ -7,6 +7,9 @@ import {
   getCatalog,
   getProjectSummary,
   getProject,
+  installProject,
+  updateProject,
+  removeProject,
 } from './model/project-actions';
 
 const mapStateToProps = state => {
@@ -35,6 +38,15 @@ const mapDispatchToProps = dispatch => ({
   },
   getProject: (name, cb) => {
     dispatch(getProject(name, cb));
+  },
+  installProject: (catalogURL, name, cb) => {
+    dispatch(installProject(catalogURL, name, cb));
+  },
+  updateProject: (projectURL, cb) => {
+    dispatch(updateProject(projectURL, cb));
+  },
+  removeProject: (projectURL, cb) => {
+    dispatch(removeProject(projectURL, cb));
   },
 });
 

@@ -31,7 +31,8 @@
   width: 10em;
   margin-bottom: 8px;
   font-weight: bold;
-  padding: 6px 8px;
+  padding: 6px 12px;
+  text-align: start;
 }
 
 .switcher-active-tab {

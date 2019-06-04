@@ -19,6 +19,18 @@ export const PROJECT_FAILURE = 'PROJECT_FAILURE';
 
 export const PROJECT_VIEW_SELECT = 'PROJECT_VIEW_SELECT';
 
+export const PROJECT_INSTALL_REQUEST = 'PROJECT_INSTALL_REQUEST';
+export const PROJECT_INSTALL_SUCCESS = 'PROJECT_INSTALL_SUCCESS';
+export const PROJECT_INSTALL_FAILURE = 'PROJECT_INSTALL_FAILURE';
+
+export const PROJECT_UPDATE_REQUEST = 'PROJECT_UPDATE_REQUEST';
+export const PROJECT_UPDATE_SUCCESS = 'PROJECT_UPDATE_SUCCESS';
+export const PROJECT_UPDATE_FAILURE = 'PROJECT_UPDATE_FAILURE';
+
+export const PROJECT_REMOVE_REQUEST = 'PROJECT_REMOVE_REQUEST';
+export const PROJECT_REMOVE_SUCCESS = 'PROJECT_REMOVE_SUCCESS';
+export const PROJECT_REMOVE_FAILURE = 'PROJECT_REMOVE_FAILURE';
+
 //
 // sync action creators
 //
@@ -40,6 +52,18 @@ export const projectSuccess = project => ({ type: PROJECT_SUCCESS, project });
 export const projectFailure = error => ({ type: PROJECT_FAILURE, error });
 
 export const projectViewSelect = component => ({ type: PROJECT_VIEW_SELECT, component });
+
+export const projectInstallRequest = (catalog, name) => ({ type: PROJECT_INSTALL_REQUEST, catalog, name });
+export const projectInstallSuccess = project => ({ type: PROJECT_INSTALL_SUCCESS, project });
+export const projectInstallFailure = error => ({ type: PROJECT_INSTALL_FAILURE, error });
+
+export const projectUpdateRequest = project => ({ type: PROJECT_UPDATE_REQUEST, project });
+export const projectUpdateSuccess = project => ({ type: PROJECT_UPDATE_SUCCESS, project });
+export const projectUpdateFailure = error => ({ type: PROJECT_UPDATE_FAILURE, error });
+
+export const projectRemoveRequest = project => ({ type: PROJECT_REMOVE_REQUEST, project });
+export const projectRemoveSuccess = project => ({ type: PROJECT_REMOVE_SUCCESS, project });
+export const projectRemoveFailure = error => ({ type: PROJECT_REMOVE_FAILURE, error });
 
 //
 // async actions
@@ -88,3 +112,38 @@ export const getProject = (name, cb) => dispatch => {
     }
   });
 };
+
+export const installProject = (catalog, name, cb) => dispatch => {
+  dispatch(projectInstallRequest(catalog, name));
+  return API.installProject(catalog, name, result => {
+    // FIXME: handle errors
+    dispatch(projectInstallSuccess(result));
+    if (cb) {
+      cb(result);
+    }
+  });
+};
+
+export const updateProject = (project, cb) => dispatch => {
+  dispatch(projectUpdateRequest(project));
+  return API.updateProject(project, result => {
+    // FIXME: handle errors
+    dispatch(projectUpdateSuccess(result));
+    if (cb) {
+      cb(result);
+    }
+  });
+};
+
+export const removeProject = (project, cb) => dispatch => {
+  dispatch(projectRemoveRequest(project));
+  return API.removeProject(project, result => {
+    // FIXME: handle errors
+    dispatch(projectRemoveSuccess(result));
+    if (cb) {
+      cb(result);
+    }
+  });
+};
+
+

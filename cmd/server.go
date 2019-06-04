@@ -137,10 +137,12 @@ func serverRun() {
 	api.GET("/catalog/:name", s.getCatalogHandler)
 	api.POST("/catalog/:name", s.createCatalogHandler)
 	api.DELETE("/catalog/:name", s.deleteCatalogHandler)
+	api.POST("/catalog/:name/install/:project", s.installFromCatalogHandler)
 
 	api.GET("/projects", s.getProjectsHandler)
 	api.GET("/project/:name", s.getProjectHandler)
 	api.DELETE("/project/:name", s.deleteProjectHandler)
+	//api.POST("/project/:name/update", s.updateProjectHanlder)
 
 	var l net.Listener
 	if httpFD > 0 {
@@ -452,28 +454,77 @@ type catalogContent struct {
 	URL     string          `json:"url"`
 }
 
+func (s *server) findCatalogByName(name string) *catalog.Catalog {
+	for _, loaded := range s.catalogs {
+		if loaded.Catalog.Name() == name {
+			return loaded.Catalog
+		}
+	}
+	return nil
+}
+
 func (s *server) getCatalogHandler(ctx *gin.Context) {
 	s.refreshCatalogs()
 
 	which := ctx.Param("name")
-	for _, loaded := range s.catalogs {
-		if loaded.Catalog.Name() == which {
-			ctx.JSON(http.StatusOK, catalogContent{
-				Name:    loaded.Catalog.Name(),
-				Updated: loaded.Catalog.Updated(),
-				Entries: loaded.Catalog.Entries(),
-				URL:     ctx.Request.URL.String(),
-			})
-			return
-		}
+	catalog := s.findCatalogByName(which)
+	if catalog != nil {
+		ctx.JSON(http.StatusOK, catalogContent{
+			Name:    catalog.Name(),
+			Updated: catalog.Updated(),
+			Entries: catalog.Entries(),
+			URL:     ctx.Request.URL.String(),
+		})
+		return
 	}
+
 	ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown catalog: %s", which)})
 }
 
 func (s *server) createCatalogHandler(ctx *gin.Context) {
+	// FIXME: implement this
+	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "create not implemented"})
 }
 
 func (s *server) deleteCatalogHandler(ctx *gin.Context) {
+	// FIXME: implement this
+	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete not implemented"})
+}
+
+type projectInstallResponse struct {
+	CatalogEntry catalog.Entry `json:"catalog_entry"`
+	URL          string        `json:"url"`
+}
+
+func (s *server) installFromCatalogHandler(ctx *gin.Context) {
+	projectDir := s.devicePath("code")
+	whichCatalog := ctx.Param("name")
+	whichProject := ctx.Param("project") // MAINT: URL decode?
+
+	s.refreshCatalogs()
+	catalog := s.findCatalogByName(whichCatalog)
+	if catalog == nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "unable to find script catalog"})
+		return
+	}
+
+	entry := catalog.Get(whichProject)
+	if entry != nil {
+		if err := dust.Install(projectDir, entry.ProjectName, entry.URL); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"error": fmt.Sprintf("install failed: %s", err),
+			})
+			return
+		}
+	} else {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "cannot find in catalog"})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, projectInstallResponse{
+		CatalogEntry: *entry,
+		URL:          s.apiPath("project", entry.ProjectName),
+	})
 }
 
 type projectSummary struct {
@@ -522,34 +573,6 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 
 	// TODO: refactor this whole thing to remove duplicate (re)install logic
 
-	//
-	// install logic
-	//
-	_, exists := ctx.GetQuery("install")
-	if exists {
-		// load catalog(s)
-		catalogs := LoadCatalogs()
-		if catalogs == nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"error": "unable to load script catalog(s)",
-			})
-			return
-		}
-
-		// TODO: restrict search to the specified catalog
-		if entry := SearchCatalogs(catalogs, which); entry != nil {
-			if err := dust.Install(projectDir, entry.ProjectName, entry.URL); err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"error": fmt.Sprintf("install failed: %s", err),
-				})
-				return
-			}
-		} else {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "cannot find in catalog"})
-			return
-		}
-	}
-
 	// look for the existing project
 	projects, err := dust.GetProjects(projectDir)
 	if err != nil {
@@ -566,7 +589,7 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 	//
 	// update logic
 	//
-	_, exists = ctx.GetQuery("update")
+	_, exists := ctx.GetQuery("update")
 	if exists {
 		// ignore the value for now but it could be a commit or version in the future?
 		if p.IsManaged() {

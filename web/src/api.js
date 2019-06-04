@@ -171,6 +171,34 @@ class API {
       });
     });
   }
+
+  static installProject(catalogURL, name, cb) {
+    const encodedName = encodeURIComponent(name);
+    const url = `${catalogURL}/install/${encodedName}`;
+    fetch(url, {'method': 'POST'}).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static updateProject(projectURL, cb) {
+    // FIXME: this really shouldn't be a GET verb
+    const url = `${projectURL}?update=`;
+    fetch(url, {'method': 'GET'}).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static removeProject(projectURL, cb) {
+    fetch(projectURL, {'method': 'DELETE'}).then(response => {
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
 }
 
 export default API;

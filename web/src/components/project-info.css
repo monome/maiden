@@ -23,11 +23,12 @@
 
 .project-info-name {
   font-weight: bold;
-  font-size: 115%;
+  /* font-size: 110%; */
 }
 
 .project-info-description {
   margin-left: 0.75em;
+  font-style: italic;
 }
 
 .project-info-version {

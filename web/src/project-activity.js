@@ -25,14 +25,17 @@ class ProjectActivity extends Component {
 
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
+    this.props.installProject(url, name);
   };
 
   handleUpdateAction = url => {
     console.log('doing update', url);
+    this.props.updateProject(url);
   };
 
   handleRemoveAction = url => {
     console.log('doing remove', url);
+    this.props.removeProject(url);
   };
 
   render() {
@@ -55,7 +58,7 @@ class ProjectActivity extends Component {
             removeAction={this.handleRemoveAction}
           />
           <CatalogList
-            name='catalog'
+            name='available'
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
           />
