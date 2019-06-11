@@ -134,66 +134,73 @@ class API {
     return API.resourceForScript('editor.json', 'dust/data');
   }
 
-  static getCatalogSummary(cb) {
+  static getCatalogSummary(onSuccess, onFailure) {
     const url = `${API_ROOT}/catalogs`;
     fetch(url).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static getCatalog(catalogName, cb) {
+  static getCatalog(catalogName, onSuccess, onFailure) {
     const name = encodeURIComponent(catalogName);
     const url = `${API_ROOT}/catalog/${name}`;
     fetch(url).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static getProjectSummary(cb) {
+  static getProjectSummary(onSuccess, onFailure) {
     const url = `${API_ROOT}/projects`;
     fetch(url).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static getProject(projectName, cb) {
+  static getProject(projectName, onSuccess, onFailure) {
     const name = encodeURIComponent(projectName);
     const url = `${API_ROOT}/project/${name}`;
     fetch(url).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static installProject(catalogURL, name, cb) {
+  static installProject(catalogURL, name, onSuccess, onFailure) {
     const encodedName = encodeURIComponent(name);
     const url = `${catalogURL}/install/${encodedName}`;
     fetch(url, {'method': 'POST'}).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static updateProject(projectURL, cb) {
+  static updateProject(projectURL, onSuccess, onFailure) {
     // FIXME: this really shouldn't be a GET verb
     const url = `${projectURL}?update=`;
     fetch(url, {'method': 'GET'}).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });
     });
   }
 
-  static removeProject(projectURL, cb) {
+  static removeProject(projectURL, onSuccess, onFailure) {
     fetch(projectURL, {'method': 'DELETE'}).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
       });

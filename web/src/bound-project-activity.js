@@ -27,26 +27,26 @@ const mapDispatchToProps = dispatch => ({
   projectViewSelect: component => {
     dispatch(projectViewSelect(component));
   },
-  getCatalogSummary: cb => {
-    dispatch(getCatalogSummary(cb));
+  getCatalogSummary: onSuccess => {
+    dispatch(getCatalogSummary(onSuccess));
   },
-  getCatalog: (name, cb) => {
-    dispatch(getCatalog(name, cb));
+  getCatalog: (name, onSuccess) => {
+    dispatch(getCatalog(name, onSuccess));
   },
-  getProjectSummary: cb => {
-    dispatch(getProjectSummary(cb));
+  getProjectSummary: onSuccess => {
+    dispatch(getProjectSummary(onSuccess));
   },
-  getProject: (name, cb) => {
-    dispatch(getProject(name, cb));
+  getProject: (name, onSuccess) => {
+    dispatch(getProject(name, onSuccess));
   },
-  installProject: (catalogURL, name, cb) => {
-    dispatch(installProject(catalogURL, name, cb));
+  installProject: (catalogURL, name, onSuccess, onFailure) => {
+    dispatch(installProject(catalogURL, name, onSuccess, onFailure));
   },
-  updateProject: (projectURL, cb) => {
-    dispatch(updateProject(projectURL, cb));
+  updateProject: (projectURL, onSuccess, onFailure) => {
+    dispatch(updateProject(projectURL, onSuccess, onFailure));
   },
-  removeProject: (projectURL, cb) => {
-    dispatch(removeProject(projectURL, cb));
+  removeProject: (projectURL, onSuccess, onFailure) => {
+    dispatch(removeProject(projectURL, onSuccess, onFailure));
   },
 });
 

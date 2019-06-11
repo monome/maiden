@@ -2,6 +2,7 @@
 
 * refresh file tree after fs modifications (retaining tree visibility state)
 * error checking on install, update, delete response
+* confirmation dialog on project remove
 * show indeterminant progress indicator during above operations (with timeout)
 * copy catalog entry to dotfile in project dir to carry over catalog metadata
 * project read logic should load metadata from above dotfile

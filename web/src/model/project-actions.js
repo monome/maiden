@@ -113,37 +113,55 @@ export const getProject = (name, cb) => dispatch => {
   });
 };
 
-export const installProject = (catalog, name, cb) => dispatch => {
+export const installProject = (catalog, name, onSuccess, onFailure) => dispatch => {
   dispatch(projectInstallRequest(catalog, name));
-  return API.installProject(catalog, name, result => {
-    // FIXME: handle errors
-    dispatch(projectInstallSuccess(result));
-    if (cb) {
-      cb(result);
-    }
-  });
+  return API.installProject(catalog, name,
+    successResult => {
+      dispatch(projectInstallSuccess(successResult));
+      if (onSuccess) {
+        onSuccess(successResult);
+      }
+    },
+    failureResult => {
+      dispatch(projectInstallFailure(failureResult));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
 };
 
-export const updateProject = (project, cb) => dispatch => {
+export const updateProject = (project, onSuccess, onFailure) => dispatch => {
   dispatch(projectUpdateRequest(project));
-  return API.updateProject(project, result => {
-    // FIXME: handle errors
-    dispatch(projectUpdateSuccess(result));
-    if (cb) {
-      cb(result);
-    }
-  });
+  return API.updateProject(project, 
+    successResult => {
+      dispatch(projectUpdateSuccess(successResult));
+      if (onSuccess) {
+        onSuccess(successResult);
+      }
+    },
+    failureResult => {
+      dispatch(projectUpdateFailure(failureResult));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
 };
 
-export const removeProject = (project, cb) => dispatch => {
+export const removeProject = (project, onSuccess, onFailure) => dispatch => {
   dispatch(projectRemoveRequest(project));
-  return API.removeProject(project, result => {
-    // FIXME: handle errors
-    dispatch(projectRemoveSuccess(result));
-    if (cb) {
-      cb(result);
-    }
-  });
+  return API.removeProject(project,
+    successResult => {
+      dispatch(projectRemoveSuccess(successResult));
+      if (onSuccess) {
+        onSuccess(successResult);
+      }
+    },
+    failureResult => {
+      dispatch(projectRemoveFailure(failureResult));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
 };
 
 

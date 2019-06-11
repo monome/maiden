@@ -25,17 +25,37 @@ class ProjectActivity extends Component {
 
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
-    this.props.installProject(url, name);
+    this.props.installProject(url, name,
+      _ => {
+        // refresh project list
+        this.props.getProjectSummary();
+      },
+      failure => {
+        console.log('install-project failed', failure);
+      });
   };
 
   handleUpdateAction = url => {
     console.log('doing update', url);
-    this.props.updateProject(url);
+    this.props.updateProject(url, 
+      _ => {
+        this.props.getProjectSummary();
+      },
+      failure => {
+        console.log('update-project failed', failure);
+      });
   };
 
   handleRemoveAction = url => {
     console.log('doing remove', url);
-    this.props.removeProject(url);
+    this.props.removeProject(url,
+      _ => {
+        // refresh project list
+        this.props.getProjectSummary();
+      },
+      failure => {
+        console.log('update-project failed', failure);
+      });
   };
 
   render() {
