@@ -1,13 +1,13 @@
 # catalog source config file paths; can be glob patterns
 sources:
-  - ./sources/*.json
+  - $HOME/dust/data/sources/*.json
 
 # output dir for catalogs generated from a source
-catalogOutputDir: $HOME/catalogs/
+catalogOutputDir: $HOME/dust/data/catalogs/
 
 # catalog file paths; can be glob patterns
 catalogs:
-  - $HOME/catalogs/*.json
+  - $HOME/dust/data/catalogs/*.json
 
 # dust directory details
 dust:
