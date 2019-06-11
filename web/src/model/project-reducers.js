@@ -5,6 +5,16 @@ import {
   PROJECT_SUMMARY_SUCCESS,
   PROJECT_SUCCESS,
   PROJECT_VIEW_SELECT,
+  PROJECT_INSTALL_REQUEST,
+  PROJECT_INSTALL_SUCCESS,
+  PROJECT_INSTALL_FAILURE,
+  PROJECT_UPDATE_REQUEST,
+  PROJECT_UPDATE_SUCCESS,
+  PROJECT_UPDATE_FAILURE,
+  PROJECT_REMOVE_REQUEST,
+  PROJECT_REMOVE_SUCCESS,
+  PROJECT_REMOVE_FAILURE,
+  installID,
 } from './project-actions';
 
 /*
@@ -19,8 +29,6 @@ project: {
   projects Map({
     <projectName>: Map({ ...details... })
   }),
-
-
 }
 
 */
@@ -31,6 +39,8 @@ const initialProjectState = {
   catalogs: new Map(),
   projectSummary: new Map(),
   projects: new Map(),
+  installing: new Map(),
+  mutating: new Map(),
 };
 
 const projects = (state = initialProjectState, action) => {
@@ -62,7 +72,52 @@ const projects = (state = initialProjectState, action) => {
     case PROJECT_VIEW_SELECT:
       return { ...state, activeComponent: action.component };
 
-      default:
+    case PROJECT_INSTALL_REQUEST:
+      return { ...state, 
+        installing: state.installing.set(installID(action.catalog, action.name), 'installing...'),
+      };
+
+    case PROJECT_INSTALL_FAILURE:
+      return { ...state,
+        installing: state.installing.set(installID(action.catalog, action.name), action.error.error),
+      };
+
+    case PROJECT_INSTALL_SUCCESS:
+      return { ...state, 
+        installing: state.installing.delete(installID(action.catalog, action.name)),
+      };
+
+    case PROJECT_UPDATE_REQUEST:
+      return { ...state, 
+        mutating: state.mutating.set(action.project, 'updating...'),
+      };
+
+    case PROJECT_UPDATE_FAILURE:
+      return { ...state,
+        mutating: state.mutating.set(action.project, action.error.error),
+      };
+
+    case PROJECT_UPDATE_SUCCESS:
+      return { ...state, 
+        mutating: state.mutating.delete(action.project),
+      };
+
+    case PROJECT_REMOVE_REQUEST:
+      return { ...state, 
+        mutating: state.mutating.set(action.project, 'removing...'),
+      };
+    
+    case PROJECT_REMOVE_FAILURE:
+      return { ...state,
+        mutating: state.mutating.set(action.project, action.error.error),
+      };
+
+    case PROJECT_REMOVE_SUCCESS:
+      return { ...state, 
+        mutating: state.mutating.delete(action.project),
+      };
+    
+    default:
       return state;
   }
 };

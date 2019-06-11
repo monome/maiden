@@ -54,16 +54,16 @@ export const projectFailure = error => ({ type: PROJECT_FAILURE, error });
 export const projectViewSelect = component => ({ type: PROJECT_VIEW_SELECT, component });
 
 export const projectInstallRequest = (catalog, name) => ({ type: PROJECT_INSTALL_REQUEST, catalog, name });
-export const projectInstallSuccess = project => ({ type: PROJECT_INSTALL_SUCCESS, project });
-export const projectInstallFailure = error => ({ type: PROJECT_INSTALL_FAILURE, error });
+export const projectInstallSuccess = (project, catalog, name) => ({ type: PROJECT_INSTALL_SUCCESS, project, catalog, name });
+export const projectInstallFailure = (error, catalog, name) => ({ type: PROJECT_INSTALL_FAILURE, error, catalog, name });
 
 export const projectUpdateRequest = project => ({ type: PROJECT_UPDATE_REQUEST, project });
 export const projectUpdateSuccess = project => ({ type: PROJECT_UPDATE_SUCCESS, project });
-export const projectUpdateFailure = error => ({ type: PROJECT_UPDATE_FAILURE, error });
+export const projectUpdateFailure = (error, project) => ({ type: PROJECT_UPDATE_FAILURE, error, project });
 
 export const projectRemoveRequest = project => ({ type: PROJECT_REMOVE_REQUEST, project });
 export const projectRemoveSuccess = project => ({ type: PROJECT_REMOVE_SUCCESS, project });
-export const projectRemoveFailure = error => ({ type: PROJECT_REMOVE_FAILURE, error });
+export const projectRemoveFailure = (error, project) => ({ type: PROJECT_REMOVE_FAILURE, error, project });
 
 //
 // async actions
@@ -117,13 +117,13 @@ export const installProject = (catalog, name, onSuccess, onFailure) => dispatch 
   dispatch(projectInstallRequest(catalog, name));
   return API.installProject(catalog, name,
     successResult => {
-      dispatch(projectInstallSuccess(successResult));
+      dispatch(projectInstallSuccess(successResult, catalog, name));
       if (onSuccess) {
         onSuccess(successResult);
       }
     },
     failureResult => {
-      dispatch(projectInstallFailure(failureResult));
+      dispatch(projectInstallFailure(failureResult, catalog, name));
       if (onFailure) {
         onFailure(failureResult);
       }
@@ -134,13 +134,13 @@ export const updateProject = (project, onSuccess, onFailure) => dispatch => {
   dispatch(projectUpdateRequest(project));
   return API.updateProject(project, 
     successResult => {
-      dispatch(projectUpdateSuccess(successResult));
+      dispatch(projectUpdateSuccess(successResult, project));
       if (onSuccess) {
         onSuccess(successResult);
       }
     },
     failureResult => {
-      dispatch(projectUpdateFailure(failureResult));
+      dispatch(projectUpdateFailure(failureResult, project));
       if (onFailure) {
         onFailure(failureResult);
       }
@@ -151,17 +151,23 @@ export const removeProject = (project, onSuccess, onFailure) => dispatch => {
   dispatch(projectRemoveRequest(project));
   return API.removeProject(project,
     successResult => {
-      dispatch(projectRemoveSuccess(successResult));
+      dispatch(projectRemoveSuccess(successResult, project));
       if (onSuccess) {
         onSuccess(successResult);
       }
     },
     failureResult => {
-      dispatch(projectRemoveFailure(failureResult));
+      dispatch(projectRemoveFailure(failureResult, project));
       if (onFailure) {
         onFailure(failureResult);
       }
     });
 };
 
+//
+// helpers
+//
 
+export const installID = (catalog, name) => (
+  `${name}::${catalog}`
+);
