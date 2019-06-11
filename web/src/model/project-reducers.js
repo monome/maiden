@@ -25,8 +25,7 @@ project: {
   catalogs Map({
     <catalogName>: Map({ ...details... })
   }),
-  projectSummary: Map ({}),
-  projects Map({
+  projectSummary: Map({
     <projectName>: Map({ ...details... })
   }),
 }
@@ -38,7 +37,6 @@ const initialProjectState = {
   catalogSummary: new Map(),
   catalogs: new Map(),
   projectSummary: new Map(),
-  projects: new Map(),
   installing: new Map(),
   mutating: new Map(),
 };
