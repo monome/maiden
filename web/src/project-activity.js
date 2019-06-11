@@ -40,7 +40,7 @@ class ProjectActivity extends Component {
 
   render() {
     const switcherSize = {
-      height: this.props.height,
+      height: this.props.height - 10,  // FIXME: not sure why this is longer than it should be
       width: this.props.width,
     };
 
