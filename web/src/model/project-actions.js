@@ -9,6 +9,10 @@ export const CATALOG_REQUEST = 'CATALOG_REQUEST';
 export const CATALOG_SUCCESS = 'CATALOG_SUCCESS';
 export const CATALOG_FAILURE = 'CATALOG_FAILURE';
 
+export const CATALOG_UPDATE_REQUEST = 'CATALOG_UPDATE_REQUEST';
+export const CATALOG_UPDATE_SUCCESS = 'CATALOG_UPDATE_SUCCESS';
+export const CATALOG_UPDATE_FAILURE = 'CATALOG_UPDATE_FAILURE';
+
 export const PROJECT_SUMMARY_REQUEST = 'PROJECT_SUMMARY_REQUEST';
 export const PROJECT_SUMMARY_SUCCESS = 'PROJECT_SUMMARY_SUCCESS';
 export const PROJECT_SUMMARY_FAILURE = 'PROJECT_SUMMARY_FAILURE';
@@ -39,9 +43,13 @@ export const catalogSummaryRequest = () => ({ type: CATALOG_SUMMARY_REQUEST });
 export const catalogSummarySuccess = catalogs => ({ type: CATALOG_SUMMARY_SUCCESS, catalogs });
 export const catalogSummaryFailure = error => ({ type: CATALOG_SUMMARY_FAILURE, error });
 
-export const catalogRequest = () => ({ type: CATALOG_REQUEST });
-export const catalogSuccess = catalog => ({ type: CATALOG_SUCCESS, catalog });
-export const catalogFailure = error => ({ type: CATALOG_FAILURE, error });
+export const catalogRequest = name => ({ type: CATALOG_REQUEST, name });
+export const catalogSuccess = (name, catalog) => ({ type: CATALOG_SUCCESS, name, catalog });
+export const catalogFailure = (name, error) => ({ type: CATALOG_FAILURE, name, error });
+
+export const catalogUpdateRequest = url => ({ type: CATALOG_UPDATE_REQUEST, url });
+export const catalogUpdateSuccess = (url, catalog) => ({ type: CATALOG_UPDATE_SUCCESS, url, catalog });
+export const catalogUpdateFailure = error => ({ type: CATALOG_UPDATE_FAILURE, error });
 
 export const projectSummaryRequest = () => ({ type: PROJECT_SUMMARY_REQUEST });
 export const projectSummarySuccess = projects => ({ type: PROJECT_SUMMARY_SUCCESS, projects });
@@ -80,15 +88,58 @@ export const getCatalogSummary = cb => dispatch => {
   });
 };
 
-export const getCatalog = (name, cb) => dispatch => {
-  dispatch(catalogRequest());
-  return API.getCatalog(name, catalog => {
-    const c = fromJS(catalog);
-    dispatch(catalogSuccess(c));
-    if (cb) {
-      cb(c);
-    }
-  });
+export const getCatalogByURL = (url, onSuccess, onFailure) => dispatch => {
+  dispatch(catalogRequest(url));
+  return API.getCatalogByURL(url, 
+    successResponse => {
+      const c = fromJS(successResponse);
+      dispatch(catalogSuccess(url, c));
+      if (onSuccess) {
+        onSuccess(c);
+      }
+    },
+    failureResult => {
+      dispatch(catalogFailure(url, failureResult));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
+};
+
+export const getCatalog = (name, onSuccess, onFailure) => dispatch => {
+  dispatch(catalogRequest(name));
+  return API.getCatalog(name, 
+    successResponse => {
+      const c = fromJS(successResponse);
+      dispatch(catalogSuccess(name, c));
+      if (onSuccess) {
+        onSuccess(c);
+      }
+    },
+    failureResult => {
+      dispatch(catalogFailure(name, failureResult));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
+};
+
+export const updateCatalog = (url, onSuccess, onFailure) => dispatch => {
+  dispatch(catalogUpdateRequest(url));
+  return API.updateCatalog(url, 
+    successResponse => {
+      const catalog = fromJS(successResponse);
+      dispatch(catalogUpdateSuccess(url, catalog))
+      if (onSuccess) {
+        onSuccess(catalog);
+      }
+    },
+    failureResult => {
+      dispatch(catalogUpdateFailure(failureResult))
+      if (onFailure) {
+        onFailure(failureResult)
+      }
+    });
 };
 
 export const getProjectSummary = cb => dispatch => {

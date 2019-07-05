@@ -1,7 +1,11 @@
-import { Map, List } from 'immutable';
+import { Map, List, fromJS } from 'immutable';
 import {
   CATALOG_SUMMARY_SUCCESS,
   CATALOG_SUCCESS,
+  CATALOG_FAILURE,
+  CATALOG_UPDATE_REQUEST,
+  CATALOG_UPDATE_SUCCESS,
+  CATALOG_UPDATE_FAILURE,
   PROJECT_SUMMARY_SUCCESS,
   PROJECT_SUCCESS,
   PROJECT_VIEW_SELECT,
@@ -41,30 +45,65 @@ const initialProjectState = {
   mutating: new Map(),
 };
 
+const handleCatalogSummarySuccess = (action, state) => {
+  const sortedCatalogs = action.catalogs.get('catalogs').sort((a, b) => {
+    const na = a.get('name');
+    const nb = b.get('name');
+    if (na < nb)   { return -1; }
+    if (na > nb)   { return 1; }
+    return 0;
+  });
+  return { ...state, catalogSummary: sortedCatalogs };
+}
+
+const handleCatalogGetSuccess = (action, state) => {
+  const catalogName = action.catalog.get('name');
+  const sortedEntries = action.catalog.get('entries').sort((a, b) => {
+    const na = a.get('project_name');
+    const nb = b.get('project_name');
+    if (na < nb)   { return -1; }
+    if (na > nb)   { return 1; }
+    return 0;
+  });
+  const sortedCatalog = action.catalog.set('entries', sortedEntries);
+  const newCatalogs = state.catalogs.set(catalogName, sortedCatalog);
+  return { ...state, catalogs: newCatalogs };
+}
+
 const projects = (state = initialProjectState, action) => {
   switch (action.type) {
     case CATALOG_SUMMARY_SUCCESS:
-      const sortedCatalogs = action.catalogs.get('catalogs').sort((a, b) => {
-        const na = a.get('name');
-        const nb = b.get('name');
-        if (na < nb)   { return -1; }
-        if (na > nb)   { return 1; }
-        return 0;
-      });
-      return { ...state, catalogSummary: sortedCatalogs };
+      return handleCatalogSummarySuccess(action, state)
 
     case CATALOG_SUCCESS:
-      const catalogName = action.catalog.get('name');
-      const sortedEntries = action.catalog.get('entries').sort((a, b) => {
-        const na = a.get('project_name');
-        const nb = b.get('project_name');
-        if (na < nb)   { return -1; }
-        if (na > nb)   { return 1; }
-        return 0;
+      return handleCatalogGetSuccess(action, state)
+  
+    case CATALOG_FAILURE:
+      // TODO:
+      // MAINT: this is ugly, the catalog summary will contain faux entries
+      // which correspond to sources which haven't been fetched. Here we treat a
+      // catalog get failure as just an empty catalog so that the per-catalog
+      // update/refresh ui can be used
+      console.log('creating empty catalog: ', action.error.name);
+      const emptyCatalog = fromJS({
+        'url': action.error.url,
+        'entries': [],
+        'name': action.error.name,
       });
-      const sortedCatalog = action.catalog.set('entries', sortedEntries);
-      const newCatalogs = state.catalogs.set(catalogName, sortedCatalog);
-      return { ...state, catalogs: newCatalogs };
+      return { ...state, 
+        catalogs: state.catalogs.set(action.error.name, emptyCatalog),
+      };
+
+    case CATALOG_UPDATE_REQUEST:
+      // TODO: 
+      return state;
+
+    case CATALOG_UPDATE_SUCCESS:
+      return handleCatalogGetSuccess(action, state);
+
+    case CATALOG_UPDATE_FAILURE:
+      // TODO:
+      return state;
 
     case PROJECT_SUMMARY_SUCCESS:
       return { ...state, projectSummary: action.projects };

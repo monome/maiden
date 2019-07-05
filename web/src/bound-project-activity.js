@@ -5,6 +5,8 @@ import {
   projectViewSelect,
   getCatalogSummary,
   getCatalog,
+  getCatalogByURL,
+  updateCatalog,
   getProjectSummary,
   getProject,
   installProject,
@@ -32,6 +34,12 @@ const mapDispatchToProps = dispatch => ({
   },
   getCatalog: (name, onSuccess) => {
     dispatch(getCatalog(name, onSuccess));
+  },
+  getCatalogByURL: (url, onSuccess) => {
+    dispatch(getCatalogByURL(url, onSuccess));
+  },
+  updateCatalog: (catalogURL, onSuccess, onFailure) => {
+    dispatch(updateCatalog(catalogURL, onSuccess, onFailure));
   },
   getProjectSummary: onSuccess => {
     dispatch(getProjectSummary(onSuccess));

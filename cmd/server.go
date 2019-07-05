@@ -138,6 +138,7 @@ func serverRun() {
 	api.POST("/catalog/:name", s.createCatalogHandler)
 	api.DELETE("/catalog/:name", s.deleteCatalogHandler)
 	api.POST("/catalog/:name/install/:project", s.installFromCatalogHandler)
+	api.POST("/catalog/:name/update", s.updateCatalogHandler)
 
 	api.GET("/projects", s.getProjectsHandler)
 	api.GET("/project/:name", s.getProjectHandler)
@@ -382,6 +383,13 @@ func (s *server) refreshCatalogs() {
 
 	logger.Debug("refreshing catalogs...")
 
+	// remove any cached copy if the backing file is gone
+	for path := range s.catalogs {
+		if _, err := os.Stat(path); os.IsNotExist(err) {
+			delete(s.catalogs, path)
+		}
+	}
+
 	for _, path := range GetCatalogPaths() {
 		if existing := s.catalogs[path]; existing != nil {
 			// already loaded; reload if it has changed
@@ -414,19 +422,6 @@ func (s *server) refreshCatalogs() {
 }
 
 func (s *server) getCatalogsHandler(ctx *gin.Context) {
-	// FIXME: this probably makes more sense to expose update logic on the
-	// /catalog/:name handlers and the refreshCatalogs() function refactored.
-	update, exists := ctx.GetQuery("update")
-	if exists {
-		if update == "all" {
-			logger.Debug("updating all catalogs...")
-			CatalogUpdateRun(nil)
-		} else {
-			logger.Debugf("updating catalog: %s", update)
-			CatalogUpdateRun([]string{update})
-		}
-	}
-
 	// (re)load anything which has changed
 	s.refreshCatalogs()
 
@@ -439,6 +434,25 @@ func (s *server) getCatalogsHandler(ctx *gin.Context) {
 			Date: value.Catalog.Updated(),
 			URL:  s.apiPath("catalog", name),
 		})
+	}
+
+	// mux in any defined sources
+	sources := LoadSources()
+	for _, source := range sources {
+		exists := false
+		sourceName := source.Source.Name
+		for _, entry := range summary {
+			if entry.Name == sourceName {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			summary = append(summary, catalogSummary{
+				Name: sourceName,
+				URL:  s.apiPath("catalog", sourceName),
+			})
+		}
 	}
 
 	ctx.JSON(http.StatusOK, catalogsInfo{
@@ -478,7 +492,11 @@ func (s *server) getCatalogHandler(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("unknown catalog: %s", which)})
+	ctx.JSON(http.StatusNotFound, gin.H{
+		"error": fmt.Sprintf("unknown catalog: %s", which),
+		"name":  which,
+		"url":   ctx.Request.URL.String(),
+	})
 }
 
 func (s *server) createCatalogHandler(ctx *gin.Context) {
@@ -525,6 +543,80 @@ func (s *server) installFromCatalogHandler(ctx *gin.Context) {
 		CatalogEntry: *entry,
 		URL:          s.apiPath("project", entry.ProjectName),
 	})
+}
+
+func (s *server) updateCatalogHandler(ctx *gin.Context) {
+	whichCatalog := ctx.Param("name")
+
+	// FIXME: refactor so that this doesn't duplicate CatalogUpdateRun function
+	sources := LoadSources()
+	if sources == nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "unable to load catalog sources"})
+		return
+	}
+
+	for _, loaded := range sources {
+		if loaded.Source.Name == whichCatalog {
+			sourceMethod := loaded.Source.Method
+			if sourceMethod == "" {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "source method not specified"})
+				return
+			}
+
+			// compute output path
+			outputDir := viper.GetString("catalogOutputDir")
+			outputPath := os.ExpandEnv(filepath.Join(outputDir, loaded.Source.Name+".json"))
+			switch sourceMethod {
+			case "lines":
+				GenerateCatalogFromLines(loaded.Source, outputPath)
+			case "download":
+				DownloadCatalog(loaded.Source, outputPath)
+			default:
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "unhandled source method"})
+				return
+			}
+			break
+		}
+	}
+
+	// (re)load anything which has changed
+	s.refreshCatalogs()
+
+	which := ctx.Param("name")
+	catalog := s.findCatalogByName(which)
+	if catalog != nil {
+		ctx.JSON(http.StatusOK, catalogContent{
+			Name:    catalog.Name(),
+			Updated: catalog.Updated(),
+			Entries: catalog.Entries(),
+			URL:     s.apiPath("catalog", catalog.Name()),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusNotFound, gin.H{
+		"error": fmt.Sprintf("unknown catalog: %s", which),
+		"name":  which,
+		"url":   ctx.Request.URL.String(),
+	})
+
+	/*
+		summary := make([]catalogSummary, 0)
+
+		for _, value := range s.catalogs {
+			name := value.Catalog.Name()
+			summary = append(summary, catalogSummary{
+				Name: name,
+				Date: value.Catalog.Updated(),
+				URL:  s.apiPath("catalog", name),
+			})
+		}
+
+		ctx.JSON(http.StatusOK, catalogsInfo{
+			Catalogs: summary,
+			Self:     ctx.Request.URL.String(), // MAINT: this includes query args...
+		})
+	*/
 }
 
 type projectSummary struct {

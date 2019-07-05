@@ -144,10 +144,29 @@ class API {
     });
   }
 
+  static getCatalogByURL(catalogURL, onSuccess, onFailure) {
+    fetch(catalogURL).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
   static getCatalog(catalogName, onSuccess, onFailure) {
     const name = encodeURIComponent(catalogName);
     const url = `${API_ROOT}/catalog/${name}`;
     fetch(url).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
+  static updateCatalog(catalogURL, onSuccess, onFailure) {
+    const url = `${catalogURL}/update`;
+    fetch(url, {'method': 'POST'}).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);

@@ -1,5 +1,8 @@
 import React from 'react';
 
+import IconButton from '../icon-button';
+import { ICONS } from '../svg-icons';
+
 import TextButton from './text-button';
 import ProjectInfo from './project-info';
 import ProjectControl from './project-control';
@@ -32,6 +35,15 @@ const Catalog = (props) => {
     <div className='catalog-container'>
       <div className='catalog-name'>
         {catalog.get('name')}
+        <IconButton 
+          tooltipeMessage='update catalog'
+          icon={ICONS['loop2']}
+          size='12'
+          padding='1'
+          color='hsl(0, 0%, 59%)'
+          dark={true}
+          action={() => props.refreshAction(catalogURL)}
+        />
       </div>
       <ul className='catalog-entries'>
         {entries}

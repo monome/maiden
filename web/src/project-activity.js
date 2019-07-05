@@ -9,11 +9,9 @@ import './project-activity.css';
 class ProjectActivity extends Component {
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
-      // summary.get('catalogs').map(description => this.props.getCatalog(description.get('name')));
-      //console.log(summary.get('catalogs'));
       summary.get('catalogs').forEach(detail => {
-        const name = detail.get('name');
-        this.props.getCatalog(name);
+       const url = detail.get('url');
+       this.props.getCatalogByURL(url);
       });
     });
     this.props.getProjectSummary();
@@ -21,6 +19,11 @@ class ProjectActivity extends Component {
 
   handleTabSelection = name => {
     this.props.projectViewSelect(name);
+  };
+
+  handleRefreshAction = url => {
+    console.log('refreshing catalog', url);
+    this.props.updateCatalog(url);
   };
 
   handleInstallAction = (url, name) => {
@@ -82,27 +85,9 @@ class ProjectActivity extends Component {
             catalogSummary={this.props.catalogSummary}
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
+            refreshAction={this.handleRefreshAction}
           />
          </Switcher>
-      </div>
-    );
-  };
-
-
-  render2() {
-    //console.log('PA this.props', this.props)
-    const style = {
-      height: this.props.height,
-      width: this.props.width,
-    };
-
-    return (
-      <div className='project-activity-container' style={style}>
-        <CatalogList
-          name="available"
-          catalogs={this.props.catalogs}
-          installAction={this.handleInstallAction}
-        />
       </div>
     );
   };
