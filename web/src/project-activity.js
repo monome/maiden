@@ -79,6 +79,7 @@ class ProjectActivity extends Component {
           />
           <CatalogList
             name='available'
+            catalogSummary={this.props.catalogSummary}
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
           />

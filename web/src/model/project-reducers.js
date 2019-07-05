@@ -1,4 +1,4 @@
-import { Map } from 'immutable';
+import { Map, List } from 'immutable';
 import {
   CATALOG_SUMMARY_SUCCESS,
   CATALOG_SUCCESS,
@@ -21,7 +21,7 @@ import {
 
 project: {
   activeComponent: <name>,
-  catalogSummary: Map ({}),
+  catalogSummary: List({}),
   catalogs Map({
     <catalogName>: Map({ ...details... })
   }),
@@ -34,7 +34,7 @@ project: {
 
 const initialProjectState = {
   activeComponent: 'installed',
-  catalogSummary: new Map(),
+  catalogSummary: new List(),
   catalogs: new Map(),
   projectSummary: new Map(),
   installing: new Map(),
@@ -44,7 +44,14 @@ const initialProjectState = {
 const projects = (state = initialProjectState, action) => {
   switch (action.type) {
     case CATALOG_SUMMARY_SUCCESS:
-      return { ...state, catalogSummary: action.catalogs };
+      const sortedCatalogs = action.catalogs.get('catalogs').sort((a, b) => {
+        const na = a.get('name');
+        const nb = b.get('name');
+        if (na < nb)   { return -1; }
+        if (na > nb)   { return 1; }
+        return 0;
+      });
+      return { ...state, catalogSummary: sortedCatalogs };
 
     case CATALOG_SUCCESS:
       const catalogName = action.catalog.get('name');
