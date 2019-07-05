@@ -52,6 +52,15 @@ const mockCatalogs = Map({
   "two": mockLinesCatalog,
 });
 
+const mockCatalogSummary = fromJS([
+  {
+    "name": "one",
+  },
+  {
+    "name": "two",
+  }
+]);
+
 storiesOf('Catalog', module)
   .add('single catalog', () => (
     <Catalog catalog={mockLinesCatalog}
@@ -62,6 +71,7 @@ storiesOf('Catalog', module)
   ))
   .add('multiple catalogs', () => (
     <CatalogList catalogs={mockCatalogs}
+      catalogSummary={mockCatalogSummary}
       installAction={(url, name) => {
         action('do install', url, name);
       }}
