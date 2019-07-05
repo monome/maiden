@@ -9,7 +9,7 @@ import ModalContent from './modal-content';
 import ModalGetName from './modal-get-name';
 import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
-import api from './api';
+import api, { isProtectedResource } from './api';
 import { USER_DATA_PATH } from './constants';
 
 const TreeHeader = props => {
@@ -140,6 +140,11 @@ class Section extends Component {
 
     const activeResource = this.props.activeNode.get('url');
     const activeResourceIsDir = this.props.activeNode.has('children');
+
+    if (isProtectedResource(activeResource)) {
+      console.log('ignoring tool, active resource is protected', activeResource);
+      return;
+    }
 
     if (!activeResource.includes(this.props.dataRootPath)) {
       console.log('ignoring tool, active buffer is not in category', this.props.dataRootPath);

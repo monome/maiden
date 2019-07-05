@@ -7,6 +7,18 @@ function apiPath(p) {
 }
 
 export const DUST_CODE_RESOURCE = apiPath('dust/code');
+export const DUST_AUDIO_RESOURCE = apiPath('dust/audio');
+export const DUST_DATA_RESOURCE = apiPath('dust/data');
+
+export const DUST_PROTECTED_RESOURCES = new Set([
+  DUST_AUDIO_RESOURCE,
+  DUST_CODE_RESOURCE,
+  DUST_DATA_RESOURCE,
+]);
+
+export const isProtectedResource = resource => (
+  DUST_PROTECTED_RESOURCES.has(resource)
+);
 
 class API {
   static siblingResourceForName(name, siblingResource, category = 'scripts') {
