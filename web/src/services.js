@@ -110,14 +110,30 @@ class TextMode extends EditorMode {
   }
 }
 
+class JsonMode extends EditorMode {
+  constructor() {
+    super('json');
+    this.enableSnippets = false;
+  }
+}
+
 class EditorService {
   constructor() {
     this.luaMode = new LuaMode();
     this.textMode = new TextMode();
+    this.jsonMode = new JsonMode();
   }
   getMode(fileName) {
+    if (fileName) {
+      if (fileName.endsWith('.lua')) {
+        return this.luaMode;
+      }
+      else if(fileName.endsWith('.json')) {
+        return this.jsonMode;
+      }
+    }
     // fall back to a simple text mode for non-lua files.
-    return fileName && fileName.endsWith('.lua') ? this.luaMode : this.textMode;
+    return this.textMode;
   }
 }
 

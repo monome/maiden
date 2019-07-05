@@ -35,6 +35,10 @@ import {
   scriptNew,
 } from './edit-actions';
 
+import {
+  bufferIsEditable
+} from './edit-helpers';
+
 import api from '../api';
 
 /*
@@ -126,7 +130,7 @@ const handleBufferChange = (action, state) => {
   }
 
   // FIXME: super janky hack to prevent marking binary buffers dirty, this needs to be removed when proper alt ui is in place for the editor when binary files are selected
-  if (!buffer.get('contentType').includes('text')) {
+  if (!bufferIsEditable(buffer)) {
     console.log('ignoring buffer change for binary buffer');
     return state;
   }

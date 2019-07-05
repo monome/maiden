@@ -195,7 +195,7 @@ export const bufferRead = resource => dispatch => {
     .then(response => {
       if (response.ok) {
         const contentType = response.headers.get('Content-Type');
-        if (contentType.includes('text')) {
+        if (contentType.includes('text') || contentType.includes('application/json')) {
           response.text().then(content => {
             dispatch(bufferReadSuccess(resource, content, contentType));
           });

@@ -3,6 +3,7 @@ import AceEditor from 'react-ace';
 import 'brace/ext/language_tools';
 import 'brace/ext/searchbox';
 import 'brace/mode/lua';
+import 'brace/mode/json';
 import 'brace/snippets/lua';
 import 'brace/theme/dawn';
 import 'brace/keybinding/vim';

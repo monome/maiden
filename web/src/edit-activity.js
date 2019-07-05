@@ -7,7 +7,7 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import { commandService } from './services';
 import OS from './utils';
-
+import { bufferIsEditable } from './model/edit-helpers';
 import ReplActivity from './bound-repl-activity';
 
 import './edit-activity.css';
@@ -197,10 +197,7 @@ class EditActivity extends Component {
   };
 
   isText = buffer => {
-    if (buffer) {
-      return buffer.get('contentType').includes('text');
-    }
-    return false;
+    return buffer && bufferIsEditable(buffer);
   };
 
   render() {
