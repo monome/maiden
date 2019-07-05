@@ -65,7 +65,7 @@ edit: {
 */
 
 const handleScriptNew = (action, state) => {
-  const category = action.category || 'scripts';
+  const category = action.category || 'dust';
   const categoryIndex = rootCategoryIndex(state.rootNodes, category);
 
   // assume script will be placed at the top of the hierarchy (by default)
