@@ -6,6 +6,8 @@ function apiPath(p) {
   return `${API_ROOT}/${p}`;
 }
 
+export const DUST_CODE_RESOURCE = apiPath('dust/code');
+
 class API {
   static siblingResourceForName(name, siblingResource, category = 'scripts') {
     let resourceBase = apiPath(`${category}/`);

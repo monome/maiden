@@ -32,6 +32,7 @@ class ProjectActivity extends Component {
       _ => {
         // refresh project list
         this.props.getProjectSummary();
+        this.props.refreshCodeDir();
       },
       failure => {
         console.log('install-project failed', failure);
@@ -43,6 +44,7 @@ class ProjectActivity extends Component {
     this.props.updateProject(url, 
       _ => {
         this.props.getProjectSummary();
+        this.props.refreshCodeDir();
       },
       failure => {
         console.log('update-project failed', failure);
@@ -55,6 +57,7 @@ class ProjectActivity extends Component {
       _ => {
         // refresh project list
         this.props.getProjectSummary();
+        this.props.refreshCodeDir();
       },
       failure => {
         console.log('update-project failed', failure);

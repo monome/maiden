@@ -14,6 +14,12 @@ import {
   removeProject,
 } from './model/project-actions';
 
+import {
+  directoryRead,
+} from './model/edit-actions';
+
+import { DUST_CODE_RESOURCE } from './api';
+
 const mapStateToProps = state => {
   const { activeComponent, catalogSummary, catalogs, projectSummary, projects } = state.projects;
   return {
@@ -40,6 +46,9 @@ const mapDispatchToProps = dispatch => ({
   },
   updateCatalog: (catalogURL, onSuccess, onFailure) => {
     dispatch(updateCatalog(catalogURL, onSuccess, onFailure));
+  },
+  refreshCodeDir: () => {
+    dispatch(directoryRead(DUST_CODE_RESOURCE));
   },
   getProjectSummary: onSuccess => {
     dispatch(getProjectSummary(onSuccess));
