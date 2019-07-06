@@ -8,9 +8,11 @@ import (
 	"github.com/monome/maiden/pkg/catalog"
 )
 
+const linesURL = "https://llllllll.co"
+
 // GatherProjects collects up project information from the Library topic on lines
 func GatherProjects(c *catalog.Catalog) error {
-	client := NewClient("https://llllllll.co")
+	client := NewClient(linesURL)
 	categories, err := GetCategories(client)
 	if err != nil {
 		return err
@@ -33,6 +35,7 @@ func GatherProjects(c *catalog.Catalog) error {
 				log.Printf("\tfailed to get details (%s)", err)
 				continue
 			}
+			discussionURL := fmt.Sprintf("%s/t/%d", linesURL, t.ID)
 			author := fmt.Sprintf("%s (%s)", details.CreatedBy.Name, details.CreatedBy.Username)
 			url, _ := GuessProjectURLFromLinks(details.Links)
 			c.Insert(&catalog.Entry{
@@ -40,6 +43,7 @@ func GatherProjects(c *catalog.Catalog) error {
 				ProjectName: ProjectNameFromTopicTitle(t.Title),
 				Author:      author,
 				URL:         url,
+				Discussion:  discussionURL,
 			})
 		}
 	}

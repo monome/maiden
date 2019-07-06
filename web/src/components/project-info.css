@@ -26,6 +26,16 @@
   /* font-size: 110%; */
 }
 
+.project-info-name-link, .project-info-name-link:visited {
+  font-weight: bold;
+  text-decoration: none;
+  color: #979797;
+}
+
+.project-info-name-link:hover {
+  color: hsl(0, 0%, 39%);
+}
+
 .project-info-description {
   margin-left: 0.75em;
   font-style: italic;

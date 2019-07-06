@@ -11,35 +11,43 @@ import CatalogList from '../src/components/catalog-list';
 const mockLinesCatalog = fromJS({
   "entries": [
       {
-          "author": "Lee Azzarello (lazzarello)",
-          "description": "foo bar baz",
-          "origin": "lines",
-          "project_name": "fm7",
-          "project_url": "https://github.com/lazzarello/fm7",
-          "tags": [
-            "one",
-          ],
+        "author": "Lee Azzarello (lazzarello)",
+        "description": "foo bar baz",
+        "origin": "lines",
+        "project_name": "fm7",
+        "project_url": "https://github.com/lazzarello/fm7",
+        "tags": [
+          "one",
+        ],
       },
       {
-          "author": "mark john williamson (junklight)",
-          "description": "",
-          "origin": "lines",
-          "project_name": "kria_midi",
-          "project_url": "https://github.com/junklight/misc"
+        "author": "mark john williamson (junklight)",
+        "description": "",
+        "origin": "lines",
+        "project_name": "kria_midi",
+        "project_url": "https://github.com/junklight/misc"
       },
       {
-          "author": "jai lai bookie (Dan_Derks)",
-          "description": "",
-          "origin": "lines",
-          "project_name": "less_concepts",
-          "project_url": "https://github.com/dndrks/less-concepts-norns"
+        "project_name": "drum_room",
+        "project_url": "https://github.com/markwheeler/drum_room",
+        "author": "Mark Eats (markeats)",
+        "description": "",
+        "discussion_url": "https://llllllll.co/t/23467",
+        "origin": "lines"
       },
       {
-          "author": "its your bedtime (its_your_bedtime)",
-          "description": "",
-          "origin": "lines",
-          "project_name": "orca",
-          "project_url": "https://github.com/hundredrabbits/Orca#operators"
+        "author": "jai lai bookie (Dan_Derks)",
+        "description": "",
+        "origin": "lines",
+        "project_name": "less_concepts",
+        "project_url": "https://github.com/dndrks/less-concepts-norns"
+      },
+      {
+        "author": "its your bedtime (its_your_bedtime)",
+        "description": "",
+        "origin": "lines",
+        "project_name": "orca",
+        "project_url": "https://github.com/hundredrabbits/Orca#operators"
       },
   ],
   "name": "lines",

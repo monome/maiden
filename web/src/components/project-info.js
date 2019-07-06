@@ -14,13 +14,27 @@ const ProjectInfo = (props) => {
   if (tags) {
     badges = tags.map(t => <Badge key={t}>{t}</Badge>)
   }
+  
+  let title = undefined;
+  const discussion = props.project.get('discussion_url');
+  if (discussion) {
+    title = <a href={discussion}
+              className='project-info-name-link'
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {name}
+            </a>;
+  } else {
+    title = <span className='project-info-name'>
+            {name}
+           </span>
+  }
 
   return (
     <div className='project-info'>
       <div className='project-info-top'>
-        <span className='project-info-name'>
-          {name}
-        </span>
+        {title}
         <span className='project-badges'>
           {badges}
         </span>
