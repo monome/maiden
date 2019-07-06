@@ -49,7 +49,7 @@ func init() {
 func New(name string) *Catalog {
 	return &Catalog{
 		content: &catalogContent{
-			Name: name,
+			Name:    name,
 			Header:  catalogDefaultHeader,
 			Entries: make(map[string]Entry),
 		},

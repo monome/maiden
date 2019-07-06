@@ -528,7 +528,7 @@ func (s *server) installFromCatalogHandler(ctx *gin.Context) {
 
 	entry := catalog.Get(whichProject)
 	if entry != nil {
-		if err := dust.Install(projectDir, entry.ProjectName, entry.URL); err != nil {
+		if err := dust.Install(projectDir, entry.ProjectName, entry.URL, entry); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"error": fmt.Sprintf("install failed: %s", err),
 			})
@@ -620,10 +620,11 @@ func (s *server) updateCatalogHandler(ctx *gin.Context) {
 }
 
 type projectSummary struct {
-	Name    string `json:"project_name"`
-	Managed bool   `json:"managed"`
-	Version string `json:"version"`
-	URL     string `json:"url"`
+	Name     string         `json:"project_name"`
+	Managed  bool           `json:"managed"`
+	Version  string         `json:"version"`
+	URL      string         `json:"url"`
+	MetaData *dust.MetaData `json:"meta_data,omitempty"`
 }
 
 type projectsInfo struct {
@@ -645,11 +646,13 @@ func (s *server) getProjectsHandler(ctx *gin.Context) {
 		if managed {
 			version, _ = p.GetVersion()
 		}
+		md, _ := p.GetMetaData()
 		listing = append(listing, projectSummary{
-			Name:    p.Name,
-			Managed: managed,
-			Version: version,
-			URL:     s.apiPath("project", p.Name),
+			Name:     p.Name,
+			Managed:  managed,
+			Version:  version,
+			URL:      s.apiPath("project", p.Name),
+			MetaData: md,
 		})
 	}
 
@@ -705,7 +708,7 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
 				// TODO: only remove if download succeds?
 				os.RemoveAll(p.Root)
-				if err = dust.Install(projectDir, p.Name, entry.URL); err != nil {
+				if err = dust.Install(projectDir, p.Name, entry.URL, entry); err != nil {
 					ctx.JSON(http.StatusInternalServerError, gin.H{
 						"error": fmt.Sprintf("(re)install failed: %s", err),
 					})
@@ -724,11 +727,13 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 	if managed {
 		version, _ = p.GetVersion()
 	}
+	md, _ := p.GetMetaData()
 	ctx.JSON(http.StatusOK, projectSummary{
-		Name:    p.Name,
-		Managed: managed,
-		Version: version,
-		URL:     s.apiPath("project", p.Name),
+		Name:     p.Name,
+		Managed:  managed,
+		Version:  version,
+		URL:      s.apiPath("project", p.Name),
+		MetaData: md,
 	})
 }
 

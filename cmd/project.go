@@ -151,7 +151,7 @@ func installProjectRun(args []string) {
 	for _, name := range args {
 		if entry := SearchCatalogs(catalogs, name); entry != nil {
 			fmt.Printf("Installing: %s (%s)... ", entry.ProjectName, entry.URL)
-			err := dust.Install(root, name, entry.URL)
+			err := dust.Install(root, name, entry.URL, entry)
 			if err != nil {
 				fmt.Printf("failed: %s\n", err)
 			} else {
@@ -203,7 +203,7 @@ func updateProjectRun(args []string) {
 			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
 				// TODO: only remove if download succeds?
 				os.RemoveAll(p.Root)
-				err = dust.Install(dustRoot, p.Name, entry.URL)
+				err = dust.Install(dustRoot, p.Name, entry.URL, entry)
 				CheckErrorNonFatal(err, "done.")
 			} else {
 				fmt.Printf("failed: cannot find in catalog")

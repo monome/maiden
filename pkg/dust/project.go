@@ -2,6 +2,7 @@ package dust
 
 import (
 	"archive/zip"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -9,9 +10,32 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/src-d/go-git.v4"
+
+	"github.com/monome/maiden/pkg/catalog"
 )
+
+// MetaData encapsulates information about the project known during installation
+type MetaData struct {
+	Header    catalog.Header `json:"file_info"`
+	Installed time.Time      `json:"installed_on"`
+	Updated   time.Time      `json:"updated_on,omitempty"`
+	SourceURL string         `json:"project_url"`
+	Entry     *catalog.Entry `json:"catalog_entry,omitempty"`
+}
+
+var (
+	projectMetaDataHeader catalog.Header
+)
+
+func init() {
+	projectMetaDataHeader = catalog.Header{
+		Version: 1,
+		Kind:    "project_metadata",
+	}
+}
 
 // Project encapsulates a dust project
 type Project struct {
@@ -111,8 +135,53 @@ func Unzip(src string, dest string, removeArchiveRoot bool) ([]string, error) {
 	return filenames, nil
 }
 
+func metaDataPath(rootDir string) string {
+	return filepath.Join(rootDir, ".project")
+}
+
+func writeMetaData(d *MetaData, outPath string) error {
+	if d == nil {
+		return nil
+	}
+
+	data, err := json.MarshalIndent(d, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	outFile, err := os.Create(outPath)
+	if err != nil {
+		return err
+	}
+	defer outFile.Close()
+
+	_, err = outFile.Write(data)
+	return err
+}
+
+func readMetaData(inPath string) *MetaData {
+	inFile, err := os.Open(inPath)
+	if err != nil {
+		return nil
+	}
+	defer inFile.Close()
+
+	data, err := ioutil.ReadAll(inFile)
+	if err != nil {
+		return nil
+	}
+
+	var d MetaData
+	err = json.Unmarshal(data, &d)
+	if err != nil {
+		return nil
+	}
+
+	return &d
+}
+
 // Install installs the project at url if a project with the given name does not already exist in root
-func Install(root, name, url string) error {
+func Install(root, name, url string, entry *catalog.Entry) error {
 	path := filepath.Join(root, name)
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
 		return fmt.Errorf("project %s already exists in %s", name, root)
@@ -120,6 +189,13 @@ func Install(root, name, url string) error {
 
 	// ensure output root dir exists
 	os.MkdirAll(root, os.ModePerm)
+
+	metadata := MetaData{
+		Header:    projectMetaDataHeader,
+		Installed: time.Now(),
+		SourceURL: url,
+		Entry:     entry,
+	}
 
 	if strings.HasSuffix(url, ".zip") {
 		// do zip archive install
@@ -131,7 +207,11 @@ func Install(root, name, url string) error {
 
 		// TODO: deal with zip archives needing to be renamed or un-nested
 		_, err = Unzip(archivePath, path, true)
-		return err
+		if err != nil {
+			return err
+		}
+
+		return writeMetaData(&metadata, metaDataPath(path))
 	}
 
 	// assume url is a git repo, clone it
@@ -139,8 +219,11 @@ func Install(root, name, url string) error {
 		URL:               url,
 		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
 	})
+	if err != nil {
+		return err
+	}
 
-	return err
+	return writeMetaData(&metadata, metaDataPath(path))
 }
 
 // GetProjects returns Project instances for all recognized projects in root
@@ -207,6 +290,37 @@ func (p *Project) GetVersion() (string, error) {
 	return shortHash(ref.Hash().String()), nil
 }
 
+func (p *Project) metaDataPath() string {
+	return metaDataPath(p.Root)
+}
+
+// GetMetaData reads and returns any meta data for the project
+func (p *Project) GetMetaData() (*MetaData, error) {
+	f, err := os.Open(p.metaDataPath())
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+
+	var info MetaData
+	err = json.Unmarshal(data, &info)
+	if err != nil {
+		return nil, err
+	}
+
+	return &info, nil
+}
+
+// UpdateMetaData updates the 'update_time' key in the project metadata
+func (p *Project) UpdateMetaData(md *MetaData) {
+	md.Updated = time.Now()
+}
+
 // Update pulls down any changes for the project if it is managed via git
 func (p *Project) Update(force bool) error {
 	// https://github.com/src-d/go-git/blob/master/_examples/pull/main.go
@@ -220,10 +334,21 @@ func (p *Project) Update(force bool) error {
 		return err
 	}
 
-	return w.Pull(&git.PullOptions{
+	// lame, pull removes unknown files so the .project metadata file is removed.
+	// to compensate we read in the .project file, do the pull, then write it back
+	// out
+	md := readMetaData(p.metaDataPath())
+
+	err = w.Pull(&git.PullOptions{
 		RemoteName: "origin",
-		Force:      force,
+		// Force:      force,
 	})
+	if err != nil {
+		return err
+	}
+
+	p.UpdateMetaData(md)
+	return writeMetaData(md, p.metaDataPath())
 }
 
 /*
