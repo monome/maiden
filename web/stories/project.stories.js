@@ -26,43 +26,79 @@ const mockProjectSummary = fromJS({
   "projects": [
       {
           "managed": true,
-          "project_name": "ack",
-          "url": "/api/v1/project/ack",
-          "version": "24dcc12"
+          "meta_data": {
+              "catalog_entry": {
+                  "author": "Brian Crabtree (tehn)",
+                  "description": "",
+                  "discussion_url": "https://llllllll.co/t/21022",
+                  "origin": "lines",
+                  "project_name": "awake",
+                  "project_url": "https://github.com/tehn/awake"
+              },
+              "file_info": {
+                  "kind": "project_metadata",
+                  "version": 1
+              },
+              "installed_on": "2019-07-05T20:57:44.408481-07:00",
+              "project_url": "https://github.com/tehn/awake",
+              "updated_on": "0001-01-01T00:00:00Z"
+          },
+          "project_name": "awake",
+          "url": "/api/v1/project/awake",
+          "version": "0d5e4ba"
       },
       {
           "managed": true,
-          "project_name": "glut",
-          "url": "/api/v1/project/glut",
-          "version": "9f3647a"
+          "meta_data": {
+              "catalog_entry": {
+                  "author": "Matthew (Justmat)",
+                  "description": "",
+                  "discussion_url": "https://llllllll.co/t/23336",
+                  "origin": "lines",
+                  "project_name": "bounds",
+                  "project_url": "https://github.com/notjustmat/bounds"
+              },
+              "file_info": {
+                  "kind": "project_metadata",
+                  "version": 1
+              },
+              "installed_on": "2019-07-05T20:57:46.211228-07:00",
+              "project_url": "https://github.com/notjustmat/bounds",
+              "updated_on": "0001-01-01T00:00:00Z"
+          },
+          "project_name": "bounds",
+          "url": "/api/v1/project/bounds",
+          "version": "de6ea8c"
       },
       {
           "managed": true,
-          "project_name": "meso",
-          "url": "/api/v1/project/meso",
-          "version": "7034c18"
-      },
-      {
-          "managed": true,
-          "project_name": "mlr",
-          "url": "/api/v1/project/mlr",
-          "version": "69d9ab6"
-      },
-      {
-          "managed": true,
-          "project_name": "molly_the_poly",
-          "url": "/api/v1/project/molly_the_poly",
-          "version": "604c1ee"
-      },
-      {
-          "managed": true,
-          "project_name": "orca",
-          "url": "/api/v1/project/orca",
-          "version": "28ae108"
-      },
+          "meta_data": {
+              "catalog_entry": {
+                  "description": "abstractions to build on",
+                  "project_name": "meso-git",
+                  "project_url": "https://github.com/ngwese/meso.git",
+                  "tags": [
+                      "powermate",
+                      "hid",
+                      "lib"
+                  ]
+              },
+              "file_info": {
+                  "kind": "project_metadata",
+                  "version": 1
+              },
+              "installed_on": "2019-07-05T20:48:47.683785-07:00",
+              "project_url": "https://github.com/ngwese/meso.git",
+              "updated_on": "2019-07-05T20:49:22.792449-07:00"
+          },
+          "project_name": "meso-git",
+          "url": "/api/v1/project/meso-git",
+          "version": "29956ad"
+      }
   ],
   "url": "/api/v1/projects"
-});
+}
+);
 
 storiesOf('Projects', module)
   .add('text badges', () => (

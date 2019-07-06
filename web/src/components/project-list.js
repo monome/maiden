@@ -11,11 +11,17 @@ const ProjectList = props => {
   let entries = undefined;
   if (projects && projects.has('projects')) {
     entries = projects.get('projects').map(p => {
-      const url= p.get('url');
+      // layer project data over catalog entry (if it exists)
+      let composed = p;
+      const entry = p.getIn(['meta_data', 'catalog_entry'])
+      if (entry) {
+        composed = entry.merge(p);
+      }
+      const url = composed.get('url');
       return (
         <li key={url}>
           <ProjectControl>
-            <ProjectInfo project={p} />
+            <ProjectInfo project={composed} />
             <TextButton
               color='hsl(0, 0%, 59%)' 
               action={() => updateAction(url)}
