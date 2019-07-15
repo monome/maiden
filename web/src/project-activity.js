@@ -40,19 +40,20 @@ class ProjectActivity extends Component {
       },
       failure => {
         console.log('install-project failed', failure);
+        this.props.hideModal();  // FIXME: show error in new dialog
       });
   };
 
-  handleUpdateAction = url => {
+  handleUpdateAction = (url, name) => {
     console.log('doing update', url);
 
-    const modalDismiss = _ => {
-      this.props.hideModal();
-    };
+    // const modalDismiss = _ => {
+    //   this.props.hideModal();
+    // };
 
     const modalCompletion = choice => {
       if (choice === 'ok') {
-        this.props.updateProject(url, 
+        this.props.updateProject(url, name,
           _ => {
             this.props.getProjectSummary();
             this.props.refreshCodeDir();
@@ -60,11 +61,12 @@ class ProjectActivity extends Component {
           },
           failure => {
             console.log('update-project failed', failure);
-            this.props.updateModal({
-              message: `Updating project "${url}" failed.`,
-              supporting: failure,
-              buttonAction: modalDismiss,
-            })
+            this.props.hideModal(); // FIXME: show error in new dialog
+            // this.props.updateModal({
+            //   message: `Updating project "${name}" failed.`,
+            //   supporting: failure,
+            //   buttonAction: modalDismiss,
+            // })
           });
       } else {
         // update request canceled
@@ -74,7 +76,7 @@ class ProjectActivity extends Component {
 
     const modalContent = (
       <ModalContent
-        message={`Update project "${url}"?`}
+        message={`Update project "${name}"?`}
         supporting="Locally modified changes can be overwritten"
         buttonAction={modalCompletion}
       />
@@ -83,12 +85,12 @@ class ProjectActivity extends Component {
     this.props.showModal(modalContent);
   };
 
-  handleRemoveAction = url => {
+  handleRemoveAction = (url, name) => {
     console.log('doing remove', url);
 
     const modalCompletion = choice => {
       if (choice === 'ok') {
-        this.props.removeProject(url,
+        this.props.removeProject(url, name,
           _ => {
             // refresh project list
             this.props.getProjectSummary();
@@ -108,7 +110,7 @@ class ProjectActivity extends Component {
 
     const modalContent = (
       <ModalContent
-        message={`Delete "${url}"?`}
+        message={`Delete "${name}"?`}
         supporting="This operation cannot be undone."
         buttonAction={modalCompletion}
       />

@@ -18,19 +18,20 @@ const ProjectList = props => {
         composed = entry.merge(p);
       }
       const url = composed.get('url');
+      const name = composed.get('project_name')
       return (
         <li key={url}>
           <ProjectControl>
             <ProjectInfo project={composed} />
             <TextButton
               color='hsl(0, 0%, 59%)' 
-              action={() => updateAction(url)}
+              action={() => updateAction(url, name)}
             >
               update
             </TextButton>
             <TextButton
               color='hsl(0, 0%, 59%)' 
-              action={() => removeAction(url)}
+              action={() => removeAction(url, name)}
             >
               remove
             </TextButton>
