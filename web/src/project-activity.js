@@ -4,6 +4,10 @@ import Switcher from './components/switcher';
 import CatalogList from './components/catalog-list';
 import ProjectList from './components/project-list';
 
+import ModalContent from './modal-content';
+//import IconButton from './icon-button';
+//import { ICONS } from './svg-icons';
+
 import './project-activity.css';
 
 class ProjectActivity extends Component {
@@ -41,27 +45,76 @@ class ProjectActivity extends Component {
 
   handleUpdateAction = url => {
     console.log('doing update', url);
-    this.props.updateProject(url, 
-      _ => {
-        this.props.getProjectSummary();
-        this.props.refreshCodeDir();
-      },
-      failure => {
-        console.log('update-project failed', failure);
-      });
+
+    const modalDismiss = _ => {
+      this.props.hideModal();
+    };
+
+    const modalCompletion = choice => {
+      if (choice === 'ok') {
+        this.props.updateProject(url, 
+          _ => {
+            this.props.getProjectSummary();
+            this.props.refreshCodeDir();
+            this.props.hideModal();
+          },
+          failure => {
+            console.log('update-project failed', failure);
+            this.props.updateModal({
+              message: `Updating project "${url}" failed.`,
+              supporting: failure,
+              buttonAction: modalDismiss,
+            })
+          });
+      } else {
+        // update request canceled
+        this.props.hideModal();
+      }
+    };
+
+    const modalContent = (
+      <ModalContent
+        message={`Update project "${url}"?`}
+        supporting="Locally modified changes can be overwritten"
+        buttonAction={modalCompletion}
+      />
+    );
+
+    this.props.showModal(modalContent);
   };
 
   handleRemoveAction = url => {
     console.log('doing remove', url);
-    this.props.removeProject(url,
-      _ => {
-        // refresh project list
-        this.props.getProjectSummary();
-        this.props.refreshCodeDir();
-      },
-      failure => {
-        console.log('update-project failed', failure);
-      });
+
+    const modalCompletion = choice => {
+      if (choice === 'ok') {
+        this.props.removeProject(url,
+          _ => {
+            // refresh project list
+            this.props.getProjectSummary();
+            this.props.refreshCodeDir();
+            this.props.hideModal();
+          },
+          failure => {
+            // TODO: make this a dialog
+            console.log('remove-project failed', failure);
+            this.props.hideModal();
+          });
+      } else {
+        // canel or any other outcome
+        this.props.hideModal();
+      }
+    };
+
+    const modalContent = (
+      <ModalContent
+        message={`Delete "${url}"?`}
+        supporting="This operation cannot be undone."
+        buttonAction={modalCompletion}
+      />
+    );
+
+    this.props.showModal(modalContent);
   };
 
   render() {
