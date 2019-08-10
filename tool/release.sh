@@ -15,6 +15,7 @@ eval $cmd
 # for compatibility with old systemd unit setup
 (cd $REL_DIR/; ln -s maiden maiden.arm)
 cp -v tool/start.sh $REL_DIR
+cp -v tool/project-setup.sh $REL_DIR
 cp -v maiden.yaml $REL_DIR
 
 # app
