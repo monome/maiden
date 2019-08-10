@@ -18,6 +18,10 @@ cp -v tool/start.sh $REL_DIR
 cp -v tool/project-setup.sh $REL_DIR
 cp -v maiden.yaml $REL_DIR
 
+# sources
+mkdir -pv $REL_DIR/dist/sources/
+cp -v sources/lines*.json $REL_DIR/dist/sources/
+
 # app
 echo -e "\nbuilding app"
 echo "====================="
