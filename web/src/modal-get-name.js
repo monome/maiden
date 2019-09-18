@@ -58,7 +58,7 @@ class ModalGetName extends Component {
 
   handleOnChange = () => {
     const newName = this.textArea.value;
-    if (this.siblingNames.has(this.textArea.value)) {
+    if (newName !== this.props.initialName && this.siblingNames.has(newName)) {
       this.setState({
         errorMessage: 'name already in use',
         newName,
@@ -76,7 +76,7 @@ class ModalGetName extends Component {
     }
   };
 
-  isValidName = name => !this.siblingNames.has(name) && !name.startsWith(".");
+  isValidName = name => (name === this.props.initialName || !this.siblingNames.has(name)) && !name.startsWith(".");
 
   complete = choice => {
     const name = this.state.newName;
