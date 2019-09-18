@@ -248,6 +248,7 @@ const handleResourceRenameSuccess = (action, state) => {
     activeBuffer,
     rootNodes,
     buffers,
+    activeNode: newResource,
   };
 };
 
