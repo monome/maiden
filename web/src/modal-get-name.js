@@ -26,6 +26,7 @@ class ModalGetName extends Component {
     this.state = {
       showError: false,
       errorMessage: '',
+      newName: this.props.initialName,
     };
 
     this.siblingNames = props.getSiblingNames(this.props.selectedResource);
@@ -56,17 +57,21 @@ class ModalGetName extends Component {
   };
 
   handleOnChange = () => {
+    const newName = this.textArea.value;
     if (this.siblingNames.has(this.textArea.value)) {
       this.setState({
         errorMessage: 'name already in use',
+        newName,
       });
     } else if (this.textArea.value.startsWith(".")) {
       this.setState({
-        errorMessage: 'name cannot start with "."'
+        errorMessage: 'name cannot start with "."',
+        newName,
       });
     } else {
       this.setState({
         errorMessage: '',
+        newName,
       });
     }
   };
@@ -74,13 +79,17 @@ class ModalGetName extends Component {
   isValidName = name => !this.siblingNames.has(name) && !name.startsWith(".");
 
   complete = choice => {
-    const name = this.textArea.value;
+    const name = this.state.newName;
     if (choice === 'ok' && !this.isValidName(name)) {
       // prevent completion if name is bad
       return;
     }
-    this.props.buttonAction(choice, this.textArea.value);
+    this.props.buttonAction(choice, this.state.newName);
   };
+
+  componentDidMount() {
+    this.textArea.select();
+  }
 
   render() {
     return (
@@ -92,7 +101,7 @@ class ModalGetName extends Component {
         <textarea
           className="get-name-modal-text-area"
           ref={e => (this.textArea = e)}
-          placeholder={this.props.initialName || ''}
+          value={this.state.newName || ''}
           rows="1"
           maxLength="128"
           wrap="false"
