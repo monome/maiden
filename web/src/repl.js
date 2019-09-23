@@ -14,7 +14,7 @@ class ReplOutput extends Component {
   componentDidUpdate() {
     // FIXME: this always forces scrolling to the bottom
     if (this.output) {
-      this.output.scrollTo(0, this.output.scrollHeight);
+      this.output.scrollTop = this.output.scrollHeight;
     }
   }
 
