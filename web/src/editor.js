@@ -30,8 +30,10 @@ class Editor extends Component {
         editor.setKeyboardHandler(clonedOpts.keyBoardHandler, () => {
           const { $handlers } = editor.keyBinding;
           const handler = $handlers[$handlers.length - 1];
-          const cpIndex = handler.defaultKeymap.findIndex(x => x.keys == '<C-p>');
-          handler.defaultKeymap.splice(cpIndex, 1);
+          const cpIndex = handler.defaultKeymap.findIndex(x => x.keys === '<C-p>');
+          if (~cpIndex) {
+            handler.defaultKeymap.splice(cpIndex, 1);
+          }
         });
       }
       delete clonedOpts.keyBoardHandler;
