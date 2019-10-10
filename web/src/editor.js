@@ -10,7 +10,7 @@ import 'brace/keybinding/vim';
 import 'brace/keybinding/emacs';
 
 import api from './api';
-import { commandService, editorService } from './services';
+import { commandService, editorService, keyService } from './services';
 
 import './editor.css';
 import './theme/norns_dark';
@@ -26,16 +26,9 @@ class Editor extends Component {
     const clonedOpts = JSON.parse(JSON.stringify(opts));
 
     if (clonedOpts.keyBoardHandler) {
-      if (clonedOpts.keyBoardHandler.includes('vim')) {
-        editor.setKeyboardHandler(clonedOpts.keyBoardHandler, () => {
-          const { $handlers } = editor.keyBinding;
-          const handler = $handlers[$handlers.length - 1];
-          const cpIndex = handler.defaultKeymap.findIndex(x => x.keys === '<C-p>');
-          if (~cpIndex) {
-            handler.defaultKeymap.splice(cpIndex, 1);
-          }
-        });
-      }
+      editor.setKeyboardHandler(clonedOpts.keyBoardHandler, () => {
+        this.removeConflictingBindings(editor, clonedOpts.keyBoardHandler);
+      });
       delete clonedOpts.keyBoardHandler;
     } else {
       editor.setKeyboardHandler();
@@ -48,6 +41,21 @@ class Editor extends Component {
 
     session.setOptions(clonedOpts);
   };
+
+  removeConflictingBindings = (editor, handlerName) => {
+    if (handlerName.includes('vim')) {
+      const { $handlers } = editor.keyBinding;
+      const handler = $handlers[$handlers.length - 1];
+      const keymap = handler.defaultKeymap;
+
+      keyService.bindings.forEach(({ keystroke }) => {
+        const cpIndex = keymap.findIndex(x => x.keys === keystroke.vimKey);
+        if (~cpIndex) {
+          keymap.splice(cpIndex, 1);
+        }
+      })
+    }
+  }
 
   onLoad = editor => {
     // grab reference to ace editor
@@ -154,8 +162,7 @@ class Editor extends Component {
     const width = `${this.props.width}px`;
     const height = `${this.props.height}px`;
 
-    const getActiveBuffer = () => this.props.activityActiveBuffer;
-    const { scriptRun } = this.props;
+    const aceCommands = keyService.bindings.map(b => b.aceCommand);
 
     const mode = editorService.getMode(this.props.bufferName);
     mode.onRender(this.editor);
@@ -181,13 +188,7 @@ class Editor extends Component {
           $blockScrolling: Infinity,
           $newLineMode: 'unix',
         }}
-        commands={[{
-          name: 'play',
-          bindKey: { win: 'Ctrl-P', mac: 'Ctrl-P' },
-          exec: () => { 
-            scriptRun && scriptRun(getActiveBuffer());
-          }
-        }]}
+        commands={aceCommands}
       />
     );
   }
