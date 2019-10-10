@@ -232,6 +232,8 @@ class EditActivity extends Component {
           bufferChange={this.props.bufferChange}
           editorConfig={this.props.editorConfig}
           selectionEval={this.props.selectionEval}
+          activityActiveBuffer={this.props.activeBuffer}
+          scriptRun={this.props.scriptRun}
         />
         <EditTools
           className="edit-tools"

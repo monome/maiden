@@ -26,7 +26,14 @@ class Editor extends Component {
     const clonedOpts = JSON.parse(JSON.stringify(opts));
 
     if (clonedOpts.keyBoardHandler) {
-      editor.setKeyboardHandler(clonedOpts.keyBoardHandler);
+      if (clonedOpts.keyBoardHandler.includes('vim')) {
+        editor.setKeyboardHandler(clonedOpts.keyBoardHandler, () => {
+          const { $handlers } = editor.keyBinding;
+          const handler = $handlers[$handlers.length - 1];
+          const cpIndex = handler.defaultKeymap.findIndex(x => x.keys == '<C-p>');
+          handler.defaultKeymap.splice(cpIndex, 1);
+        });
+      }
       delete clonedOpts.keyBoardHandler;
     } else {
       editor.setKeyboardHandler();
@@ -145,6 +152,9 @@ class Editor extends Component {
     const width = `${this.props.width}px`;
     const height = `${this.props.height}px`;
 
+    const getActiveBuffer = () => this.props.activityActiveBuffer;
+    const { scriptRun } = this.props;
+
     const mode = editorService.getMode(this.props.bufferName);
     mode.onRender(this.editor);
 
@@ -169,6 +179,13 @@ class Editor extends Component {
           $blockScrolling: Infinity,
           $newLineMode: 'unix',
         }}
+        commands={[{
+          name: 'play',
+          bindKey: { win: 'Ctrl-P', mac: 'Ctrl-P' },
+          exec: () => { 
+            scriptRun && scriptRun(getActiveBuffer());
+          }
+        }]}
       />
     );
   }
