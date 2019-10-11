@@ -92,23 +92,37 @@ class API {
     }).then(cb);
   }
 
-  static getReplEndpoints(cb) {
-    const origin = document.location.hostname;
-    fetch('repl-endpoints.json').then(response => {
-      response.json().then(data => {
-        // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
-        const config = new Map();
-        const template = new Map(Object.entries(data));
-        template.forEach((value, key) => {
-          const url = new URL(value);
-          if (url.hostname === undefined || url.hostname === 'maiden_app_location') {
-            url.hostname = origin;
-          }
-          config.set(key, url.href);
-        });
-        cb(config);
+  static async getReplEndpoints(cb) {
+    const processResponse = data => {
+      // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
+      const origin = document.location.hostname;
+      const config = new Map();
+      const template = new Map(Object.entries(data));
+      template.forEach((value, key) => {
+        const url = new URL(value);
+        if (url.hostname === undefined || url.hostname === 'maiden_app_location') {
+          url.hostname = origin;
+        }
+        config.set(key, url.href);
       });
-    });
+      cb(config);
+    }
+
+    // Can we check whether maiden is local instead?
+    try {
+      const raw = await fetch('/repl-endpoints.json');
+      const json = await raw.json();
+      processResponse(json);
+      return;
+    } catch (e) { }
+
+    try {
+      const raw = await fetch('/maiden/repl-endpoints.json');
+      const json = await raw.json();
+      processResponse(json);
+    } catch (e) {
+      console.error('could not find REPL endpoints at either expected path');
+    }
   }
 
   static getUnitMapping(cb) {

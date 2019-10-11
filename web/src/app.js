@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import BoundWorkspace from './bound-workspace';
+import BoundUrlHandler from './bound-url-handler'
 import activities from './activities';
 import './app.css';
 import './tool-tip.css';
@@ -32,6 +33,7 @@ class App extends Component {
     return (
       <div>
         <div className="app-header" style={headerStyle} />
+        <BoundUrlHandler />
         <BoundWorkspace activities={activities} {...this.state} />
       </div>
     );
