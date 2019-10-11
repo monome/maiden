@@ -213,9 +213,32 @@ export const bufferRead = resource => dispatch => {
     });
 };
 
+// This is async because nested directories don't 
+// like opening until their parents have loaded
+export const directoryReadRecursive = resource => async dispatch => {
+  await resource.split('/').reduce(async (asyncUrl, asyncPart) => {
+    const url = await asyncUrl;
+    const name = await asyncPart;
+    if (url.includes('dust')) {
+      const node = {
+        name,
+        url,
+        children: [],
+        activeBuffer: false,
+        activeNode: false,
+        toggled: false,
+      };
+
+      dispatch(explorerToggleNode(node, true));
+      await dispatch(directoryRead(node.url));
+    }
+    return `${url}/${name}`;
+  });
+}
+
 export const directoryRead = resource => dispatch => {
   dispatch(directoryReadRequest(resource));
-  fetch(resource)
+  return fetch(resource)
     .then(response => {
       if (response.ok) {
         response.json().then(data => {
