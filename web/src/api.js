@@ -92,7 +92,26 @@ class API {
     }).then(cb);
   }
 
-  static async getReplEndpoints(cb) {
+  // Can we check whether maiden is local instead?
+  static async fetchJsonFromRoot(resource, defaultValue) {
+    let raw, json;
+    try {
+      raw = await fetch(`/${resource}`);
+      json = await raw.json();
+    } catch (e) { }
+
+    if (!json) {
+      try {
+        raw = await fetch(`/maiden/${resource}`);
+        json = await raw.json();
+      } catch (e) { 
+        return defaultValue;
+      }
+    }
+    return json;
+  }
+
+  static getReplEndpoints(cb) {
     const processResponse = data => {
       // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
       const origin = document.location.hostname;
@@ -108,28 +127,14 @@ class API {
       cb(config);
     }
 
-    // Can we check whether maiden is local instead?
-    try {
-      const raw = await fetch('/repl-endpoints.json');
-      const json = await raw.json();
-      processResponse(json);
-      return;
-    } catch (e) { }
-
-    try {
-      const raw = await fetch('/maiden/repl-endpoints.json');
-      const json = await raw.json();
-      processResponse(json);
-    } catch (e) {
-      console.error('could not find REPL endpoints at either expected path');
-    }
+    this.fetchJsonFromRoot('repl-endpoints.json', {}).then(data => {
+      processResponse(data);
+    })
   }
 
   static getUnitMapping(cb) {
-    fetch('units.json').then(response => {
-      response.json().then(data => {
-        cb(new Map(Object.entries(data.units)));
-      });
+    this.fetchJsonFromRoot('units.json', {}).then(data => {
+      cb(new Map(Object.entries(data.units)));
     });
   }
 
