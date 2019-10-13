@@ -38,6 +38,14 @@ class KeyStroke {
     return OS.isMac ? this.mac : this.win;
   }
 
+  get vimKey() {
+    return `<C-${this.key}>`;
+  }
+  
+  osModKey(os) {
+    return `${Modifier[os][this.modifier].name}-${this.key}`
+  }
+
   matches(event) {
     if (!this.osModifier.matches(event)) {
       return false;
@@ -50,6 +58,21 @@ class KeyBinding {
   constructor(keystroke, commandId) {
     this.keystroke = keystroke;
     this.commandId = commandId;
+  }
+
+  get aceCommand() {
+    const name = this.commandId;
+    return {
+      name,
+      bindKey: { 
+        win: this.keystroke.osModKey('win'),
+        mac: this.keystroke.osModKey('mac'),
+      },
+      exec: () => {
+        const command = commandService.commands.get(name);
+        command && command();
+      }
+    }
   }
 }
 
