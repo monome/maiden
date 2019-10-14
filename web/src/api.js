@@ -1,6 +1,6 @@
 import parsePath from 'parse-filepath';
 
-const API_ROOT = '/api/v1';
+export const API_ROOT = '/api/v1';
 
 function apiPath(p) {
   return `${API_ROOT}/${p}`;
@@ -92,49 +92,30 @@ class API {
     }).then(cb);
   }
 
-  // Can we check whether maiden is local instead?
-  static async fetchJsonFromRoot(resource, defaultValue) {
-    let raw, json;
-    try {
-      raw = await fetch(`/${resource}`);
-      json = await raw.json();
-    } catch (e) { }
-
-    if (!json) {
-      try {
-        raw = await fetch(`/maiden/${resource}`);
-        json = await raw.json();
-      } catch (e) { 
-        return defaultValue;
-      }
-    }
-    return json;
-  }
-
   static getReplEndpoints(cb) {
-    const processResponse = data => {
-      // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
-      const origin = document.location.hostname;
-      const config = new Map();
-      const template = new Map(Object.entries(data));
-      template.forEach((value, key) => {
-        const url = new URL(value);
-        if (url.hostname === undefined || url.hostname === 'maiden_app_location') {
-          url.hostname = origin;
-        }
-        config.set(key, url.href);
+    const origin = document.location.hostname;
+    fetch('repl-endpoints.json').then(response => {
+      response.json().then(data => {
+        // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
+        const config = new Map();
+        const template = new Map(Object.entries(data));
+        template.forEach((value, key) => {
+          const url = new URL(value);
+          if (url.hostname === undefined || url.hostname === 'maiden_app_location') {
+            url.hostname = origin;
+          }
+          config.set(key, url.href);
+        });
+        cb(config);
       });
-      cb(config);
-    }
-
-    this.fetchJsonFromRoot('repl-endpoints.json', {}).then(data => {
-      processResponse(data);
-    })
+    });
   }
 
   static getUnitMapping(cb) {
-    this.fetchJsonFromRoot('units.json', {}).then(data => {
-      cb(new Map(Object.entries(data.units)));
+    fetch('units.json').then(response => {
+      response.json().then(data => {
+        cb(new Map(Object.entries(data.units)));
+      });
     });
   }
 

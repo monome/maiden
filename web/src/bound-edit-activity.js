@@ -5,7 +5,7 @@ import EditActivity from './edit-activity';
 import { MATRON_COMPONENT } from './constants';
 import { nodeForResource } from './model/listing';
 import api from './api';
-import { resourceToPath } from './utils'
+import { resourceToEditPath } from './url-utils'
 
 import {
   rootList,
@@ -113,7 +113,7 @@ const mapDispatchToProps = dispatch => ({
   bufferSelect: resource => {
     dispatch(bufferSelect(resource));
 
-    const path = resourceToPath(resource);
+    const path = resourceToEditPath(resource);
     path && dispatch(pushHistory(path));
   },
   bufferSave: (resource, code, completionCB = () => {}) => {
