@@ -92,11 +92,6 @@ func serverRun() {
 		ctx.Redirect(http.StatusFound, "/maiden")
 	})
 
-	// defer routing to web app
-	r.NoRoute(func(ctx *gin.Context) {
-		ctx.File(appDir + "/index.html")
-	})
-
 	// expose app
 	r.Static("/maiden", appDir)
 
