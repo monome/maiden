@@ -1,9 +1,7 @@
 import { API_ROOT } from './api'
 
 export const DUST_ROOT = '/dust';
-
-// NB trailing instead of leading slash
-export const EDIT_PREFIX = 'edit/'
+export const EDIT_PREFIX = 'edit'
 
 export const findSubPath = (dustPath) => {
   const i = dustPath.indexOf(DUST_ROOT);
