@@ -7,7 +7,10 @@ import activities from './activities';
 import { commandService, keyService } from './services';
 import './workspace.css';
 
-ReactModal.setAppElement('#root');
+// https://github.com/reactjs/react-modal/issues/632#issuecomment-378755186
+if (process.env.NODE_ENV !== 'test')  {
+  ReactModal.setAppElement('#root');
+}
 
 class Workspace extends Component {
   constructor(props) {
