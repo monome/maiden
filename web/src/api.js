@@ -1,6 +1,6 @@
 import parsePath from 'parse-filepath';
 
-export const API_ROOT = '/api/v1';
+const API_ROOT = '/api/v1';
 
 function apiPath(p) {
   return `${API_ROOT}/${p}`;

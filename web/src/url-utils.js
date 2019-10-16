@@ -1,21 +1,17 @@
-import { API_ROOT } from './api'
+import api from './api'
 
-export const DUST_ROOT = '/dust';
-export const EDIT_PREFIX = 'edit'
-
-export const findSubPath = (dustPath) => {
-  const i = dustPath.indexOf(DUST_ROOT);
-  return ~i ? dustPath.substring(i + DUST_ROOT.length) : null;
-}
+const DUST_ROOT = 'dust/';
+const EDIT_PREFIX = 'edit/'
 
 export const resourceToEditPath = (resource) => {
-  const sub = findSubPath(resource);
+  const sub = api.fileFromResource(resource);
   return sub ? `#${EDIT_PREFIX}${DUST_ROOT}${sub}` : null;
 }
 
 export const pathToResource = (path) => {
-  const sub = findSubPath(path);
-  return sub ? `${API_ROOT}${DUST_ROOT}${sub}` : null;
+  const i = path.indexOf(DUST_ROOT);
+  const sub = i !== -1 ? path.substring(i + DUST_ROOT.length) : null;
+  return sub ? api.resourceForScript(sub, 'dust') : null;
 }
 
 export const isEditPath = (path) => {
@@ -27,7 +23,8 @@ export const inSameDir = (file1, file2) => {
     return false;
   }
 
-  const getDir = file => file.split('/').slice(0, -1).join('/');
+  const getDir = file => file.replace(/\/\//g, '/')
+                              .split('/').slice(0, -1).join('/');
   const [dir1, dir2] = [file1, file2].map(getDir);
   return dir1 === dir2;
 }
