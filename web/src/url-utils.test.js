@@ -37,21 +37,4 @@ describe('url-utils', () => {
       expect(result).toBe(false);
     });
   })
-
-  describe('inSameDir', () => {
-    it('returns true for resources in the same dir', () => {
-      const result = urlUtils.inSameDir('one/two', 'one/three');
-      expect(result).toBe(true);
-    });
-
-    it('returns true for same dir with extra slashes', () => {
-      const result = urlUtils.inSameDir('one//two', 'one/three');
-      expect(result).toBe(true);
-    });
-
-    it('returns false for resources not in the same dir', () => {
-      const result = urlUtils.inSameDir('one/two', 'four/two');
-      expect(result).toBe(false);
-    });
-  })
 });
