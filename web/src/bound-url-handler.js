@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { bufferSelect, directoryReadRecursive } from './model/edit-actions'
-import { inSameDir, isEditPath, pathToResource } from './url-utils'
+import { isEditPath, pathToResource } from './url-utils'
 
 // This might be better as a hook (not much of a class), 
 // but they are only supported in react-redux ^7.1
@@ -13,20 +13,24 @@ class UrlHandler extends Component {
 
   showFileFromUrl() {
     const { pathname } = this.props;
-    if (!isEditPath(pathname)) {
+    if (!isEditPath(pathname) || pathname === this._loadedPath) {
       return;
     }
 
     const resource = pathToResource(pathname);
-    if (!inSameDir(this._loadedPath, pathname)) {
+
+    // Only expand tree on initial page load
+    if (!this._loadedPath) {
       this.props.directoryReadRecursive(resource);
     }
     this.props.bufferSelect(resource);
+
+    // Now the path will always be set
     this._loadedPath = pathname;
   }
 
   render() {
-    if (!this.props.pathname !== this._loadedPath) {
+    if (this.props.pathname !== this._loadedPath) {
       this.showFileFromUrl();
     }
     return null;
