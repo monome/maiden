@@ -53,7 +53,7 @@ class EditActivity extends Component {
     this.state = {
       toolbarWidth: 50,
       sidebarWidth: props.ui.sidebarWidth,
-      editorHeight: props.height - props.ui.replHeight,
+      replHeight: props.ui.replHeight,
     };
   }
 
@@ -87,17 +87,17 @@ class EditActivity extends Component {
     return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
   }
 
-  editorSplitSizing() {
+  replSplitSizing() {
     return {
-      size: this.getEditorHeight(),
-      defaultSize: this.getEditorHeight(),
-      minSize: 1,
-      maxSize: this.props.height - this.props.ui.replMinHeight,
+      size: this.props.ui.replHidden? 0 : this.state.replHeight,
+      minSize: this.props.ui.replMinHeight,
+      defaultSize: this.props.ui.replMinHeight,
+      maxSize: this.props.height - this.props.ui.editorMinHeight,
     };
   }
 
   getEditorHeight() {
-    return this.props.ui.replHidden ? this.props.height : this.state.editorHeight;
+    return this.props.ui.replHidden ? this.props.height : this.props.height - this.state.replHeight - 1;
   }
 
   editorSize() {
@@ -117,14 +117,10 @@ class EditActivity extends Component {
     };
   }
 
-  getReplHeight() {
-    return this.props.height - this.getEditorHeight() - 1;
-  }
-
   replSize() {
     return {
       width: this.props.width - this.getSidebarWidth(),
-      height: this.getReplHeight(),
+      height: this.state.replHeight,
     };
   }
 
@@ -142,14 +138,14 @@ class EditActivity extends Component {
     this.props.sidebarSize(this.state.sidebarWidth);
   };
 
-  handleEditorSplitChange = size => {
+  handleReplSplitChange = size => {
     this.setState({
-      editorHeight: size,
+      replHeight: size,
     });
   };
 
-  handleEditorSplitDragFinish = () => {
-    this.props.replSize(this.getReplHeight());
+  handleReplSplitDragFinish = () => {
+    this.props.replSize(this.state.replHeight);
   };
 
   getActiveBuffer = () => this.props.buffers.get(this.props.activeBuffer);
@@ -284,9 +280,10 @@ class EditActivity extends Component {
         />
         <SplitPane
           split="horizontal"
-          {...this.editorSplitSizing()}
-          onChange={this.handleEditorSplitChange}
-          onDragFinished={this.handleEditorSplitDragFinish}
+          primary="second"
+          {...this.replSplitSizing()}
+          onChange={this.handleReplSplitChange}
+          onDragFinished={this.handleReplSplitDragFinish}
         >
           {editor}
           <ReplActivity {...this.replSize()} />

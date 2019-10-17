@@ -20,6 +20,7 @@ const initialState = {
   replHidden: false,
   replHeight: 160,
   replMinHeight: 100,
+  editorMinHeight: 100,
   configHidden: true,
   collapsedCategories: new Set(),
 };
