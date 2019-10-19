@@ -28,6 +28,7 @@ const HelpButton = props => (
         mouseEnterDelay={0}
         position='right center'
         arrow={false}>
+          <div>
             <div>
               <a className="help-button-link"
                   href="https://monome.org/docs/norns/"
@@ -48,6 +49,7 @@ const HelpButton = props => (
                   key="api"
                   rel="noopener noreferrer">api...</a>
             </div>
+          </div>
     </Popup>
 );
 
