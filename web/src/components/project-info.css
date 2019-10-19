@@ -41,7 +41,13 @@
   font-style: italic;
 }
 
-.project-info-version {
+.project-info-version, .project-info-version:visited {
   font-weight: bolder;
+  text-decoration: none;
+  color: #979797;
   margin-right: 2px;
+}
+
+.project-info-version:hover {
+  color: hsl(0, 0%, 39%);
 }

@@ -7,14 +7,15 @@ const ProjectInfo = (props) => {
   // NOTE: props.project is an immutablejs map
   const name = props.project.get('project_name');
   const description = props.project.get('description');
-  const version = props.project.get('version');
   const tags = props.project.get('tags');
-  
+  const project_version = props.project.get('version');
+  const project_url = props.project.get('project_url');
+
   let badges = undefined;
   if (tags) {
     badges = tags.map(t => <Badge key={t}>{t}</Badge>)
   }
-  
+
   let title = undefined;
   const discussion = props.project.get('discussion_url');
   if (discussion) {
@@ -31,6 +32,21 @@ const ProjectInfo = (props) => {
            </span>
   }
 
+  let version = undefined
+  if (project_url) {
+    version = <a href={project_url}
+                className='project-info-version'
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {project_version}
+              </a>
+  } else {
+    version = <span className='project-info-version'>
+                {project_version}
+              </span>
+  }
+
   return (
     <div className='project-info'>
       <div className='project-info-top'>
@@ -43,9 +59,7 @@ const ProjectInfo = (props) => {
         <span className='project-info-description'>
           {description}
         </span>
-        <span className='project-info-version'>
-          {version}
-        </span>
+      {version}
       </div>
     </div>
   );
