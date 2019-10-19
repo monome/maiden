@@ -10,9 +10,9 @@ class ActivityBar extends Component {
 
     this.props.activities.forEach(activity => {
       let button;
-      
+
       if (activity.component) {
-        button = <activity.component />
+        button = <activity.component key={activity.key} />
       } else {
         button = <IconButton
                     key={activity.selector + activity.toggle}

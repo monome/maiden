@@ -38,6 +38,7 @@ const activities = [
   },
   {
     component: HelpButton,
+    key: 'help',
     position: 'lower',
   },
   {
