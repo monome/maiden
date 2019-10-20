@@ -9,6 +9,7 @@ import ModalContent from './modal-content';
 //import { ICONS } from './svg-icons';
 
 import './project-activity.css';
+import ModalProgress from './modal-progress';
 
 class ProjectActivity extends Component {
   componentDidMount() {
@@ -27,16 +28,46 @@ class ProjectActivity extends Component {
 
   handleRefreshAction = url => {
     console.log('refreshing catalog', url);
-    this.props.updateCatalog(url);
+
+    const refreshModal = (
+      <ModalProgress
+        message={`Refreshing catalog...`}
+        buttonAction={this.modalDismiss}
+      />
+    );
+
+    this.props.showModal(refreshModal);
+
+    this.props.updateCatalog(url,
+      _ => {
+        this.props.hideModal();
+      },
+      failure => {
+        console.log('refresh-catalog failed', failure);
+        this.props.showModal(this.errorModalContent(
+          `Refreshing catalog failed`,
+          failure.error));
+      });
   };
 
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
+
+    const installModal = (
+      <ModalProgress
+        message={`Installing ${name}...`}
+        buttonAction={this.modalDismiss}
+      />
+    );
+
+    this.props.showModal(installModal);
+
     this.props.installProject(url, name,
       _ => {
         // refresh project list
         this.props.getProjectSummary();
         this.props.refreshCodeDir();
+        this.props.hideModal();
       },
       failure => {
         console.log('install-project failed', failure);
