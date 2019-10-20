@@ -4,8 +4,8 @@ DATA_DIR=~/dust/data
 INST_DIR=~/maiden
 
 # setup source and catalog dirs
-mkdir -pv $DATA_DIR/sources
-mkdir -pv $DATA_DIR/catalogs
+rm -rf $DATA_DIR/sources && mkdir -pv $DATA_DIR/sources
+rm -rf $DATA_DIR/catalogs && mkdir -pv $DATA_DIR/catalogs
 
 # copy initial contents; ignoring failures
 set +e

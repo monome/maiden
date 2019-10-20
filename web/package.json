@@ -36,7 +36,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "proxy": "http://localhost:5000",
+  "proxy": "http://norns2.local",
   "devDependencies": {
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",

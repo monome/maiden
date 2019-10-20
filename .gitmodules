@@ -1,0 +1,3 @@
+[submodule "deps/norns-community"]
+	path = deps/norns-community
+	url = https://github.com/monome/norns-community.git

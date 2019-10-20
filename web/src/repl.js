@@ -106,7 +106,8 @@ class ReplInput extends Component {
             this.input = e;
           }}
           onKeyDown={this.onKeyDown}
-          spellCheck="false"
+          spellCheck={false}
+          // autoFocus={true}
           rows={1}
         />
       </div>
