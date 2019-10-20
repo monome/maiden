@@ -1,4 +1,4 @@
 {
-    "matron": "ws://norns2.local:5555",
-    "sc": "ws://norns2.local:5556"
+    "matron": "ws://maiden_app_location:5555",
+    "sc": "ws://maiden_app_location:5556"
 }
