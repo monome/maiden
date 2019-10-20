@@ -30,7 +30,9 @@ const activities = [
     position: 'upper',
   },
   {
-    selector: 'project', // ????
+    selector: 'project',
+    tooltipMessage: `toggle project manager`,
+    tooltipPosition: 'right',
     icon: ICONS.books,
     toggle: PROJECT_COMPONENT,
     view: BoundProjectActivity,

@@ -24,7 +24,7 @@ const Catalog = (props) => {
         <TextButton color="hsl(0, 0%, 59%)"
           action={() => props.installAction(catalogURL, projectName)}
         >
-          install  
+          install
         </TextButton>
       </ProjectControl>
       </li>
@@ -35,8 +35,9 @@ const Catalog = (props) => {
     <div className='catalog-container'>
       <div className='catalog-name'>
         {catalog.get('name')}
-        <IconButton 
-          tooltipeMessage='update catalog'
+        <IconButton
+          tooltipMessage='update catalog'
+          tooltipPosition='right'
           icon={ICONS['loop2']}
           size='12'
           padding='1'
