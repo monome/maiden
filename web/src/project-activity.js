@@ -40,16 +40,31 @@ class ProjectActivity extends Component {
       },
       failure => {
         console.log('install-project failed', failure);
-        this.props.hideModal();  // FIXME: show error in new dialog
+        this.props.showModal(this.errorModalContent(
+          `Installing project "${name}" failed`,
+          failure.error));
       });
   };
 
+  modalDismiss = _ => {
+    this.props.hideModal();
+  };
+
+  errorModalContent = (message, failure) => {
+    const content = (
+      <ModalContent
+        message={message}
+        supporting={failure}
+        buttonAction={this.modalDismiss}
+        confirmOnly={true}
+      />
+    );
+    return(content);
+  };
+
+
   handleUpdateAction = (url, name) => {
     console.log('doing update', url);
-
-    // const modalDismiss = _ => {
-    //   this.props.hideModal();
-    // };
 
     const modalCompletion = choice => {
       if (choice === 'ok') {
@@ -61,12 +76,9 @@ class ProjectActivity extends Component {
           },
           failure => {
             console.log('update-project failed', failure);
-            this.props.hideModal(); // FIXME: show error in new dialog
-            // this.props.updateModal({
-            //   message: `Updating project "${name}" failed.`,
-            //   supporting: failure,
-            //   buttonAction: modalDismiss,
-            // })
+            this.props.showModal(this.errorModalContent(
+              `Updating project "${name}" failed`,
+              failure.error));
           });
       } else {
         // update request canceled
@@ -77,7 +89,7 @@ class ProjectActivity extends Component {
     const modalContent = (
       <ModalContent
         message={`Update project "${name}"?`}
-        supporting="Locally modified changes can be overwritten"
+        supporting="Local modifications will be overwritten"
         buttonAction={modalCompletion}
       />
     );
@@ -98,9 +110,10 @@ class ProjectActivity extends Component {
             this.props.hideModal();
           },
           failure => {
-            // TODO: make this a dialog
             console.log('remove-project failed', failure);
-            this.props.hideModal();
+            this.props.showModal(this.errorModalContent(
+              `Removing project "${name}" failed`,
+              failure.error));
           });
       } else {
         // canel or any other outcome
