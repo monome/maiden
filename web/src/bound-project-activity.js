@@ -59,11 +59,11 @@ const mapDispatchToProps = dispatch => ({
   installProject: (catalogURL, name, onSuccess, onFailure) => {
     dispatch(installProject(catalogURL, name, onSuccess, onFailure));
   },
-  updateProject: (projectURL, onSuccess, onFailure) => {
-    dispatch(updateProject(projectURL, onSuccess, onFailure));
+  updateProject: (projectURL, name, onSuccess, onFailure) => {
+    dispatch(updateProject(projectURL, name, onSuccess, onFailure));
   },
-  removeProject: (projectURL, onSuccess, onFailure) => {
-    dispatch(removeProject(projectURL, onSuccess, onFailure));
+  removeProject: (projectURL, name, onSuccess, onFailure) => {
+    dispatch(removeProject(projectURL, name, onSuccess, onFailure));
   },
 });
 

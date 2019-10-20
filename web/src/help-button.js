@@ -19,7 +19,7 @@ const contentStyle = {
 };
 
 const HelpButton = props => (
-    <Popup 
+    <Popup
         trigger={trigger}
         on='hover'
         contentStyle={contentStyle}
@@ -28,9 +28,28 @@ const HelpButton = props => (
         mouseEnterDelay={0}
         position='right center'
         arrow={false}>
-            <div><a className="help-button-link" href="https://monome.org/docs/norns/" target="_blank" rel="noopener noreferrer">overview...</a></div>
-            <div><a className="help-button-link" href="https://monome.org/docs/norns/script-reference/" target="_blank" rel="noopener noreferrer">script reference...</a></div>
-            <div><a className="help-button-link" href="/doc" target="_blank" rel="noopener noreferrer">api...</a></div>
+          <div>
+            <div>
+              <a className="help-button-link"
+                  href="https://monome.org/docs/norns/"
+                  target="_blank"
+                  key="overview"
+                  rel="noopener noreferrer">overview...</a>
+            </div>
+            <div>
+              <a className="help-button-link"
+                  href="https://monome.org/docs/norns/script-reference/" target="_blank"
+                  key="reference"
+                  rel="noopener noreferrer">script reference...</a>
+            </div>
+            <div>
+              <a className="help-button-link"
+                  href="/doc"
+                  target="_blank"
+                  key="api"
+                  rel="noopener noreferrer">api...</a>
+            </div>
+          </div>
     </Popup>
 );
 

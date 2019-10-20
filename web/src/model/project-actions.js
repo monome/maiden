@@ -65,13 +65,13 @@ export const projectInstallRequest = (catalog, name) => ({ type: PROJECT_INSTALL
 export const projectInstallSuccess = (project, catalog, name) => ({ type: PROJECT_INSTALL_SUCCESS, project, catalog, name });
 export const projectInstallFailure = (error, catalog, name) => ({ type: PROJECT_INSTALL_FAILURE, error, catalog, name });
 
-export const projectUpdateRequest = project => ({ type: PROJECT_UPDATE_REQUEST, project });
-export const projectUpdateSuccess = project => ({ type: PROJECT_UPDATE_SUCCESS, project });
-export const projectUpdateFailure = (error, project) => ({ type: PROJECT_UPDATE_FAILURE, error, project });
+export const projectUpdateRequest = (project, name) => ({ type: PROJECT_UPDATE_REQUEST, project, name });
+export const projectUpdateSuccess = (project, name) => ({ type: PROJECT_UPDATE_SUCCESS, project, name });
+export const projectUpdateFailure = (error, project, name) => ({ type: PROJECT_UPDATE_FAILURE, error, project, name });
 
-export const projectRemoveRequest = project => ({ type: PROJECT_REMOVE_REQUEST, project });
-export const projectRemoveSuccess = project => ({ type: PROJECT_REMOVE_SUCCESS, project });
-export const projectRemoveFailure = (error, project) => ({ type: PROJECT_REMOVE_FAILURE, error, project });
+export const projectRemoveRequest = (project, name) => ({ type: PROJECT_REMOVE_REQUEST, project, name });
+export const projectRemoveSuccess = (project, name) => ({ type: PROJECT_REMOVE_SUCCESS, project, name });
+export const projectRemoveFailure = (error, project, name) => ({ type: PROJECT_REMOVE_FAILURE, error, project, name });
 
 //
 // async actions
@@ -181,36 +181,36 @@ export const installProject = (catalog, name, onSuccess, onFailure) => dispatch 
     });
 };
 
-export const updateProject = (project, onSuccess, onFailure) => dispatch => {
-  dispatch(projectUpdateRequest(project));
+export const updateProject = (project, name, onSuccess, onFailure) => dispatch => {
+  dispatch(projectUpdateRequest(project, name));
   return API.updateProject(project, 
     successResult => {
-      dispatch(projectUpdateSuccess(successResult, project));
+      dispatch(projectUpdateSuccess(successResult, project, name));
       if (onSuccess) {
-        onSuccess(successResult);
+        onSuccess(successResult, name);
       }
     },
     failureResult => {
-      dispatch(projectUpdateFailure(failureResult, project));
+      dispatch(projectUpdateFailure(failureResult, project, name));
       if (onFailure) {
-        onFailure(failureResult);
+        onFailure(failureResult, name);
       }
     });
 };
 
-export const removeProject = (project, onSuccess, onFailure) => dispatch => {
-  dispatch(projectRemoveRequest(project));
+export const removeProject = (project, name, onSuccess, onFailure) => dispatch => {
+  dispatch(projectRemoveRequest(project, name));
   return API.removeProject(project,
     successResult => {
-      dispatch(projectRemoveSuccess(successResult, project));
+      dispatch(projectRemoveSuccess(successResult, project, name));
       if (onSuccess) {
-        onSuccess(successResult);
+        onSuccess(successResult, name);
       }
     },
     failureResult => {
-      dispatch(projectRemoveFailure(failureResult, project));
+      dispatch(projectRemoveFailure(failureResult, project, name));
       if (onFailure) {
-        onFailure(failureResult);
+        onFailure(failureResult, name);
       }
     });
 };

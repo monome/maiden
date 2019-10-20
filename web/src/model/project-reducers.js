@@ -77,7 +77,7 @@ const projects = (state = initialProjectState, action) => {
 
     case CATALOG_SUCCESS:
       return handleCatalogGetSuccess(action, state)
-  
+
     case CATALOG_FAILURE:
       // TODO:
       // MAINT: this is ugly, the catalog summary will contain faux entries
@@ -90,12 +90,12 @@ const projects = (state = initialProjectState, action) => {
         'entries': [],
         'name': action.error.name,
       });
-      return { ...state, 
+      return { ...state,
         catalogs: state.catalogs.set(action.error.name, emptyCatalog),
       };
 
     case CATALOG_UPDATE_REQUEST:
-      // TODO: 
+      // TODO:
       return state;
 
     case CATALOG_UPDATE_SUCCESS:
@@ -117,7 +117,7 @@ const projects = (state = initialProjectState, action) => {
       return { ...state, activeComponent: action.component };
 
     case PROJECT_INSTALL_REQUEST:
-      return { ...state, 
+      return { ...state,
         installing: state.installing.set(installID(action.catalog, action.name), 'installing...'),
       };
 
@@ -127,12 +127,12 @@ const projects = (state = initialProjectState, action) => {
       };
 
     case PROJECT_INSTALL_SUCCESS:
-      return { ...state, 
+      return { ...state,
         installing: state.installing.delete(installID(action.catalog, action.name)),
       };
 
     case PROJECT_UPDATE_REQUEST:
-      return { ...state, 
+      return { ...state,
         mutating: state.mutating.set(action.project, 'updating...'),
       };
 
@@ -142,25 +142,25 @@ const projects = (state = initialProjectState, action) => {
       };
 
     case PROJECT_UPDATE_SUCCESS:
-      return { ...state, 
+      return { ...state,
         mutating: state.mutating.delete(action.project),
       };
 
     case PROJECT_REMOVE_REQUEST:
-      return { ...state, 
+      return { ...state,
         mutating: state.mutating.set(action.project, 'removing...'),
       };
-    
+
     case PROJECT_REMOVE_FAILURE:
       return { ...state,
         mutating: state.mutating.set(action.project, action.error.error),
       };
 
     case PROJECT_REMOVE_SUCCESS:
-      return { ...state, 
+      return { ...state,
         mutating: state.mutating.delete(action.project),
       };
-    
+
     default:
       return state;
   }

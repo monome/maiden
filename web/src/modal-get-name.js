@@ -105,7 +105,7 @@ class ModalGetName extends Component {
           rows="1"
           maxLength="128"
           wrap="false"
-          autoFocus="true"
+          autoFocus={true}
           onKeyDown={this.handleKeyDown}
           onChange={this.handleOnChange}
         />

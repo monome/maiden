@@ -3,7 +3,7 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import './modal-content.css';
 
-const ModalContent = props => {
+const ModalProgress = props => {
   const cancelButton = (
     <IconButton
       key="cancel"
@@ -16,22 +16,7 @@ const ModalContent = props => {
     />
   );
 
-  const okButton = (
-    <IconButton
-      key="ok"
-      action={() => props.buttonAction('ok')}
-      tooltipMessage="ok"
-      tooltipPosition="top"
-      icon={ICONS.check}
-      color="hsl(0, 0%, 59%)"
-      size="30"
-    />
-  );
-
-  let buttons = [cancelButton, okButton];
-  if (props.confirmOnly) {
-    buttons = [okButton];
-  }
+  let buttons = [cancelButton];
 
   return (
     <div className="modal-content">
@@ -50,4 +35,4 @@ const ModalContent = props => {
   );
 };
 
-export default ModalContent;
+export default ModalProgress;
