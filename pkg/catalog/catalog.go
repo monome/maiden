@@ -23,10 +23,10 @@ type Entry struct {
 
 // catalogContent represents the contents of a catalog file
 type catalogContent struct {
-	Header  Header           `json:"file_info"`
-	Name    string           `json:"catalog_name"`
-	Date    time.Time        `json:"date,omitempty"`
-	Entries map[string]Entry `json:"entries"`
+	Header  Header    `json:"file_info"`
+	Name    string    `json:"catalog_name"`
+	Date    time.Time `json:"date,omitempty"`
+	Entries []Entry   `json:"entries"`
 }
 
 // Catalog is collected information about
@@ -51,7 +51,7 @@ func New(name string) *Catalog {
 		content: &catalogContent{
 			Name:    name,
 			Header:  catalogDefaultHeader,
-			Entries: make(map[string]Entry),
+			Entries: make([]Entry, 0),
 		},
 	}
 }
@@ -89,26 +89,29 @@ func (c *Catalog) Store(w io.Writer) error {
 // Insert places the given entry in the catalog potentially replacing an entry
 // with the name name
 func (c *Catalog) Insert(entry *Entry) {
-	c.content.Entries[entry.ProjectName] = *entry
+	for i, e := range c.content.Entries {
+		if e.ProjectName == entry.ProjectName {
+			c.content.Entries[i] = *entry
+			return
+		}
+	}
+	// else we haven't found a matching entry, append
+	c.content.Entries = append(c.content.Entries, *entry)
 }
 
 // Get returns the first matching entry found in the catalog or nil
 func (c *Catalog) Get(name string) *Entry {
-	if e, ok := c.content.Entries[name]; ok {
-		return &e
+	for _, e := range c.content.Entries {
+		if e.ProjectName == name {
+			return &e
+		}
 	}
 	return nil
 }
 
 // Entries returns all the entries in the catalog
 func (c *Catalog) Entries() []Entry {
-	es := make([]Entry, len(c.content.Entries))
-	i := 0
-	for _, v := range c.content.Entries {
-		es[i] = v
-		i++
-	}
-	return es
+	return c.content.Entries
 }
 
 // Name returns the name of the catalog
