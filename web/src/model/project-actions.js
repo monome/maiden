@@ -27,6 +27,9 @@ export const PROJECT_INSTALL_REQUEST = 'PROJECT_INSTALL_REQUEST';
 export const PROJECT_INSTALL_SUCCESS = 'PROJECT_INSTALL_SUCCESS';
 export const PROJECT_INSTALL_FAILURE = 'PROJECT_INSTALL_FAILURE';
 
+export const PROJECT_UPDATE_ALL_SUCCESS = 'PROJECT_UPDATE_ALL_SUCCESS';
+export const PROJECT_UPDATE_ALL_FAILURE = 'PROJECT_UPDATE_ALL_FAILURE';
+
 export const PROJECT_UPDATE_REQUEST = 'PROJECT_UPDATE_REQUEST';
 export const PROJECT_UPDATE_SUCCESS = 'PROJECT_UPDATE_SUCCESS';
 export const PROJECT_UPDATE_FAILURE = 'PROJECT_UPDATE_FAILURE';
@@ -64,6 +67,9 @@ export const projectViewSelect = component => ({ type: PROJECT_VIEW_SELECT, comp
 export const projectInstallRequest = (catalog, name) => ({ type: PROJECT_INSTALL_REQUEST, catalog, name });
 export const projectInstallSuccess = (project, catalog, name) => ({ type: PROJECT_INSTALL_SUCCESS, project, catalog, name });
 export const projectInstallFailure = (error, catalog, name) => ({ type: PROJECT_INSTALL_FAILURE, error, catalog, name });
+
+export const projectUpdateAllSuccess = (successArr) => ({ type: PROJECT_UPDATE_ALL_SUCCESS, successArr });
+export const projectUpdateAllFailure = (successArr, failureArr) => ({ type: PROJECT_UPDATE_ALL_FAILURE, successArr, failureArr });
 
 export const projectUpdateRequest = (project, name) => ({ type: PROJECT_UPDATE_REQUEST, project, name });
 export const projectUpdateSuccess = (project, name) => ({ type: PROJECT_UPDATE_SUCCESS, project, name });
@@ -179,6 +185,35 @@ export const installProject = (catalog, name, onSuccess, onFailure) => dispatch 
         onFailure(failureResult);
       }
     });
+};
+
+export const updateAllProjects = (projects, onSuccess, onFailure) => dispatch => {
+  const successArr = [];
+  const failureArr = [];
+  const requestsArr = projects.map(({url,name}) => {
+    dispatch(projectUpdateRequest(url, name));
+    return API.updateProject(url, 
+      successResult => {
+        successArr.push({successResult, url, name});
+      },
+      failureResult => {
+        failureArr.push({failureResult, url, name});
+      });
+  });
+
+  Promise.all(requestsArr).then(_ => {
+    if (failureArr.length) {
+      dispatch(projectUpdateAllFailure(successArr, failureArr));
+      if (onFailure) {
+        onFailure(successArr, failureArr);
+      }
+    } else {
+      dispatch(projectUpdateAllSuccess(successArr));
+      if (onSuccess) {
+        onSuccess(successArr);
+      }
+    }
+  });
 };
 
 export const updateProject = (project, name, onSuccess, onFailure) => dispatch => {

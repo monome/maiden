@@ -67,7 +67,7 @@ class TextButton extends Component {
   render() {
     const style = {color: this.state.color};
     return (
-      <button className='text-button'
+      <button className={`text-button ${this.props.classes ? ` ${this.props.classes}` : ''}`}
         onClick={this.handleClick}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}

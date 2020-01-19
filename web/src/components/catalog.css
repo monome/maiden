@@ -23,3 +23,11 @@
 .catalog-entries > li {
   margin: 0 0 4px 0;
 }
+
+.catalog-installedLabel {
+  font-style: italic;
+  font-family: monospace;
+  width: 10em;
+  text-align: center;
+  color: rgb(204, 204, 204);
+}

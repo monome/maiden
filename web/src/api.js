@@ -227,7 +227,7 @@ class API {
   static updateProject(projectURL, onSuccess, onFailure) {
     // FIXME: this really shouldn't be a GET verb
     const url = `${projectURL}?update=`;
-    fetch(url, {'method': 'GET'}).then(response => {
+    return fetch(url, {'method': 'GET'}).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);

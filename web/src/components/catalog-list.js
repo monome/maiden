@@ -8,7 +8,7 @@ const CatalogList = props => {
     const catalog = props.catalogs.get(name);
     return (
       <li key={name}>
-        <Catalog catalog={catalog} installAction={props.installAction} refreshAction={props.refreshAction} />
+        <Catalog catalog={catalog} installedProjects={props.installedProjects} installAction={props.installAction} refreshAction={props.refreshAction} />
       </li>
     );
   });

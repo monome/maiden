@@ -93,6 +93,56 @@ class ProjectActivity extends Component {
     return(content);
   };
 
+  handleUpdateAllAction = (projectList) => {
+    const modalCompletion = choice => {
+      if (choice === 'ok') {
+        this.props.updateAllProjects(projectList,
+          successArr => {
+            this.props.getProjectSummary();
+            this.props.refreshCodeDir();
+            this.props.showModal(<ModalContent
+              message='Updating all projects succeeded.'
+              supporting={`${successArr.length ? `The following projects were updated:\n\n${successArr.map(e => e.name).join('\n')}.` : ''}`}
+              style={{whiteSpace: 'pre-line'}}
+              buttonAction={this.modalDismiss}
+              confirmOnly={true}
+            />)
+          },
+          (successArr, failureArr) => {
+            this.props.showModal(<ModalContent
+              message='Updating all projects failed.'
+              supporting={`${successArr.length ? `The following projects were updated:\n\n${successArr.map(e => e.name).join('\n')}.\n\n` : ''}
+              The following errors happened:\n\n${failureArr.map(e => `${e.name}: ${e.failureResult.error}`).join('\n')}`}
+              style={{whiteSpace: 'pre-line'}}
+              buttonAction={this.modalDismiss}
+              confirmOnly={true}
+            />)
+          });
+        this.props.showModal(
+          <ModalContent
+            message='Updating all projects'
+            supporting="Updating all projects in progress"
+            buttonAction={this.modalDismiss}
+            confirmOnly={true}
+          />
+        );
+      } else {
+        // update request canceled
+        this.props.hideModal();
+      }
+    };
+
+    const modalContent = (
+      <ModalContent
+        message={`Update all projects?`}
+        supporting="Local modifications will be overwritten"
+        buttonAction={modalCompletion}
+      />
+    );
+
+    this.props.showModal(modalContent);
+  };
+
 
   handleUpdateAction = (url, name) => {
     console.log('doing update', url);
@@ -179,12 +229,14 @@ class ProjectActivity extends Component {
           <ProjectList
             name='installed'
             projects={this.props.projectSummary}
+            updateAllAction={this.handleUpdateAllAction}
             updateAction={this.handleUpdateAction}
             removeAction={this.handleRemoveAction}
           />
           <CatalogList
             name='available'
             catalogSummary={this.props.catalogSummary}
+            installedProjects={this.props.projectSummary.get('projects') && this.props.projectSummary.get('projects').map(e => e.get('project_name'))}
             catalogs={this.props.catalogs}
             installAction={this.handleInstallAction}
             refreshAction={this.handleRefreshAction}

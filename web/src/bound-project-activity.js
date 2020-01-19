@@ -10,6 +10,7 @@ import {
   getProjectSummary,
   getProject,
   installProject,
+  updateAllProjects,
   updateProject,
   removeProject,
 } from './model/project-actions';
@@ -58,6 +59,9 @@ const mapDispatchToProps = dispatch => ({
   },
   installProject: (catalogURL, name, onSuccess, onFailure) => {
     dispatch(installProject(catalogURL, name, onSuccess, onFailure));
+  },
+  updateAllProjects: (projectList, onSuccess, onFailure) => {
+    dispatch(updateAllProjects(projectList, onSuccess, onFailure));
   },
   updateProject: (projectURL, name, onSuccess, onFailure) => {
     dispatch(updateProject(projectURL, name, onSuccess, onFailure));

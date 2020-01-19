@@ -7,8 +7,9 @@ import ProjectControl from './project-control';
 import './project-list.css';
 
 const ProjectList = props => {
-  const { projects, updateAction, removeAction } = props;
+  const { projects, updateAllAction, updateAction, removeAction } = props;
   let entries = undefined;
+  const projectList = projects.get('projects') ? projects.get('projects').map(e => ({url: e.get('url'), name: e.get('project_name')})).toArray() : [];
   if (projects && projects.has('projects')) {
     entries = projects.get('projects').map(p => {
       // layer project data over catalog entry (if it exists)
@@ -43,6 +44,11 @@ const ProjectList = props => {
 
   return (
     <div className='project-list-container'>
+      {projectList.length ? (<TextButton
+        classes='project-updateAllButton'
+        color='hsl(0, 0%, 59%)' 
+        action={() => updateAllAction(projectList)}
+      >update all</TextButton>) : ''}
       <ul className='project-listing'>
         {entries}
       </ul>

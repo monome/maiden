@@ -10,22 +10,29 @@ import ProjectControl from './project-control';
 import './catalog.css';
 
 const Catalog = (props) => {
-  const {catalog} = props;
+  const {catalog, installedProjects} = props;
   const catalogURL = catalog.get('url');
 
   const entries = catalog.get('entries').map(e => {
     const projectName = e.get('project_name');
     const projectURL = e.get('project_url');
     const key = `${projectName}-${projectURL || ""}`; // to silence warnings
+
     return (
       <li key={key}>
       <ProjectControl>
         <ProjectInfo project={e} />
-        <TextButton color="hsl(0, 0%, 59%)"
-          action={() => props.installAction(catalogURL, projectName)}
-        >
-          install
-        </TextButton>
+        {(installedProjects || []).indexOf(projectName) === -1 ? (
+          <TextButton color="hsl(0, 0%, 59%)"
+            action={() => props.installAction(catalogURL, projectName)}
+          >
+            install
+          </TextButton>
+        ) : (
+          <div className='catalog-installedLabel'>
+              already installed
+          </div>
+        )}
       </ProjectControl>
       </li>
     );
