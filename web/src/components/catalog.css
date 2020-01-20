@@ -24,8 +24,7 @@
   margin: 0 0 4px 0;
 }
 
-.catalog-installedLabel {
-  font-style: italic;
+.catalog-installed-label {
   font-family: monospace;
   width: 10em;
   text-align: center;

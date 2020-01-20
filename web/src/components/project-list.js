@@ -25,13 +25,13 @@ const ProjectList = props => {
           <ProjectControl>
             <ProjectInfo project={composed} />
             <TextButton
-              color='hsl(0, 0%, 59%)' 
+              color='hsl(0, 0%, 45%)'
               action={() => updateAction(url, name)}
             >
               update
             </TextButton>
             <TextButton
-              color='hsl(0, 0%, 59%)' 
+              color='hsl(0, 0%, 45%)'
               action={() => removeAction(url, name)}
             >
               remove
@@ -45,8 +45,8 @@ const ProjectList = props => {
   return (
     <div className='project-list-container'>
       {projectList.length ? (<TextButton
-        classes='project-updateAllButton'
-        color='hsl(0, 0%, 59%)' 
+        classes='project-update-all-button'
+        color='hsl(0, 0%, 45%)'
         action={() => updateAllAction(projectList)}
       >update all</TextButton>) : ''}
       <ul className='project-listing'>

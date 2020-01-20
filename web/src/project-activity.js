@@ -8,6 +8,8 @@ import ModalContent from './modal-content';
 //import IconButton from './icon-button';
 //import { ICONS } from './svg-icons';
 
+import { orderResultsByProjectName } from './model/project-actions';
+
 import './project-activity.css';
 import ModalProgress from './modal-progress';
 
@@ -93,35 +95,69 @@ class ProjectActivity extends Component {
     return(content);
   };
 
+  updateSummaryModalContent = (successArr, failureArr) => {
+    let success = undefined;
+    if (successArr && successArr.length) {
+      success = (
+        <div>
+          <span className='project-activity-update-modal-section-header'>Updated</span>
+          <br /><br />
+          <table>
+            <tbody>
+              {successArr.map(e => (<tr><td>{e.name}</td></tr>))}
+            </tbody>
+          </table><br /><br />
+        </div>
+      );
+    }
+
+    let failure = undefined;
+    if (failureArr && failureArr.length) {
+      failure = (
+        <div>
+          <span className='project-activity-update-modal-section-header'>Failed</span>
+          <br /><br />
+          <table>
+            <tbody>
+              {failureArr.map(e => (
+                <tr>
+                  <td style={{ width: '100px' }}>{e.name}</td>
+                  <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
+                </tr>))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    return (
+      <ModalContent
+        buttonAction={this.modalDismiss}
+        confirmOnly={true}
+      >
+        {success}
+        {failure}
+      </ModalContent>
+    )
+  };
+
   handleUpdateAllAction = (projectList) => {
     const modalCompletion = choice => {
       if (choice === 'ok') {
         this.props.updateAllProjects(projectList,
-          successArr => {
-            successArr = successArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-            this.props.getProjectSummary();
-            this.props.refreshCodeDir();
-            this.props.showModal(<ModalContent
-              message='Updating all projects succeeded.'
-              supporting={`${successArr.length ? `The following projects were updated:\n\n${successArr.map(e => e.name).join('\n')}.` : ''}`}
-              style={{whiteSpace: 'pre-line'}}
-              buttonAction={this.modalDismiss}
-              confirmOnly={true}
-            />)
-          },
+          // completion callback
           (successArr, failureArr) => {
-            successArr = successArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
-            failureArr = failureArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+            if (successArr) {
+              successArr = successArr.sort(orderResultsByProjectName);
+            }
+            if (failureArr) {
+              failureArr = failureArr.sort(orderResultsByProjectName);
+            }
             this.props.getProjectSummary();
             this.props.refreshCodeDir();
-            this.props.showModal(<ModalContent
-              message='Updating all projects failed.'
-              supporting={<span>{successArr.length ? (<div>The following projects were updated:<br /><br /><table><tbody>{successArr.map(e => (<tr><td>{e.name}</td></tr>))}</tbody></table><br /><br /></div>) : ''}
-              <div>The following errors happened:<br /><br /><table><tbody>{failureArr.map(e => (<tr><td style={{ width: '100px' }}>{e.name}</td><td style={{ width: 'auto' }}>{e.failureResult.error}</td></tr>))}</tbody></table></div></span>}
-              buttonAction={this.modalDismiss}
-              confirmOnly={true}
-            />)
+            this.props.showModal(this.updateSummaryModalContent(successArr, failureArr));
           });
+
         this.props.showModal(
           <ModalContent
             message='Updating all projects'
@@ -133,23 +169,10 @@ class ProjectActivity extends Component {
       } else {
         // update request canceled
         this.props.hideModal();
-        <table>
-    <thead>
-        <tr>
-            <th colspan="2">The table header</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>The table body</td>
-            <td>with two columns</td>
-        </tr>
-    </tbody>
-</table>
       }
     };
 
-    const modalContent = (
+    const confirmUpdateAllModalContent = (
       <ModalContent
         message={`Update all projects?`}
         supporting="Local modifications will be overwritten"
@@ -157,7 +180,7 @@ class ProjectActivity extends Component {
       />
     );
 
-    this.props.showModal(modalContent);
+    this.props.showModal(confirmUpdateAllModalContent);
   };
 
 

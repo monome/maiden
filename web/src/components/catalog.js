@@ -23,14 +23,14 @@ const Catalog = (props) => {
       <ProjectControl>
         <ProjectInfo project={e} />
         {(installedProjects || []).indexOf(projectName) === -1 ? (
-          <TextButton color="hsl(0, 0%, 59%)"
+          <TextButton color="hsl(0, 0%, 45%)"
             action={() => props.installAction(catalogURL, projectName)}
           >
             install
           </TextButton>
         ) : (
-          <div className='catalog-installedLabel'>
-              already installed
+          <div className='catalog-installed-label'>
+              installed
           </div>
         )}
       </ProjectControl>
@@ -48,7 +48,7 @@ const Catalog = (props) => {
           icon={ICONS['loop2']}
           size='12'
           padding='1'
-          color='hsl(0, 0%, 59%)'
+          color='hsl(0, 0%, 45%)'
           dark={true}
           action={() => props.refreshAction(catalogURL)}
         />
