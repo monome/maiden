@@ -190,17 +190,24 @@ export const installProject = (catalog, name, onSuccess, onFailure) => dispatch 
 export const updateAllProjects = (projects, onSuccess, onFailure) => dispatch => {
   const successArr = [];
   const failureArr = [];
-  const requestsArr = projects.map(({url,name}) => {
+  const requestsArr = [];
+  projects.forEach(({url,name}) => {
     dispatch(projectUpdateRequest(url, name));
-    return API.updateProject(url, 
-      successResult => {
-        successArr.push({successResult, url, name});
-      },
-      failureResult => {
-        failureArr.push({failureResult, url, name});
-      });
+    const promise = new Promise((resolve) => {
+      API.updateProject(url, 
+        successResult => {
+          successArr.push({successResult, url, name});
+          resolve('resolved');
+        },
+        failureResult => {
+          console.log("got here")
+          failureArr.push({failureResult, url, name});
+          resolve('resolved');
+        });
+    });
+    console.log(promise);
+    requestsArr.push(promise);
   });
-
   Promise.all(requestsArr).then(_ => {
     if (failureArr.length) {
       dispatch(projectUpdateAllFailure(successArr, failureArr));

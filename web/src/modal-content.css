@@ -26,3 +26,13 @@
     color: rgb(151, 80, 49);
     height: 1em;
 }
+
+.modal-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.modal-content td {
+    padding: 5px;
+    border: 1px solid #ccc;
+}

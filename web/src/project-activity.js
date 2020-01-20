@@ -98,6 +98,7 @@ class ProjectActivity extends Component {
       if (choice === 'ok') {
         this.props.updateAllProjects(projectList,
           successArr => {
+            successArr = successArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
             this.props.getProjectSummary();
             this.props.refreshCodeDir();
             this.props.showModal(<ModalContent
@@ -109,11 +110,14 @@ class ProjectActivity extends Component {
             />)
           },
           (successArr, failureArr) => {
+            successArr = successArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+            failureArr = failureArr.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+            this.props.getProjectSummary();
+            this.props.refreshCodeDir();
             this.props.showModal(<ModalContent
               message='Updating all projects failed.'
-              supporting={`${successArr.length ? `The following projects were updated:\n\n${successArr.map(e => e.name).join('\n')}.\n\n` : ''}
-              The following errors happened:\n\n${failureArr.map(e => `${e.name}: ${e.failureResult.error}`).join('\n')}`}
-              style={{whiteSpace: 'pre-line'}}
+              supporting={<span>{successArr.length ? (<div>The following projects were updated:<br /><br /><table><tbody>{successArr.map(e => (<tr><td>{e.name}</td></tr>))}</tbody></table><br /><br /></div>) : ''}
+              <div>The following errors happened:<br /><br /><table><tbody>{failureArr.map(e => (<tr><td style={{ width: '100px' }}>{e.name}</td><td style={{ width: 'auto' }}>{e.failureResult.error}</td></tr>))}</tbody></table></div></span>}
               buttonAction={this.modalDismiss}
               confirmOnly={true}
             />)
@@ -121,7 +125,7 @@ class ProjectActivity extends Component {
         this.props.showModal(
           <ModalContent
             message='Updating all projects'
-            supporting="Updating all projects in progress"
+            supporting="please wait..."
             buttonAction={this.modalDismiss}
             confirmOnly={true}
           />
@@ -129,6 +133,19 @@ class ProjectActivity extends Component {
       } else {
         // update request canceled
         this.props.hideModal();
+        <table>
+    <thead>
+        <tr>
+            <th colspan="2">The table header</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>The table body</td>
+            <td>with two columns</td>
+        </tr>
+    </tbody>
+</table>
       }
     };
 
