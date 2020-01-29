@@ -8,9 +8,19 @@
     padding: 6px;
 }
 
+.help-button-popup {
+    font-family: monospace !important; 
+    background-color: #F4F4F4 !important;
+    padding: 6px 6px 6px .4em !important;
+    border: 1px solid rgb(130, 130, 130, 0.1) !important;
+    border-left: none !important;
+    box-shadow: none !important;
+    padding-left: .4em !important;
+}
+
 .help-button-link, .help-botton-link:visited {
     text-decoration: none;
-    color: #979797;
+    color: hsl(0, 0%, 46%);
 }
 
 .help-button-link:hover {
