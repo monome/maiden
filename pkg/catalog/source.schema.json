@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/monome/maiden/master/pkg/catalog/source.schema.json",
+    "title": "maiden catalog source file",
+    "description": "details of maiden catalog to download",
+    "type": "object",
+    "properties": {
+        "file_info": {
+            "description": "file format metadata",
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            },
+            "required": [ "kind", "version" ]
+        },
+        "source": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "object"
+                }
+            },
+            "required": [ "name", "method", "parameters" ]
+        }
+    },
+    "required": [ "file_info", "source" ]
+}
