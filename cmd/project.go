@@ -40,7 +40,7 @@ var installProjectCmd = &cobra.Command{
 
 var updateProjectCmd = &cobra.Command{
 	Use:   "update",
-	Short: "install a script/project",
+	Short: "update a script/project",
 	// Args:  cobra.,
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
