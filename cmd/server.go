@@ -154,6 +154,9 @@ func serverRun() {
 	if err != nil {
 		log.Fatalf("listen error: %v", err)
 	}
+
+	go s.updateCatalogs()
+
 	log.Fatal(http.Serve(l, r))
 
 	if dbusConn != nil {
@@ -376,7 +379,9 @@ type catalogsInfo struct {
 	Self     string           `json:"url"`
 }
 
-func (s *server) refreshCatalogs() {
+func (s *server) refreshCatalogs() bool {
+	var catalogChanged = false
+
 	// FIXME: only load the catalogs if they have changed on disk
 	s.catalogsMutex.Lock()
 	defer s.catalogsMutex.Unlock()
@@ -406,6 +411,7 @@ func (s *server) refreshCatalogs() {
 					continue
 				}
 				s.catalogs[path] = fresh
+				catalogChanged = true
 			}
 		} else {
 			// new file, load it
@@ -415,10 +421,35 @@ func (s *server) refreshCatalogs() {
 				continue
 			}
 			s.catalogs[path] = fresh
+			catalogChanged = true
 		}
 	}
 
-	logger.Debug("finished refreshing catalogs...")
+	logger.Debugf("finished refreshing catalogs... changed: %t", catalogChanged)
+	return catalogChanged
+}
+
+func (s *server) updateCatalogs() {
+	// load up existing catalogs if any
+	s.refreshCatalogs()
+
+	// sleep for a bit to give the network time to come up
+	time.Sleep(15 * time.Second)
+
+	// attempt to update all catalogs, if a change is detected
+	attempts := 5
+	for attempts > 0 {
+		logger.Debug("attempting to update catalogs")
+		// trigger catalog download
+		CatalogUpdateRun(nil)
+		if s.refreshCatalogs() {
+			logger.Debug("catalogs updated")
+			break
+		}
+		attempts--
+		logger.Debugf("catalog update, no change, sleeping, %v more attempts", attempts)
+		time.Sleep(1 * time.Minute)
+	}
 }
 
 func (s *server) getCatalogsHandler(ctx *gin.Context) {
