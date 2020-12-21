@@ -1,4 +1,10 @@
+.catalog-list-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .catalog-list {
+  width: 100%;
   list-style: none;
   margin: 0px;
   padding: 0px;
@@ -6,4 +12,14 @@
 
 .catalog-list li {
   margin: 0 0 8px 0;
+}
+
+.catalog-refresh-all-button {
+  color: rgb(150, 150, 150);
+  background: rgb(249, 249, 249);
+  padding: 15px;
+  width: 95%;
+  margin-right: 8px;
+  margin-bottom: 5px;
+  align-self: center;
 }

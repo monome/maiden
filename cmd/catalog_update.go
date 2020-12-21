@@ -36,6 +36,11 @@ func downloadURLToFile(filepath string, url string) error {
 		logger.Debug("url get failed: ", err)
 		return err
 	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("download failed for %s, status: %d", url, resp.StatusCode)
+	}
+
 	defer resp.Body.Close()
 
 	logger.Debug("creating file: ", filepath)
@@ -93,7 +98,7 @@ func CatalogUpdateRun(args []string) {
 		case "download":
 			DownloadCatalog(loaded.Source, outputPath)
 		default:
-			fmt.Println("unrecognize catalog source:", sourceMethod)
+			fmt.Println("unrecognized catalog source:", sourceMethod)
 		}
 	}
 }
@@ -136,7 +141,7 @@ func DownloadCatalog(source *catalog.Source, outputPath string) {
 
 	fmt.Printf("fetching %s... ", url)
 	if err := downloadURLToFile(outputPath, url); err != nil {
-		logger.Fatal(err)
+		logger.Warn(err)
 	}
 	fmt.Printf("wrote: %s\n", outputPath)
 }
