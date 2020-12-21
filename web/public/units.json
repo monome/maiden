@@ -1,7 +1,7 @@
 {
     "units" : {
         "matron": "norns-matron.service",
-        "sc": "norns-sclang.service",
+        "supercollider": "norns-sclang.service",
         "crone": "norns-crone.service"
     }
 }
