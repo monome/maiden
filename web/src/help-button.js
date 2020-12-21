@@ -26,7 +26,7 @@ const HelpButton = props => (
       </div>
       <div>
         <a className="help-button-link"
-          href="https://monome.org/docs/norns/script-reference/" target="_blank"
+          href="https://monome.org/docs/norns/reference/" target="_blank"
           key="reference"
           rel="noopener noreferrer">script reference...</a>
       </div>
