@@ -52,6 +52,82 @@ class ProjectActivity extends Component {
       });
   };
 
+  handleRefreshAllAction = (catalogSummary) => {
+    const modalCompletion = choice => {
+      if (choice === 'ok') {
+        this.props.updateAllCatalogs(catalogSummary, (successArr, failureArr) => {
+          this.props.showModal(this.updateRefreshAllModalContent(successArr, failureArr));
+        });
+
+        this.props.showModal(
+          <ModalContent
+            message='Refreshing all catalogs'
+            supporting="please wait..."
+            buttonAction={this.modalDismiss}
+            confirmOnly={true}
+          />
+        );
+      } else {
+        // update request canceled
+        this.props.hideModal();
+      }
+    };
+
+    this.props.showModal(
+      <ModalContent
+        message={`Refresh all catalogs?`}
+        buttonAction={modalCompletion}
+      />
+    );
+  };
+
+  updateRefreshAllModalContent = (successArr, failureArr) => {
+    let success = undefined;
+    if (successArr && successArr.length) {
+      success = (
+        <div>
+          <span className='project-activity-update-modal-section-header'>Updated</span>
+          <br /><br />
+          <table>
+            <tbody>
+              {successArr.map(e => (<tr><td>{e.name}</td></tr>))}
+            </tbody>
+          </table><br /><br />
+        </div>
+      );
+    }
+
+    let failure = undefined;
+    if (failureArr && failureArr.length) {
+      failure = (
+        <div>
+          <span className='project-activity-update-modal-section-header'>Failed</span>
+          <br /><br />
+          <table>
+            <tbody>
+              {failureArr.map(e => (
+                <tr>
+                  <td style={{ width: '100px' }}>{e.name}</td>
+                  <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
+                </tr>))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    return (
+      <ModalContent
+        buttonAction={this.modalDismiss}
+        confirmOnly={true}
+      >
+        {success}
+        {failure}
+      </ModalContent>
+    )
+  };
+
+
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
 
@@ -278,6 +354,7 @@ class ProjectActivity extends Component {
             catalogSummary={this.props.catalogSummary}
             installedProjects={this.props.projectSummary.get('projects') && this.props.projectSummary.get('projects').map(e => e.get('project_name'))}
             catalogs={this.props.catalogs}
+            refreshAllAction={this.handleRefreshAllAction}
             installAction={this.handleInstallAction}
             refreshAction={this.handleRefreshAction}
           />

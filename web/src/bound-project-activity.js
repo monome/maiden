@@ -7,6 +7,7 @@ import {
   getCatalog,
   getCatalogByURL,
   updateCatalog,
+  updateAllCatalogs,
   getProjectSummary,
   getProject,
   installProject,
@@ -47,6 +48,9 @@ const mapDispatchToProps = dispatch => ({
   },
   updateCatalog: (catalogURL, onSuccess, onFailure) => {
     dispatch(updateCatalog(catalogURL, onSuccess, onFailure));
+  },
+  updateAllCatalogs: (catalogSummary, onSuccess, onFailure) => {
+    dispatch(updateAllCatalogs(catalogSummary, onSuccess, onFailure));
   },
   refreshCodeDir: () => {
     dispatch(directoryRead(DUST_CODE_RESOURCE));

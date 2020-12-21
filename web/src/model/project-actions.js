@@ -13,6 +13,8 @@ export const CATALOG_UPDATE_REQUEST = 'CATALOG_UPDATE_REQUEST';
 export const CATALOG_UPDATE_SUCCESS = 'CATALOG_UPDATE_SUCCESS';
 export const CATALOG_UPDATE_FAILURE = 'CATALOG_UPDATE_FAILURE';
 
+export const CATALOG_UPDATE_ALL_COMPLETE = 'CATALOG_UPDATE_ALL_COMPLETE';
+
 export const PROJECT_SUMMARY_REQUEST = 'PROJECT_SUMMARY_REQUEST';
 export const PROJECT_SUMMARY_SUCCESS = 'PROJECT_SUMMARY_SUCCESS';
 export const PROJECT_SUMMARY_FAILURE = 'PROJECT_SUMMARY_FAILURE';
@@ -52,6 +54,9 @@ export const catalogFailure = (name, error) => ({ type: CATALOG_FAILURE, name, e
 export const catalogUpdateRequest = url => ({ type: CATALOG_UPDATE_REQUEST, url });
 export const catalogUpdateSuccess = (url, catalog) => ({ type: CATALOG_UPDATE_SUCCESS, url, catalog });
 export const catalogUpdateFailure = error => ({ type: CATALOG_UPDATE_FAILURE, error });
+
+export const catalogUpdateAllComplete = (successArr, failureArr) => ({ type: CATALOG_UPDATE_ALL_COMPLETE, successArr, failureArr });
+
 
 export const projectSummaryRequest = () => ({ type: PROJECT_SUMMARY_REQUEST });
 export const projectSummarySuccess = projects => ({ type: PROJECT_SUMMARY_SUCCESS, projects });
@@ -144,6 +149,37 @@ export const updateCatalog = (url, onSuccess, onFailure) => dispatch => {
         onFailure(failureResult)
       }
     });
+};
+
+export const updateAllCatalogs = (catalogSummary, onComplete) => dispatch => {
+  const successArr = [];
+  const failureArr = [];
+  const requestsArr = [];
+  catalogSummary.forEach(c => {
+    const name = c.get('name');
+    const url = c.get('url');
+    dispatch(catalogUpdateRequest(url));
+    const promise = new Promise((resolve) => {
+      API.updateCatalog(url,
+        successResult => {
+          successArr.push({successResult, url, name});
+          const catalog = fromJS(successResult);
+          dispatch(catalogUpdateSuccess(url, catalog))
+          resolve('resolved');
+        },
+        failureResult => {
+          failureArr.push({failureResult, url, name});
+          resolve('resolved');
+        });
+    });
+    requestsArr.push(promise);
+  });
+  Promise.all(requestsArr).then(_ => {
+    dispatch(catalogUpdateAllComplete(successArr, failureArr));
+    if (onComplete) {
+      onComplete(successArr, failureArr);
+    }
+  });
 };
 
 export const getProjectSummary = cb => dispatch => {

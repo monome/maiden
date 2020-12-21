@@ -1,6 +1,7 @@
 import React from 'react';
 import Catalog from './catalog';
 import './catalog-list.css';
+import TextButton from './text-button';
 
 const CatalogList = props => {
   const catalogs = props.catalogSummary.valueSeq().map(c => {
@@ -13,9 +14,16 @@ const CatalogList = props => {
     );
   });
   return (
-    <ul className='catalog-list'>
-      {catalogs}
-    </ul>
+    <div className='catalog-list-container'>
+      {catalogs.size ? (<TextButton
+        classes='catalog-refresh-all-button'
+        color='hsl(0, 0%, 45%)'
+        action={() => props.refreshAllAction(props.catalogSummary)}
+        >refresh all</TextButton>) : ''}
+      <ul className='catalog-list'>
+        {catalogs}
+      </ul>
+    </div>
   );
 };
 
