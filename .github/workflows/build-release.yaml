@@ -1,0 +1,32 @@
+name: build-release
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+      - fix/*
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          make release
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: maiden
+          path: |
+            dist/maiden.tgz

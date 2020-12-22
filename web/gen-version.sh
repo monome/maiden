@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 version=$(git describe --tags | cut -c 2- | cut -d '-' -f 1)
 commit=$(git describe --always --dirty)
