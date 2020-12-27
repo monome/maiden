@@ -190,12 +190,19 @@ func InferProjectNameFromURL(u *url.URL) string {
 	host := u.Hostname()
 	if host == "github.com" || host == "gitlab.com" || host == "bitbucket.org" {
 		// ...then the project/repo name is the second element of the path
-		return strings.Split(u.Path, "/")[2]
+		name := strings.Split(u.Path, "/")[2]
+		if ext := filepath.Ext(name); ext == ".git" {
+			name = strings.TrimSuffix(name, ext)
+		}
+		return name
 	}
 
 	// ...else, try the basename????
 	name := path.Base(u.Path)
-	name = name[0 : len(name)-len(filepath.Ext(name))] // strip any extension
+	if ext := filepath.Ext(name); ext != "" {
+		name = strings.TrimSuffix(name, ext)
+	}
+	//name = name[0 : len(name)-len(filepath.Ext(name))] // strip any extension
 	return name
 }
 
