@@ -39,6 +39,12 @@ export const PROJECT_REMOVE_REQUEST = 'PROJECT_REMOVE_REQUEST';
 export const PROJECT_REMOVE_SUCCESS = 'PROJECT_REMOVE_SUCCESS';
 export const PROJECT_REMOVE_FAILURE = 'PROJECT_REMOVE_FAILURE';
 
+export const PROJECT_INSTALL_URL_REQUEST = 'PROJECT_INSTALL_URL_REQUEST';
+export const PROJECT_INSTALL_URL_SUCCESS = 'PROJECT_INSTALL_URL_SUCCESS';
+export const PROJECT_INSTALL_URL_FAILURE = 'PROJECT_INSTALL_URL_FAILURE';
+
+
+
 //
 // sync action creators
 //
@@ -81,6 +87,10 @@ export const projectUpdateFailure = (error, project, name) => ({ type: PROJECT_U
 export const projectRemoveRequest = (project, name) => ({ type: PROJECT_REMOVE_REQUEST, project, name });
 export const projectRemoveSuccess = (project, name) => ({ type: PROJECT_REMOVE_SUCCESS, project, name });
 export const projectRemoveFailure = (error, project, name) => ({ type: PROJECT_REMOVE_FAILURE, error, project, name });
+
+export const projectInstallURLRequest = (url) => ({ type: PROJECT_INSTALL_URL_REQUEST, url });
+export const projectInstallURLSuccess = (project, url) => ({ type: PROJECT_INSTALL_URL_SUCCESS, project, url });
+export const projectInstallURLFailure = (error, url) => ({ type: PROJECT_INSTALL_URL_FAILURE, error, url });
 
 //
 // async actions
@@ -283,6 +293,24 @@ export const removeProject = (project, name, onSuccess, onFailure) => dispatch =
       }
     });
 };
+
+export const installProjectFromURL = (url, onSuccess, onFailure) => dispatch => {
+  dispatch(projectInstallURLRequest(url));
+  return API.installProjectFromURL(url,
+    successResult => {
+      dispatch(projectInstallSuccess(successResult, url));
+      if (onSuccess) {
+        onSuccess(successResult);
+      }
+    },
+    failureResult => {
+      dispatch(projectInstallFailure(failureResult, url));
+      if (onFailure) {
+        onFailure(failureResult);
+      }
+    });
+};
+
 
 //
 // helpers

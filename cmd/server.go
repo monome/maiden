@@ -810,7 +810,13 @@ func (s *server) installProjectHandler(ctx *gin.Context) {
 
 	logger.Debugf("inferred project name: %s", projectName)
 
-	err = dust.Install(projectDir, projectName, srcURL, nil)
+	// fake a catalog entry so that at least the inferred project name gets back
+	// the client in an easy to access form
+	entry := catalog.Entry{
+		ProjectName: projectName,
+	}
+
+	err = dust.Install(projectDir, projectName, srcURL, &entry)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": fmt.Sprintf("install failed: %s", err),
@@ -819,7 +825,8 @@ func (s *server) installProjectHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, projectInstallResponse{
-		URL: s.apiPath("project", projectName),
+		CatalogEntry: entry,
+		URL:          s.apiPath("project", projectName),
 	})
 }
 
