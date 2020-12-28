@@ -40,6 +40,7 @@ import {
 } from './edit-helpers';
 
 import api from '../api';
+import { DUST_CODE_RESOURCE } from '../api';
 
 /*
 
@@ -65,6 +66,11 @@ edit: {
 */
 
 const handleScriptNew = (action, state) => {
+  if (action.name === undefined && action.siblingResource === undefined) {
+    console.log("ignoring script new request, neither name nor placement specified");
+    return state;
+  }
+
   const category = action.category || 'dust';
   const categoryIndex = rootCategoryIndex(state.rootNodes, category);
 
@@ -73,12 +79,13 @@ const handleScriptNew = (action, state) => {
   let siblingIsDir = false;
 
   const childPath = keyPathForResource(state.rootNodes, action.siblingResource);
+
   if (childPath) {
     // a sibling exists, use that level of hierarchy for name computation
     const siblingNode = state.rootNodes.getIn(childPath);
     siblingIsDir = nodeIsDir(siblingNode);
     if (siblingIsDir) {
-      // "selected" sibling is dir so use the directories children as the "siblings" for name generation and placement
+      // "selected" sibling is dirtoJS so use the directories children as the "siblings" for name generation and placement
       siblings = state.rootNodes.getIn(childPath.push('children'));
     } else {
       // "selected" sibling is file so use its parent directory's children as the "siblings" for name generation and placement
@@ -120,7 +127,7 @@ const handleScriptNew = (action, state) => {
 const handleBufferChange = (action, state) => {
   if (action.resource === undefined) {
     console.log('implicitly creating new script');
-    return handleScriptNew(scriptNew(undefined, action.value), state);
+    return handleScriptNew(scriptNew(DUST_CODE_RESOURCE, action.value, undefined, 'dust'), state);
   }
 
   const buffer = state.buffers.get(action.resource);

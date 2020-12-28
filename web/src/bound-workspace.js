@@ -7,8 +7,9 @@ import { toggleComponent } from './model/ui-actions';
 
 import { replEndpoints, replConnect } from './model/repl-actions';
 
-import { rootList } from './model/edit-actions';
+import { directoryRead, rootList } from './model/edit-actions';
 import { USER_DATA_PATH } from './constants';
+import { DUST_CODE_RESOURCE } from './api';
 
 const mapStateToProps = state => {
   const selected = state.activity.selected;
@@ -31,7 +32,10 @@ const mapDispatchToProps = dispatch => ({
     dispatch(replConnect(component, endpoint));
   },
   userDataList: () => {
-    dispatch(rootList(USER_DATA_PATH));
+    dispatch(rootList(USER_DATA_PATH, () => {
+      // NB: this directory read is here to ensure that the dust/code directory is materialized ahead of any implicit "untitled.lua" buffer generation in order to ensure the implicity script lands in the code directory instead of the root directory.
+      dispatch(directoryRead(DUST_CODE_RESOURCE));
+    }));
   },
 });
 

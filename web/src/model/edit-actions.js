@@ -176,12 +176,15 @@ export const explorerToggleNode = (node, toggled) => ({
 // async actions
 //
 
-export const rootList = rootName => dispatch => {
+export const rootList = (rootName, cb) => dispatch => {
   dispatch(rootListRequest(rootName));
   return api.listRoot(rootName, response => {
     if (response.ok) {
       response.json().then(data => {
         dispatch(rootListSuccess(rootName, data));
+        if (cb) {
+          cb(rootName, data);
+        }
       });
     } else {
       dispatch(rootListFailure(rootName));
@@ -213,7 +216,7 @@ export const bufferRead = resource => dispatch => {
     });
 };
 
-// This is async because nested directories don't 
+// This is async because nested directories don't
 // like opening until their parents have loaded
 export const directoryReadRecursive = resource => async dispatch => {
   if (!resource) {

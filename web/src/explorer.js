@@ -115,17 +115,6 @@ class Section extends Component {
     console.log('activeNode: ', this.props.activeNode ? this.props.activeNode.toJS() : undefined);
     const selectedResource = this.props.activeNode ? this.props.activeNode.get('url') : undefined;
 
-    // add doesn't (necessarily) require a selection
-    if (name === 'add') {
-      this.props.scriptCreate(
-        selectedResource, // sibling resource
-        undefined, // initial buffer contents
-        undefined, // buffer name
-        this.getCategory(),
-      ); // buffer category
-      return;
-    }
-
     if (name === 'new-folder') {
       // FIXME: switch this to using this.props.activeNode
       this.handleNewFolder(this.state.selectedNode);
@@ -135,6 +124,16 @@ class Section extends Component {
     // other tools only function if there is an active buffer/selection, ensure there is one and it is from this category
 
     if (this.props.activeNode === undefined) {
+      return;
+    }
+
+    if (name === 'add') {
+      this.props.scriptCreate(
+        selectedResource, // sibling resource
+        undefined, // initial buffer contents
+        undefined, // buffer name
+        this.getCategory(),
+      ); // buffer category
       return;
     }
 
