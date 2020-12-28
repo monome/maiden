@@ -40,6 +40,7 @@ class Editor extends Component {
     }
 
     session.setOptions(clonedOpts);
+    session.setUseWrapMode(true);
   };
 
   removeConflictingBindings = (editor, handlerName) => {
