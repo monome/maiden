@@ -1,5 +1,7 @@
 import { Map } from 'immutable';
-import api from '../api';
+import api, { DUST_CODE_RESOURCE } from '../api';
+import { directoryRead } from './edit-actions';
+import { projectInstallURLSuccess, projectInstallURLRequest, projectInstallURLFailure } from './project-actions';
 
 export const REPL_ENDPOINTS_REQUEST = 'REPL_ENDPOINTS_REQUEST';
 export const REPL_ENDPOINTS_SUCCESS = 'REPL_ENDPOINTS_SUCCESS';
@@ -122,18 +124,36 @@ export const replInput = (component, value) => (dispatch, getState) => {
   // check to see if the input is a unit command, if so fire off async actions
   const input = value.trim();
   if (input.startsWith(';')) {
-    const state = getState().repl;
-    const operation = input.slice(1);
-    const unitName = state.units.get(component);
-    api.doUnitOperation(unitName, operation, response => {
-      if (response.result === 'done') {
-        const endpoint = state.endpoints.get(component);
-        dispatch(replConnect(component, endpoint, 4));
-        dispatch(replEcho(component, `${input} => ${response.result}`));
-      } else {
-        dispatch(replEcho(component, `${input} => ${response.error}`));
-      }
-    });
+    const operation = input.slice(1).split(/\s+/);
+    if (operation[0] === 'install') {
+      console.log("doing install for:", operation);
+      const projectURL = operation[1];
+      dispatch(projectInstallURLRequest(projectURL));
+      dispatch(replEcho(component, ';' + operation.join(" "))); // inject into command history
+      dispatch(replReceive(component, "starting..."));
+      api.installProjectFromURL(projectURL, successResponse => {
+          dispatch(projectInstallURLSuccess(successResponse, projectURL));
+          dispatch(replReceive(component, `installed "${successResponse.catalog_entry.project_name}"!`));
+          dispatch(directoryRead(DUST_CODE_RESOURCE));
+        },
+        failResponse => {
+          dispatch(projectInstallURLFailure(failResponse.error, projectURL));
+          dispatch(replReceive(component, failResponse.error));
+        });
+    } else {
+      // default to assuming this is a unit operation
+      const state = getState().repl;
+      const unitName = state.units.get(component);
+      api.doUnitOperation(unitName, operation[0], response => {
+        if (response.result === 'done') {
+          const endpoint = state.endpoints.get(component);
+          dispatch(replConnect(component, endpoint, 4));
+          dispatch(replReceive(component, `${input} => ${response.result}`));
+        } else {
+          dispatch(replReceive(component, `${input} => ${response.error}`));
+        }
+      });
+    }
   } else {
     // nothing special
     dispatch(replSend(component, value));

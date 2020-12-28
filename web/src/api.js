@@ -224,6 +224,17 @@ class API {
     });
   }
 
+  static installProjectFromURL(sourceURL, onSuccess, onFailure) {
+    const encodedURL = encodeURIComponent(sourceURL);
+    const url = `${API_ROOT}/project/install?url=${encodedURL}`;
+    fetch(url, {'method': 'POST'}).then(response => {
+      const cb = response.ok ? onSuccess : onFailure;
+      response.json().then(body => {
+        cb(body);
+      });
+    });
+  }
+
   static updateProject(projectURL, onSuccess, onFailure) {
     // FIXME: this really shouldn't be a GET verb
     const url = `${projectURL}?update=`;
