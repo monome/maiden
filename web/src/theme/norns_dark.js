@@ -1,7 +1,7 @@
 // based on "tomorrow night"
 //
 // * suppresses background image on gutter errors / warnings in favor of color (a la "chaos")
-import ace from 'brace';
+import ace from 'ace-builds/src-noconflict/ace';
 
 /* eslint-disable no-param-reassign */
 ace.define(

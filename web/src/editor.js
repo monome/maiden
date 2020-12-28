@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import AceEditor from 'react-ace';
-import 'brace/ext/language_tools';
-import 'brace/ext/searchbox';
-import 'brace/mode/lua';
-import 'brace/mode/json';
-import 'brace/snippets/lua';
-import 'brace/theme/dawn';
-import 'brace/keybinding/vim';
-import 'brace/keybinding/emacs';
+import 'ace-builds/src-noconflict/ext-language_tools';
+import 'ace-builds/src-noconflict/ext-searchbox';
+import 'ace-builds/src-noconflict/mode-lua'
+import 'ace-builds/src-noconflict/mode-json'
+import 'ace-builds/src-noconflict/snippets/lua';
+import 'ace-builds/src-noconflict/theme-dawn';
+import 'ace-builds/src-noconflict/keybinding-vim';
+import 'ace-builds/src-noconflict/keybinding-emacs';
 
 import api from './api';
 import { commandService, editorService, keyService } from './services';
@@ -40,6 +40,7 @@ class Editor extends Component {
     }
 
     session.setOptions(clonedOpts);
+    session.setUseWrapMode(true);
   };
 
   removeConflictingBindings = (editor, handlerName) => {

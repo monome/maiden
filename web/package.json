@@ -11,7 +11,7 @@
     "macaddress": "^0.2.9",
     "parse-filepath": "^1.0.2",
     "react": "^16.8",
-    "react-ace": "^5.10.0",
+    "react-ace": "^9.2.1",
     "react-dom": "^16.8",
     "react-linkify": "^0.2.2",
     "react-modal": "^3.8",
