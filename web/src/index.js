@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import './index.css';
 import App from './app';
-import registerServiceWorker from './worker';
 import store, { history } from './model/store';
 import { ConnectedRouter } from 'connected-react-router';
 
@@ -18,5 +17,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root'),
 );
-
-registerServiceWorker();
