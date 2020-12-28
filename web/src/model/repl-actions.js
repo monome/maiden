@@ -1,5 +1,6 @@
 import { Map } from 'immutable';
-import api from '../api';
+import api, { DUST_CODE_RESOURCE } from '../api';
+import { directoryRead } from './edit-actions';
 import { projectInstallURLSuccess, projectInstallURLRequest, projectInstallURLFailure } from './project-actions';
 
 export const REPL_ENDPOINTS_REQUEST = 'REPL_ENDPOINTS_REQUEST';
@@ -133,6 +134,7 @@ export const replInput = (component, value) => (dispatch, getState) => {
       api.installProjectFromURL(projectURL, successResponse => {
           dispatch(projectInstallURLSuccess(successResponse, projectURL));
           dispatch(replReceive(component, `installed "${successResponse.catalog_entry.project_name}"!`));
+          dispatch(directoryRead(DUST_CODE_RESOURCE));
         },
         failResponse => {
           dispatch(projectInstallURLFailure(failResponse.error, projectURL));
