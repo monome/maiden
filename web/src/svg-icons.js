@@ -17,6 +17,8 @@ export const ICONS = {
 
   stack: '',
 
+  stop: 'M4 4h20v20h-20z',
+
   'floppy-disk':
     'M28 0h-28v32h32v-28l-4-4zM16 4h4v8h-4v-8zM28 28h-24v-24h2v10h18v-10h2.343l1.657 1.657v22.343z',
 

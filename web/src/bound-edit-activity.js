@@ -134,6 +134,10 @@ const mapDispatchToProps = dispatch => ({
       console.log('resource:', resource, 'cannot be run as a script');
     }
   },
+  scriptClear: () => {
+    const cmd = "norns.script.clear()";
+    dispatch(replSend(MATRON_COMPONENT, cmd));
+  },
   selectionEval: code => {
     dispatch(replSend(MATRON_COMPONENT, code));
   },
