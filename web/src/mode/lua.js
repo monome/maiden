@@ -1,5 +1,5 @@
-import 'brace/mode/lua';
-import 'brace/mode/text';
+import 'ace-builds/src-noconflict/mode-lua';
+import 'ace-builds/src-noconflict/mode-text';
 
 import EditorMode from '../mode';
 import { nornsSnippetCompleter } from '../snippets';
