@@ -19,7 +19,7 @@ cp -v maiden.yaml $REL_DIR
 
 # sources
 mkdir -pv $REL_DIR/dist/sources/
-cp -v deps/norns-community/sources/*.json $REL_DIR/dist/sources/
+cp -v sources/*.json $REL_DIR/dist/sources/
 
 # app
 echo -e "\nbuilding app"

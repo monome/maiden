@@ -1,0 +1,13 @@
+{
+  "file_info": {
+    "version": 1,
+    "kind": "catalog_source"
+  },
+  "source": {
+      "name": "base",
+      "method": "download",
+      "parameters": {
+          "url": "https://raw.githubusercontent.com/monome/norns-community/main/base.json"
+      }
+  }
+}
