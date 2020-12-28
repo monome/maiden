@@ -27,6 +27,14 @@ const tools = [
     icon: ICONS.play3,
     disabled: false,
   },
+  {
+    name: 'stop',
+    tooltipMessage: `stop script (${OS.metaKey()}.)`,
+    tooltipPosition: 'left',
+    icon: ICONS.stop,
+    disable: false,
+    alwaysEnable: true,
+  },
 ];
 
 const EditTools = props => {
@@ -154,6 +162,12 @@ class EditActivity extends Component {
     const buffer = this.getActiveBuffer();
     const resource = this.props.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
 
+    if (tool === 'stop') {
+      this.props.scriptClear();
+      return;
+    }
+
+    // remaining tools require a buffer
     if (!buffer) {
       return;
     }
@@ -203,13 +217,14 @@ class EditActivity extends Component {
     const canEdit = this.isText(buffer);
     const code = canEdit ? buffer.get('value') : '';
 
-    const enabledTools = tools.map(t => ({ ...t, disabled: !canEdit }));
+    const enabledTools = tools.map(t => ({ ...t, disabled: !(canEdit || t.alwaysEnable) }));
 
     // TODO (pq): move this somewhere more appropriate.
     commandService.registerCommand('toggle repl', () => this.props.replToggle());
     commandService.registerCommand('toggle sidebar', () => this.props.sidebarToggle());
     commandService.registerCommand('play', () => this.handleToolInvoke('play'));
     commandService.registerCommand('save', () => this.handleToolInvoke('save'));
+    commandService.registerCommand('stop', () => this.handleToolInvoke('stop'));
 
     // TODO: switch editor based on buffer content type
     const editor = (
