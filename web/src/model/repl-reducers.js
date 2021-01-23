@@ -71,7 +71,7 @@ const handleReplSend = (action, state, conn) => {
     console.log("No socket; can't send", action.value, 'to', action.component);
     return state;
   }
-  if (action.component === 'sc') {
+  if (action.component === 'supercollider') {
     // lame, sclang expects commands to be terminated with special command bytes
     socket.send(`${action.value}\x1b`);
   } else {
