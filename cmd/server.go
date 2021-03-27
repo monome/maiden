@@ -720,10 +720,12 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 		// ignore the value for now but it could be a commit or version in the future?
 		if p.IsManaged() {
 			if err := p.Update(true); err != nil {
-				ctx.JSON(http.StatusInternalServerError, gin.H{
-					"error": fmt.Sprintf("update failed: %s", err),
-				})
-				return
+				if "already up-to-date" != err {
+					ctx.JSON(http.StatusInternalServerError, gin.H{
+						"error": fmt.Sprintf("update failed: %s", err),
+					})
+					return
+				}
 			}
 		} else {
 			// load catalog(s)
