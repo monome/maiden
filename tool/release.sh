@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # quick and dirty release script
 REL_DIR=./dist/maiden
 

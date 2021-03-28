@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/src-d/go-git.v4"
+	"github.com/go-git/go-git/v5"
 
 	"github.com/monome/maiden/pkg/catalog"
 )
@@ -358,17 +358,18 @@ func (p *Project) UpdateMetaData(md *MetaData) {
 	md.Updated = time.Now()
 }
 
-// Update pulls down any changes for the project if it is managed via git
-func (p *Project) Update(force bool) error {
+// Update pulls down any changes for the project if it is managed via git,
+// returns true if the project was updated
+func (p *Project) Update(force bool) (bool, error) {
 	// https://github.com/src-d/go-git/blob/master/_examples/pull/main.go
 	r, err := git.PlainOpen(p.Root)
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	w, err := r.Worktree()
 	if err != nil {
-		return err
+		return false, err
 	}
 
 	// lame, pull removes unknown files so the .project metadata file is removed.
@@ -380,12 +381,22 @@ func (p *Project) Update(force bool) error {
 		RemoteName: "origin",
 		// Force:      force,
 	})
+	updated := true
 	if err != nil {
-		return err
+		if err == git.NoErrAlreadyUpToDate {
+			updated = false
+			err = nil
+		} else {
+			return false, err
+		}
 	}
 
-	p.UpdateMetaData(md)
-	return writeMetaData(md, p.metaDataPath())
+	if updated {
+		p.UpdateMetaData(md)
+		err = writeMetaData(md, p.metaDataPath())
+	}
+
+	return updated, err
 }
 
 /*

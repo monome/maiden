@@ -13,6 +13,8 @@ import { orderResultsByProjectName } from './model/project-actions';
 import './project-activity.css';
 import ModalProgress from './modal-progress';
 
+const SYSTEM_RESET_RECOMMENDATION = 'Run SYSTEM > RESET to ensure engine changes take effect';
+
 class ProjectActivity extends Component {
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
@@ -46,7 +48,7 @@ class ProjectActivity extends Component {
       },
       failure => {
         console.log('refresh-catalog failed', failure);
-        this.props.showModal(this.errorModalContent(
+        this.props.showModal(this.informModalContent(
           `Refreshing catalog failed`,
           failure.error));
       });
@@ -145,11 +147,15 @@ class ProjectActivity extends Component {
         // refresh project list
         this.props.getProjectSummary();
         this.props.refreshCodeDir();
-        this.props.hideModal();
+        this.props.showModal(
+          this.informModalContent(`Installed project: "${name}"`,
+            SYSTEM_RESET_RECOMMENDATION,
+          )
+        );
       },
       failure => {
         console.log('install-project failed', failure);
-        this.props.showModal(this.errorModalContent(
+        this.props.showModal(this.informModalContent(
           `Installing project "${name}" failed`,
           failure.error));
       });
@@ -159,11 +165,11 @@ class ProjectActivity extends Component {
     this.props.hideModal();
   };
 
-  errorModalContent = (message, failure) => {
+  informModalContent = (message, supporting) => {
     const content = (
       <ModalContent
         message={message}
-        supporting={failure}
+        supporting={supporting}
         buttonAction={this.modalDismiss}
         confirmOnly={true}
       />
@@ -182,7 +188,21 @@ class ProjectActivity extends Component {
             <tbody>
               {successArr.map(e => (<tr><td>{e.name}</td></tr>))}
             </tbody>
-          </table><br /><br />
+          </table>
+          <br />
+          <span className='supporting'>{SYSTEM_RESET_RECOMMENDATION}</span>
+          <br /><br />
+        </div>
+      );
+    } else {
+      success = (
+        <div>
+          <span className='project-activity-update-modal-section-header'>No updates</span>
+          <br /><br />
+          <span className='project-activity-update-modal-section-message'>
+            The latest versions are already installed
+          </span>
+          <br /><br />
         </div>
       );
     }
@@ -224,7 +244,7 @@ class ProjectActivity extends Component {
           // completion callback
           (successArr, failureArr) => {
             if (successArr) {
-              successArr = successArr.sort(orderResultsByProjectName);
+              successArr = successArr.sort(orderResultsByProjectName).filter(response => response.successResult.updated);
             }
             if (failureArr) {
               failureArr = failureArr.sort(orderResultsByProjectName);
@@ -237,7 +257,7 @@ class ProjectActivity extends Component {
         this.props.showModal(
           <ModalContent
             message='Updating all projects'
-            supporting="please wait..."
+            supporting="Please wait..."
             buttonAction={this.modalDismiss}
             confirmOnly={true}
           />
@@ -266,14 +286,27 @@ class ProjectActivity extends Component {
     const modalCompletion = choice => {
       if (choice === 'ok') {
         this.props.updateProject(url, name,
-          _ => {
-            this.props.getProjectSummary();
-            this.props.refreshCodeDir();
-            this.props.hideModal();
+          success => {
+            console.log('updated', success);
+            if (success.updated) {
+              this.props.getProjectSummary();
+              this.props.refreshCodeDir();
+              this.props.showModal(
+                this.informModalContent(`Updated project: "${name}"`,
+                  SYSTEM_RESET_RECOMMENDATION,
+                )
+              );
+            } else {
+              this.props.showModal(
+                this.informModalContent('No updates',
+                  `The latest version of "${name}" is already installed`,
+                )
+              );
+            }
           },
           failure => {
             console.log('update-project failed', failure);
-            this.props.showModal(this.errorModalContent(
+            this.props.showModal(this.informModalContent(
               `Updating project "${name}" failed`,
               failure.error));
           });
@@ -308,7 +341,7 @@ class ProjectActivity extends Component {
           },
           failure => {
             console.log('remove-project failed', failure);
-            this.props.showModal(this.errorModalContent(
+            this.props.showModal(this.informModalContent(
               `Removing project "${name}" failed`,
               failure.error));
           });
