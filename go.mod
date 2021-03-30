@@ -7,6 +7,7 @@ require (
 	github.com/coreos/go-systemd v0.0.0-20181031085051-9002847aa142
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20180417025440-6ad7b9c9d382
+	github.com/go-git/go-git/v5 v5.2.0 // indirect
 	github.com/godbus/dbus v0.0.0-20181101234600-2ff6f7ffd60f // indirect
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/hashicorp/go-getter v1.5.1

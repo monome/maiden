@@ -50,7 +50,7 @@ func init() {
 	serverCmd.Flags().StringVar(&appDir, "app", "app/", "`path` to maiden web app directory")
 	serverCmd.Flags().StringVar(&docDir, "doc", "doc/", "`path` to matron lua docs")
 
-	// allow config file values to be overriden by command line
+	// allow config file values to be overridden by command line
 	viper.BindPFlag("dust.path", serverCmd.Flags().Lookup("data"))
 	viper.BindPFlag("web.path", serverCmd.Flags().Lookup("app"))
 	viper.BindPFlag("doc.path", serverCmd.Flags().Lookup("doc"))
@@ -717,9 +717,12 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 	//
 	_, exists := ctx.GetQuery("update")
 	if exists {
+		updated := true
 		// ignore the value for now but it could be a commit or version in the future?
 		if p.IsManaged() {
-			if err := p.Update(true); err != nil {
+			logger.Debugf("updating managed project: %s", p.Name)
+			if updated, err = p.Update(true); err != nil {
+				logger.Debugf("update failed: %s, e=%s", p.Name, err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"error": fmt.Sprintf("update failed: %s", err),
 				})
@@ -737,7 +740,7 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 
 			// assume zip
 			if entry := SearchCatalogs(catalogs, p.Name); entry != nil {
-				// TODO: only remove if download succeds?
+				// TODO: only remove if download succeeds?
 				os.RemoveAll(p.Root)
 				if err = dust.Install(projectDir, p.Name, entry.URL, entry); err != nil {
 					ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -750,6 +753,14 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 				return
 			}
 		}
+
+		logger.Debugf("update ok: %s %s", p.Name, updated)
+		// report update results
+		ctx.JSON(http.StatusOK, gin.H{
+			"name":    p.Name,
+			"updated": updated,
+		})
+		return
 	}
 
 	// MAINT: this is redudant with the 'projects' handler but could be expanded to include more detail in the future
@@ -793,7 +804,7 @@ func (s *server) deleteProjectHandler(ctx *gin.Context) {
 func (s *server) installProjectHandler(ctx *gin.Context) {
 	srcURL, set := ctx.GetQuery("url")
 	if !set {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("url query arg missing")})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "url query arg missing"})
 		return
 	}
 

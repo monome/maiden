@@ -2,4 +2,4 @@ module github.com/monome/maiden/pkg/dust
 
 go 1.12
 
-require gopkg.in/src-d/go-git.v4 v4.10.0
+require github.com/go-git/go-git/v5 v5.2.0
