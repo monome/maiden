@@ -13,7 +13,7 @@ import { orderResultsByProjectName } from './model/project-actions';
 import './project-activity.css';
 import ModalProgress from './modal-progress';
 
-const SYSTEM_RESET_RECOMMENDATION = 'Run SYSTEM > RESET to ensure engine changes take effect';
+const SYSTEM_RESTART_RECOMMENDATION = 'Run SYSTEM > RESTART to ensure engine changes take effect';
 
 class ProjectActivity extends Component {
   componentDidMount() {
@@ -149,7 +149,7 @@ class ProjectActivity extends Component {
         this.props.refreshCodeDir();
         this.props.showModal(
           this.informModalContent(`Installed project: "${name}"`,
-            SYSTEM_RESET_RECOMMENDATION,
+            SYSTEM_RESTART_RECOMMENDATION,
           )
         );
       },
@@ -190,7 +190,7 @@ class ProjectActivity extends Component {
             </tbody>
           </table>
           <br />
-          <span className='supporting'>{SYSTEM_RESET_RECOMMENDATION}</span>
+          <span className='supporting'>{SYSTEM_RESTART_RECOMMENDATION}</span>
           <br /><br />
         </div>
       );
@@ -293,7 +293,7 @@ class ProjectActivity extends Component {
               this.props.refreshCodeDir();
               this.props.showModal(
                 this.informModalContent(`Updated project: "${name}"`,
-                  SYSTEM_RESET_RECOMMENDATION,
+                  SYSTEM_RESTART_RECOMMENDATION,
                 )
               );
             } else {
