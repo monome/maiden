@@ -721,7 +721,18 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 		// ignore the value for now but it could be a commit or version in the future?
 		if p.IsManaged() {
 			logger.Debugf("updating managed project: %s", p.Name)
-			if updated, err = p.Update(true); err != nil {
+
+			// grab the matching entry from the catalog to update project metadata
+			catalogs := LoadCatalogs()
+			if catalogs == nil {
+				ctx.JSON(http.StatusInternalServerError, gin.H{
+					"error": "unable to load script catalog(s)",
+				})
+				return
+			}
+			entry := SearchCatalogs(catalogs, p.Name)
+
+			if updated, err = p.Update(true, entry); err != nil {
 				logger.Debugf("update failed: %s, e=%s", p.Name, err)
 				ctx.JSON(http.StatusInternalServerError, gin.H{
 					"error": fmt.Sprintf("update failed: %s", err),

@@ -212,8 +212,9 @@ func updateProjectRun(args []string) {
 	for _, p := range candidates {
 		fmt.Printf("Updating: %s ... ", p.Name)
 		if p.IsManaged() {
-			updated, err := p.Update(true)
-			if updated == false {
+			entry := SearchCatalogs(catalogs, p.Name)
+			updated, err := p.Update(true, entry)
+			if !updated {
 				fmt.Println("already up-to-date")
 			} else {
 				CheckErrorNonFatal(err, "done.")

@@ -360,7 +360,7 @@ func (p *Project) UpdateMetaData(md *MetaData) {
 
 // Update pulls down any changes for the project if it is managed via git,
 // returns true if the project was updated
-func (p *Project) Update(force bool) (bool, error) {
+func (p *Project) Update(force bool, entry *catalog.Entry) (bool, error) {
 	// https://github.com/src-d/go-git/blob/master/_examples/pull/main.go
 	r, err := git.PlainOpen(p.Root)
 	if err != nil {
@@ -392,6 +392,9 @@ func (p *Project) Update(force bool) (bool, error) {
 	}
 
 	if updated {
+		if entry != nil {
+			md.Entry = entry
+		}
 		p.UpdateMetaData(md)
 		err = writeMetaData(md, p.metaDataPath())
 	}
