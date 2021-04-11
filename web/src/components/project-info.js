@@ -1,7 +1,15 @@
 import React from 'react';
 import Badge from './badge';
+import IconButton from '../icon-button';
+import { ICONS } from '../svg-icons';
 
 import './project-info.css';
+
+const openLinkAction = (url) => {
+  return () => {
+    window.open(url, "_blank");
+  }
+};
 
 const ProjectInfo = (props) => {
   // NOTE: props.project is an immutablejs map
@@ -32,6 +40,19 @@ const ProjectInfo = (props) => {
            </span>
   }
 
+  let documentation = undefined;
+  const doc_url = props.project.get('documentation_url');
+  if (doc_url) {
+    documentation = <IconButton
+      action={openLinkAction(doc_url)}
+      tooltipMessage="open documentation"
+      icon={ICONS.book}
+      color="hsl(0, 0%, 59%)"
+      size="16"
+      padding="2px"
+    />
+  }
+
   let version = undefined
   if (project_url) {
     version = <a href={project_url}
@@ -52,6 +73,7 @@ const ProjectInfo = (props) => {
       <div className='project-info-top'>
         {title}
         <span className='project-badges'>
+          {documentation}
           {badges}
         </span>
       </div>
@@ -59,7 +81,7 @@ const ProjectInfo = (props) => {
         <span className='project-info-description'>
           {description}
         </span>
-      {version}
+        {version}
       </div>
     </div>
   );

@@ -48,6 +48,9 @@
                     "discussion_url": {
                         "type": "string"
                     },
+                    "documentation_url": {
+                      "type": "string"
+                    },
                     "tags": {
                         "type": "array",
                         "items": {
