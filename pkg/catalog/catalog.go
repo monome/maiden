@@ -10,15 +10,16 @@ import (
 
 // Entry contains the properties of a project which are recorded as part of the catalog
 type Entry struct {
-	ProjectName string   `json:"project_name"`
-	URL         string   `json:"project_url,omitempty"`
-	Author      string   `json:"author,omitempty"`
-	Homepage    string   `json:"home_page,omitempty"`
-	Description string   `json:"description"`
-	Discussion  string   `json:"discussion_url,omitempty"`
-	Tags        []string `json:"tags,omitempty"`
-	Version     string   `json:"version,omitempty"`
-	Origin      string   `json:"origin,omitempty"`
+	ProjectName   string   `json:"project_name"`
+	URL           string   `json:"project_url,omitempty"`
+	Author        string   `json:"author,omitempty"`
+	Homepage      string   `json:"home_page,omitempty"`
+	Description   string   `json:"description"`
+	Discussion    string   `json:"discussion_url,omitempty"`
+	Documentation string   `json:"documentation_url,omitempty"`
+	Tags          []string `json:"tags,omitempty"`
+	Version       string   `json:"version,omitempty"`
+	Origin        string   `json:"origin,omitempty"`
 }
 
 // catalogContent represents the contents of a catalog file
