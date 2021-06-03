@@ -107,7 +107,9 @@ class ReplInput extends Component {
           }}
           onKeyDown={this.onKeyDown}
           spellCheck={false}
-          // autoFocus={true}
+          autoCapitalize="off"
+          autoCorrect="off"
+          autoComplete="off"
           rows={1}
         />
       </div>
