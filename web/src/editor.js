@@ -155,8 +155,11 @@ class Editor extends Component {
   }
 
   handleEval() {
-    const code = this.editor.getSelectedText().replace(/--.*\n/g,';').replace(/\n/g,';')
-    this.props.selectionEval(code);
+    var code = this.editor.getSelectedText();
+    if (code==="") {
+      code = this.editor.session.getLine(this.editor.getSelectionRange().start.row);
+    }
+    this.props.selectionEval(code.replace(/--.*\n/g,';').replace(/\n/g,';'));
   }
 
   render() {

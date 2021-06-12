@@ -123,6 +123,7 @@ keyService.bindings = [
   new KeyBinding(new KeyStroke(Modifier.CMD, 'b'), 'toggle sidebar'),
   new KeyBinding(new KeyStroke(Modifier.CMD, ';'), 'show config'),
   new KeyBinding(new KeyStroke(Modifier.CMD, '8'), 'eval'),
+  new KeyBinding(new KeyStroke(Modifier.CMD, 'enter'), 'eval'),
 ];
 
 class TextMode extends EditorMode {
