@@ -17,6 +17,12 @@
     background-color: #F9F9F9;
 }
 
+.listener-pane {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
 
 .repl-pane {
     display: flex;

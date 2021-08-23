@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
+import ReactAudioPlayer from 'react-audio-player';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
@@ -8,6 +9,7 @@ import { ICONS } from './svg-icons';
 import { commandService } from './services';
 import OS from './utils';
 import { bufferIsEditable } from './model/edit-helpers';
+import { bufferIsAudio } from './model/edit-helpers';
 import ReplActivity from './bound-repl-activity';
 
 import './edit-activity.css';
@@ -210,12 +212,18 @@ class EditActivity extends Component {
     return buffer && bufferIsEditable(buffer);
   };
 
+  isAudio = buffer => {
+    return buffer && bufferIsAudio(buffer);
+  }
+
   render() {
     const activeBuffer = this.props.activeBuffer;
     const buffer = this.getActiveBuffer();
 
     const canEdit = this.isText(buffer);
     const code = canEdit ? buffer.get('value') : '';
+
+    const canListen = this.isAudio(buffer);
 
     const enabledTools = tools.map(t => ({ ...t, disabled: !(canEdit || t.alwaysEnable) }));
 
@@ -253,6 +261,17 @@ class EditActivity extends Component {
       </div>
     );
 
+    const listener = (
+      <div className="listener-pane">
+        <ReactAudioPlayer
+          className="listener-container"
+          src={activeBuffer}
+          autoPlay
+          controls
+        />
+      </div>
+    )
+
     const sidebarSplitStyle = {
       height: this.props.height,
       width: this.props.width,
@@ -261,6 +280,51 @@ class EditActivity extends Component {
 
     const explorerStyle = {
       height: this.props.height,
+    }
+
+    if (canListen) {
+      return (
+        <SplitPane
+          split="vertical"
+          style={sidebarSplitStyle}
+          {...this.sidebarSplitSizing()}
+          onChange={this.handleSidebarSplitChange}
+          onDragFinished={this.handleSidebarSplitDragFinish}
+          paneClassName="editor-pane-common"
+        >
+          <Explorer
+            className="explorer-container"
+            hidden={this.props.ui.sidebarHidden}
+            style={explorerStyle}
+            data={this.props.explorerData}
+            bufferSelect={this.props.bufferSelect}
+            directoryRead={this.props.directoryRead}
+            directoryCreate={this.props.explorerDirectoryCreate}
+            scriptCreate={this.props.explorerScriptNew}
+            scriptDuplicate={this.props.explorerScriptDuplicate}
+            resourceDelete={this.props.explorerResourceDelete}
+            resourceRename={this.handleResourceRename}
+            collapsedCategories={this.props.collapsedCategories}
+            explorerToggleCategory={this.props.explorerToggleCategory}
+            explorerToggleNode={this.props.explorerToggleNode}
+            explorerActiveNode={this.props.explorerActiveNode}
+            activeBuffer={activeBuffer}
+            activeNode={this.props.activeNode}
+            showModal={this.props.showModal}
+            hideModal={this.props.hideModal}
+          />
+          <SplitPane
+            split="horizontal"
+            primary="second"
+            {...this.replSplitSizing()}
+            onChange={this.handleReplSplitChange}
+            onDragFinished={this.handleReplSplitDragFinish}
+          >
+            {listener}
+            <ReplActivity {...this.replSize()} />
+          </SplitPane>
+        </SplitPane>
+      );
     }
 
     return (
