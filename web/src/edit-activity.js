@@ -217,6 +217,7 @@ class EditActivity extends Component {
   }
 
   render() {
+    console.log("hello");
     const activeBuffer = this.props.activeBuffer;
     const buffer = this.getActiveBuffer();
 
@@ -282,50 +283,7 @@ class EditActivity extends Component {
       height: this.props.height,
     }
 
-    if (canListen) {
-      return (
-        <SplitPane
-          split="vertical"
-          style={sidebarSplitStyle}
-          {...this.sidebarSplitSizing()}
-          onChange={this.handleSidebarSplitChange}
-          onDragFinished={this.handleSidebarSplitDragFinish}
-          paneClassName="editor-pane-common"
-        >
-          <Explorer
-            className="explorer-container"
-            hidden={this.props.ui.sidebarHidden}
-            style={explorerStyle}
-            data={this.props.explorerData}
-            bufferSelect={this.props.bufferSelect}
-            directoryRead={this.props.directoryRead}
-            directoryCreate={this.props.explorerDirectoryCreate}
-            scriptCreate={this.props.explorerScriptNew}
-            scriptDuplicate={this.props.explorerScriptDuplicate}
-            resourceDelete={this.props.explorerResourceDelete}
-            resourceRename={this.handleResourceRename}
-            collapsedCategories={this.props.collapsedCategories}
-            explorerToggleCategory={this.props.explorerToggleCategory}
-            explorerToggleNode={this.props.explorerToggleNode}
-            explorerActiveNode={this.props.explorerActiveNode}
-            activeBuffer={activeBuffer}
-            activeNode={this.props.activeNode}
-            showModal={this.props.showModal}
-            hideModal={this.props.hideModal}
-          />
-          <SplitPane
-            split="horizontal"
-            primary="second"
-            {...this.replSplitSizing()}
-            onChange={this.handleReplSplitChange}
-            onDragFinished={this.handleReplSplitDragFinish}
-          >
-            {listener}
-            <ReplActivity {...this.replSize()} />
-          </SplitPane>
-        </SplitPane>
-      );
-    }
+    const element = canListen ? listener : editor;
 
     return (
       <SplitPane
@@ -364,7 +322,7 @@ class EditActivity extends Component {
           onChange={this.handleReplSplitChange}
           onDragFinished={this.handleReplSplitDragFinish}
         >
-          {editor}
+          {element}
           <ReplActivity {...this.replSize()} />
         </SplitPane>
       </SplitPane>
