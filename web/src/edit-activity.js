@@ -217,7 +217,6 @@ class EditActivity extends Component {
   }
 
   render() {
-    console.log("hello");
     const activeBuffer = this.props.activeBuffer;
     const buffer = this.getActiveBuffer();
 
