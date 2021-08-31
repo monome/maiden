@@ -270,7 +270,12 @@ class EditActivity extends Component {
           controls
         />
       </div>
-    )
+    );
+
+    const loading = (
+      // TODO: this should be a loading indicator instead of a blank frame
+      <div className="spinner-pane"></div>
+    );
 
     const sidebarSplitStyle = {
       height: this.props.height,
@@ -282,7 +287,10 @@ class EditActivity extends Component {
       height: this.props.height,
     }
 
-    const element = canListen ? listener : editor;
+    let element = loading;
+    if (buffer) {
+      element = canListen ? listener : editor;
+    }
 
     return (
       <SplitPane
