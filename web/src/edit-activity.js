@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
+import ReactAudioPlayer from 'react-audio-player';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
@@ -8,6 +9,7 @@ import { ICONS } from './svg-icons';
 import { commandService } from './services';
 import OS from './utils';
 import { bufferIsEditable } from './model/edit-helpers';
+import { bufferIsAudio } from './model/edit-helpers';
 import ReplActivity from './bound-repl-activity';
 
 import './edit-activity.css';
@@ -210,12 +212,18 @@ class EditActivity extends Component {
     return buffer && bufferIsEditable(buffer);
   };
 
+  isAudio = buffer => {
+    return buffer && bufferIsAudio(buffer);
+  }
+
   render() {
     const activeBuffer = this.props.activeBuffer;
     const buffer = this.getActiveBuffer();
 
     const canEdit = this.isText(buffer);
     const code = canEdit ? buffer.get('value') : '';
+
+    const canListen = this.isAudio(buffer);
 
     const enabledTools = tools.map(t => ({ ...t, disabled: !(canEdit || t.alwaysEnable) }));
 
@@ -253,6 +261,17 @@ class EditActivity extends Component {
       </div>
     );
 
+    const listener = (
+      <div className="listener-pane">
+        <ReactAudioPlayer
+          className="listener-container"
+          src={activeBuffer}
+          autoPlay
+          controls
+        />
+      </div>
+    )
+
     const sidebarSplitStyle = {
       height: this.props.height,
       width: this.props.width,
@@ -262,6 +281,8 @@ class EditActivity extends Component {
     const explorerStyle = {
       height: this.props.height,
     }
+
+    const element = canListen ? listener : editor;
 
     return (
       <SplitPane
@@ -300,7 +321,7 @@ class EditActivity extends Component {
           onChange={this.handleReplSplitChange}
           onDragFinished={this.handleReplSplitDragFinish}
         >
-          {editor}
+          {element}
           <ReplActivity {...this.replSize()} />
         </SplitPane>
       </SplitPane>
