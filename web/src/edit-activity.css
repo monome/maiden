@@ -28,6 +28,28 @@
     display: flex;
 }
 
+.spinner-pane {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-pane {
+    color: #979797;
+    background-color: #F9F9F9;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-pane > .message {
+    color: #757575;
+    font-style: italic;
+    text-transform: lowercase;
+}
+
 /* sytling for react-split-pane */
 
 .Resizer {

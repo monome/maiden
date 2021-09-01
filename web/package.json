@@ -19,6 +19,7 @@
     "react-redux": "^6.0.0",
     "react-router": "^5.1.2",
     "react-scripts": "1.0.17",
+    "react-spinners-kit": "^1.9.1",
     "react-split-pane": "^0.1.74",
     "react-tooltip": "^3.5.1",
     "react-treebeard": "^2.1.0",

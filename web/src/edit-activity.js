@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
 import ReactAudioPlayer from 'react-audio-player';
+import { ImpulseSpinner } from 'react-spinners-kit';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
@@ -8,8 +9,7 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import { commandService } from './services';
 import OS from './utils';
-import { bufferIsEditable } from './model/edit-helpers';
-import { bufferIsAudio } from './model/edit-helpers';
+import { bufferIsEditable, bufferIsAudio } from './model/edit-helpers';
 import ReplActivity from './bound-repl-activity';
 
 import './edit-activity.css';
@@ -214,7 +214,7 @@ class EditActivity extends Component {
 
   isAudio = buffer => {
     return buffer && bufferIsAudio(buffer);
-  }
+  };
 
   render() {
     const activeBuffer = this.props.activeBuffer;
@@ -263,18 +263,28 @@ class EditActivity extends Component {
 
     const listener = (
       <div className="listener-pane">
-        <ReactAudioPlayer
-          className="listener-container"
-          src={activeBuffer}
-          autoPlay
-          controls
-        />
+        <ReactAudioPlayer className="listener-container" src={activeBuffer} autoPlay controls />
       </div>
     );
 
     const loading = (
-      // TODO: this should be a loading indicator instead of a blank frame
-      <div className="spinner-pane"></div>
+      <div className="spinner-pane">
+        <ImpulseSpinner frontColor="#979797" backColor="#F1F1F1" loading />
+      </div>
+    );
+
+    const landing = (
+      <div className="landing-pane">
+        <span className="message">new script</span>
+        <IconButton
+          action={() => this.props.editorScriptNew()}
+          tooltipMessage="new script"
+          tooltipPosition="bottom"
+          icon={ICONS.plus}
+          color="hsl(0, 0%, 59%)"
+          size="24"
+        />
+      </div>
     );
 
     const sidebarSplitStyle = {
@@ -285,11 +295,15 @@ class EditActivity extends Component {
 
     const explorerStyle = {
       height: this.props.height,
-    }
+    };
 
+    // MAINT: this is ugly, ideally there would be states in the model which
+    // correspond to each pane and the whole component refactored
     let element = loading;
     if (buffer) {
       element = canListen ? listener : editor;
+    } else if (!activeBuffer) {
+      element = landing;
     }
 
     return (

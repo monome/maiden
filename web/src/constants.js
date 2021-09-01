@@ -1,6 +1,6 @@
 import { Set } from 'immutable';
 
-export const UNTITLED_SCRIPT = 'UNTITLED_SCRIPT';
+export const UNTITLED_SCRIPT = 'untitled.lua';
 
 export const MATRON_COMPONENT = 'matron';
 export const CRONE_COMPONENT = 'crone';

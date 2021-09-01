@@ -38,6 +38,7 @@ export const TOOL_INVOKE = 'TOOL_INVOKE';
 
 export const EXPLORER_TOGGLE_NODE = 'EXPLORER_TOGGLE_NODE';
 export const EXPLORER_ACTIVE_NODE = 'EXPLORER_ACTIVE_NODE';
+export const EXPLORER_REVEAL_NODE_BY_URL = 'EXPLORER_REVEAL_NODE_BY_URL';
 
 //
 // sync actions
@@ -170,6 +171,11 @@ export const explorerToggleNode = (node, toggled) => ({
   type: EXPLORER_TOGGLE_NODE,
   node,
   toggled,
+});
+
+export const explorerRevealNodeByURL = url => ({
+  type: EXPLORER_REVEAL_NODE_BY_URL,
+  url,
 });
 
 //

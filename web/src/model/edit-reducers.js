@@ -32,15 +32,14 @@ import {
   TOOL_INVOKE,
   EXPLORER_ACTIVE_NODE,
   EXPLORER_TOGGLE_NODE,
+  EXPLORER_REVEAL_NODE_BY_URL,
   scriptNew,
 } from './edit-actions';
 
-import {
-  bufferIsEditable
-} from './edit-helpers';
+import { bufferIsEditable } from './edit-helpers';
 
-import api from '../api';
-import { DUST_CODE_RESOURCE } from '../api';
+import api, { DUST_CODE_RESOURCE } from '../api';
+import { UNTITLED_SCRIPT } from '../constants';
 
 /*
 
@@ -93,7 +92,7 @@ const handleScriptNew = (action, state) => {
     }
   }
 
-  const newName = generateNodeName(siblings, action.name || 'untitled.lua');
+  const newName = generateNodeName(siblings, action.name || UNTITLED_SCRIPT);
 
   let newResource;
   if (siblingIsDir) {
@@ -335,6 +334,9 @@ const edit = (state = initialEditState, action) => {
         return { ...state, expandedNodes: state.expandedNodes.add(action.node.url) };
       }
       return { ...state, expandedNodes: state.expandedNodes.delete(action.node.url) };
+
+    case EXPLORER_REVEAL_NODE_BY_URL:
+      return { ...state, expandedNodes: state.expandedNodes.add(action.url) };
 
     default:
       return state;

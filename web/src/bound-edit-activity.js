@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { push as pushHistory } from 'connected-react-router'
+import { push as pushHistory } from 'connected-react-router';
 import EditActivity from './edit-activity';
-import { MATRON_COMPONENT } from './constants';
+import { MATRON_COMPONENT, UNTITLED_SCRIPT, USER_DATA_PATH } from './constants';
 import { nodeForResource } from './model/listing';
-import api from './api';
-import { resourceToEditPath } from './url-utils'
+import api, { DUST_CODE_RESOURCE } from './api';
+import { resourceToEditPath } from './url-utils';
 
 import {
   rootList,
@@ -21,6 +21,7 @@ import {
   toolInvoke,
   explorerActiveNode,
   explorerToggleNode,
+  explorerRevealNodeByURL,
   directoryCreate,
 } from './model/edit-actions';
 
@@ -122,11 +123,9 @@ const mapDispatchToProps = dispatch => ({
   scriptRun: resource => {
     const file = api.fileFromResource(resource);
     if (file) {
-      if (file.includes("/lib/") ||
-          file.includes("/data/") ||
-          file.includes("/audio/")) {
-        console.log("files under /lib/, /data/, and /audio/ cannot be run as a script")
-        return undefined
+      if (file.includes('/lib/') || file.includes('/data/') || file.includes('/audio/')) {
+        console.log('files under /lib/, /data/, and /audio/ cannot be run as a script');
+        return undefined;
       }
       const cmd = `norns.script.load("${file}")`;
       dispatch(replSend(MATRON_COMPONENT, cmd));
@@ -135,7 +134,7 @@ const mapDispatchToProps = dispatch => ({
     }
   },
   scriptClear: () => {
-    const cmd = "norns.script.clear()";
+    const cmd = 'norns.script.clear()';
     dispatch(replSend(MATRON_COMPONENT, cmd));
   },
   selectionEval: code => {
@@ -185,6 +184,12 @@ const mapDispatchToProps = dispatch => ({
   },
   explorerToggleCategory: name => {
     dispatch(toggleCategory(name));
+  },
+
+  // editor
+  editorScriptNew: () => {
+    dispatch(scriptNew(DUST_CODE_RESOURCE, undefined, UNTITLED_SCRIPT, USER_DATA_PATH));
+    dispatch(explorerRevealNodeByURL(DUST_CODE_RESOURCE));
   },
 
   // config
