@@ -11,7 +11,7 @@ mkdir -pv $REL_DIR
 # maiden
 echo -e "building maiden"
 echo "====================="
-cmd='GOOS=linux GOARCH=arm go build -o $REL_DIR/maiden'
+cmd="GOOS=linux GOARCH=arm go build -ldflags='${GO_LDFLAGS}' -o $REL_DIR/maiden"
 echo $cmd
 eval $cmd
 # for compatibility with old systemd unit setup
