@@ -3,6 +3,30 @@
 set -e
 
 # quick and dirty release script
+
+help() {
+      echo "Provide the following build arguments:"
+      echo " -o   operating system for GOOS"
+      echo " -a   architecture for GOARCH"
+}
+
+while getopts ":o:a:" opt; do
+  case ${opt} in
+    o) GOOS=$OPTARG ;;
+    a) GOARCH=$OPTARG ;;
+    \? )
+      echo "Invalid Option: -$OPTARG" 1>&2
+      help
+      exit 1
+      ;;
+    : )
+      echo "Invalid Option: -$OPTARG requires an argument" 1>&2
+      help
+      exit 1
+      ;;
+  esac
+done
+
 REL_DIR=./dist/maiden
 
 rm -rf ./dist
@@ -11,7 +35,7 @@ mkdir -pv $REL_DIR
 # maiden
 echo -e "building maiden"
 echo "====================="
-cmd="GOOS=linux GOARCH=arm go build -ldflags='${GO_LDFLAGS}' -o $REL_DIR/maiden"
+cmd="GOOS=$GOOS GOARCH=$GOARCH go build -ldflags='${GO_LDFLAGS}' -o $REL_DIR/maiden"
 echo $cmd
 eval $cmd
 # for compatibility with old systemd unit setup
