@@ -6,7 +6,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var version = "1.0.2"
+var (
+	version string = "development"
+	compileTime string
+)
+
+// Version constructs the formatted version string.
+func Version() string {
+	if compileTime != "" {
+		return fmt.Sprintf("%s / %s", version, compileTime)
+	}
+	return version
+}
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
@@ -15,7 +26,7 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ConfigureLogger()
 		LoadConfiguration()
-		fmt.Println(version)
+		fmt.Println(Version())
 	},
 }
 

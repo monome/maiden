@@ -71,8 +71,7 @@ func serverRun() {
 	dataDir = os.ExpandEnv(viper.GetString("dust.path"))
 	docDir = os.ExpandEnv(viper.GetString("doc.path"))
 
-	// FIXME: pull in git version
-	logger.Infof("maiden (%s)", version)
+	logger.Infof("maiden: %s", Version())
 	logger.Infof("  http: %s", httpLocation)
 	logger.Infof("   app: %s", appDir)
 	logger.Infof("  data: %s", dataDir)
@@ -103,7 +102,7 @@ func serverRun() {
 	api := r.Group(apiRoot)
 
 	api.GET("", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, apiInfo{"maiden", version})
+		ctx.JSON(http.StatusOK, apiInfo{"maiden", Version()})
 	})
 
 	// dust api
