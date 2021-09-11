@@ -8,6 +8,9 @@ build:
 	go build -ldflags="${GO_LDFLAGS}"
 
 release:
+	tool/release.sh -o linux -a arm
+
+release-local:
 	tool/release.sh
 
 clean:
