@@ -8,5 +8,5 @@
     /* bottom: 0; */
     /* z-index: 1; */
     overflow-x: hidden;
-    background: burlywood;
+    background: var(--accent1-background-default);
 }

@@ -1,7 +1,7 @@
 .tool-bar {
     display: flex;
     flex-direction: column;
-    background-color: #F4F4F4;
+    background-color: var(--neutral-background-default);
     justify-content: space-between;
 }
 

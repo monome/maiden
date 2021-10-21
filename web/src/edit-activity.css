@@ -5,7 +5,7 @@
 
 .explorer-container {
     flex: 0 0 auto;
-    background-color: rgb(175, 175, 175);
+    background-color: var(--neutral-base-default);
     height: 20px;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .editor-pane-common {
-    background-color: #F9F9F9;
+    background-color: var(--neutral-surface-default);
 }
 
 .listener-pane {
@@ -36,8 +36,8 @@
 }
 
 .landing-pane {
-    color: #979797;
-    background-color: #F9F9F9;
+    color: var(--neutral-base-default);
+    background-color: var(--neutral-surface-default);
     display: flex;
     height: 100%;
     align-items: center;
@@ -45,7 +45,7 @@
 }
 
 .landing-pane > .message {
-    color: #757575;
+    /*color: #757575;*/
     font-style: italic;
     text-transform: lowercase;
 }
@@ -72,8 +72,8 @@
  .Resizer.horizontal {
     height: 11px;
     margin: -5px 0;
-    border-top: 5px solid rgba(255, 255, 255, 0);
-    border-bottom: 5px solid rgba(255, 255, 255, 0);
+    border-top: 5px solid var(--neutral-surface-default);
+    border-bottom: 5px solid var(--neutral-surface-default);
     cursor: row-resize;
     width: 100%;
 }
