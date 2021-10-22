@@ -51,6 +51,7 @@
     padding: 0.1em;
     color: var(--neutral-medium-default);
     margin-left: 3px;
+    cursor: default;
     /* display: block; */
 }
 
@@ -61,10 +62,12 @@
 }
 
 .active-buffer {
+    color:  var(--neutral-medium-selected);
     background-color: var(--neutral-surface-selected);
 }
 
 .active-selection {
+    color:  var(--neutral-medium-selected);
     background-color: var(--neutral-surface-selected);
 }
 

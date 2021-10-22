@@ -3,12 +3,13 @@
   --neutral-background-default: #F4F4F4;
   --neutral-surface-default: #f7f7f7;
   --neutral-surface-selected: #89b5f14f;
+  --neutral-subdued-default: #eaeaea;
   --neutral-medium-default: #757575;
   --neutral-base-default: #AFAFAF;
-  --neutral-heavy-default: #222226;
-  --neutral-trim-default: #C0C0C0;
+  --neutral-heavy-default: #434351;
+  --neutral-trim-default: #DADADA;
   --interactive-medium-default: #979797;
-  --interactive-medium-hover: #979797;
+  --interactive-medium-hover: #818181;
   --interactive-medium-selected: #757575;
   --interactive-trim-default: #C5C5C5;
   --interactive-trim-selected: #C5C5C5;
@@ -21,10 +22,12 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --neutral-background-default: #111111;
-    --neutral-surface-default: #222326; /*f7f7f7*/
-    --neutral-surface-selected: #222222;
-    --neutral-medium-default: #7E7E7E;
+    --neutral-background-default: #1D1F21;
+    --neutral-surface-default: #25282c;
+    --neutral-surface-selected: #4B4231;
+    --neutral-subdued-default: #1D2023;
+    --neutral-medium-default: #969896;
+    --neutral-medium-selected: #fffc9f;
     --neutral-base-default: #2E2E2E;
     --neutral-heavy-default: #AAAAAA;
     --neutral-trim-default: #333333;
@@ -38,7 +41,7 @@
     --critical-medium-default: #975031;
     --accent1-background-default: #DEB887;
     --accent2-background-default: #AD8888;
-    --overlay-fill: rgb(120, 120, 120, 0.5);
+    --overlay-fill: rgb(0, 0, 0, 0.6);
   }
 }
 
@@ -51,9 +54,10 @@ body {
 }
 
 
-.icon-button path{
-  fill: var(--interactive-medium-default);
+/* Override svg colouring to match theme */
+.icon-button path {
+  fill: var(--interactive-medium-default) !important;
 }
-.icon-button:hover path{
-  fill: var(--interactive-medium-hover);
+.icon-button:hover path {
+  fill: var(--interactive-medium-hover) !important;
 }

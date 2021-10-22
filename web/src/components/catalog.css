@@ -10,7 +10,8 @@
   text-transform: lowercase;
   padding: 2px 10px 8px 15px;
   color: hsl(0, 0%, 59%);
-  border-bottom: 1px solid rgb(230, 230, 230);
+  /*border-bottom: 1px solid rgb(230, 230, 230);*/
+  border-bottom: 1px solid var(--neutral-trim-default);
   margin-right: 2em;
 }
 
@@ -28,5 +29,6 @@
   font-family: monospace;
   width: 10em;
   text-align: center;
-  color: rgb(204, 204, 204);
+  /*color: rgb(204, 204, 204);*/
+  color: var(--neutral-base-default);
 }

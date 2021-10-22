@@ -59,7 +59,7 @@
 
 .repl-input {
     flex: 0 0 auto;
-    background-color: var(--neutral-background-default);
+    background-color: var(--neutral-subdued-default);
     color: var(--neutral-medium-default);
     /* height: 20px; */
     display: flex;
@@ -70,14 +70,15 @@
     flex: 0 0 auto;
     /* height: 40px; */
     padding: 5px 5px 5px 5px;
-    /* color:  rgb(117, 117, 117); */
+    color:  var(--neutral-heavy-default);
     font-size: 16px;
     font-family: monospace;
 }
 
 .repl-input > .value {
     flex: 1 1 auto;
-    background-color: var(--neutral-background-default);
+    background-color: var(--neutral-subdued-default);
+    color:  var(--neutral-heavy-default);
     border: none;
     resize: none;
     overflow: auto;
