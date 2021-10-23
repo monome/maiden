@@ -36,7 +36,7 @@
 }
 
 .landing-pane {
-    color: var(--neutral-base-default);
+    color: var(--neutral-medium-default);
     background-color: var(--neutral-surface-default);
     display: flex;
     height: 100%;
