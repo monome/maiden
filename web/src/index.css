@@ -18,6 +18,8 @@
   --accent1-background-default: #DEB887;
   --accent2-background-default: #AD8888;
   --overlay-fill: rgb(120, 120, 120, 0.5);
+  --resizer-background-default: rgb(0, 0, 0);
+  --resizer-border-default: rgba(0, 0, 0, 0.5);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +44,8 @@
     --accent1-background-default: #DEB887;
     --accent2-background-default: #AD8888;
     --overlay-fill: rgb(0, 0, 0, 0.6);
+    --resizer-background-default: rgb(255, 255, 255);
+    --resizer-border-default: rgba(255, 255, 255, 0.5);
   }
 }
 
