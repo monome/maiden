@@ -49,6 +49,25 @@
   }
 }
 
+*::-webkit-scrollbar {
+  width: 12px;
+  transition: opacity .3s ease-in-out;
+  opacity: 0;
+}
+
+*::-webkit-scrollbar:hover {
+  opacity: 1;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--neutral-surface-default);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--neutral-medium-default);
+  border-radius: 20px;
+  border: 2px solid var(--neutral-surface-default);
+}
 
 body {
   margin: 0;
