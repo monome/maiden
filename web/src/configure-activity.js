@@ -79,8 +79,8 @@ class ConfigureActivity extends Component {
           <div className="configure-item">
             <div className="configure-label">editor theme:</div>
             <div className="configure-options">
-              {this.renderEditorOption('editorTheme', 'dawn', 'light')}
-              {this.renderEditorOption('editorTheme', 'norns_dark', 'dark')}
+              {this.renderEditorOption('editorTheme', 'light', 'light')}
+              {this.renderEditorOption('editorTheme', 'dark', 'dark')}
             </div>
           </div>
         </div>

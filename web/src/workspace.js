@@ -117,6 +117,12 @@ class Workspace extends Component {
   }
 
   render() {
+    if (this.props.editorTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+
     const selectedActivity = this.props.activities.find(a => this.props.selected === a.selector);
     const ActivityView = selectedActivity.view;
 

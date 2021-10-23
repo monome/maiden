@@ -171,7 +171,10 @@ class Editor extends Component {
     const mode = editorService.getMode(this.props.bufferName);
     mode.onRender(this.editor);
 
-    const theme = this.props.editorOptions.editorTheme || 'dawn';
+    let theme = 'dawn';
+    if (this.props.editorOptions.editorTheme === 'dark') {
+      theme = 'norns_dark';
+    }
 
     commandService.registerCommand('eval', () => this.handleEval());
 

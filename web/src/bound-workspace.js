@@ -15,7 +15,8 @@ const mapStateToProps = state => {
   const selected = state.activity.selected;
   const endpoints = state.repl.endpoints;
   const configHidden = state.ui.configHidden;
-  return { selected, endpoints, configHidden };
+  const editorTheme = state.config.editor.editorTheme;
+  return { selected, endpoints, configHidden, editorTheme };
 };
 
 const mapDispatchToProps = dispatch => ({

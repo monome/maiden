@@ -22,31 +22,29 @@
   --resizer-border-default: rgba(0, 0, 0, 0.5);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --neutral-background-default: #1D1F21;
-    --neutral-surface-default: #25282c;
-    --neutral-surface-selected: #4B4231;
-    --neutral-subdued-default: #1D2023;
-    --neutral-medium-default: #969896;
-    --neutral-medium-selected: #fffc9f;
-    --neutral-base-default: #2E2E2E;
-    --neutral-heavy-default: #AAAAAA;
-    --neutral-trim-default: #333333;
-    --overlay-fill: rgb(0, 0, 0, 0.5);
-    --interactive-medium-default: #666666;
-    --interactive-medium-hover: #888888;
-    --interactive-medium-selected: #757575;
-    --interactive-trim-default: #555555;
-    --interactive-trim-selected: #C5C5C5;
-    --interactive-surface-hover: #444444;
-    --critical-medium-default: #975031;
-    --accent1-background-default: #DEB887;
-    --accent2-background-default: #AD8888;
-    --overlay-fill: rgb(0, 0, 0, 0.6);
-    --resizer-background-default: rgb(255, 255, 255);
-    --resizer-border-default: rgba(255, 255, 255, 0.5);
-  }
+:root[data-theme="dark"] {
+  --neutral-background-default: #1D1F21;
+  --neutral-surface-default: #25282c;
+  --neutral-surface-selected: #4B4231;
+  --neutral-subdued-default: #1D2023;
+  --neutral-medium-default: #969896;
+  --neutral-medium-selected: #fffc9f;
+  --neutral-base-default: #2E2E2E;
+  --neutral-heavy-default: #AAAAAA;
+  --neutral-trim-default: #333333;
+  --overlay-fill: rgb(0, 0, 0, 0.5);
+  --interactive-medium-default: #666666;
+  --interactive-medium-hover: #888888;
+  --interactive-medium-selected: #757575;
+  --interactive-trim-default: #555555;
+  --interactive-trim-selected: #C5C5C5;
+  --interactive-surface-hover: #444444;
+  --critical-medium-default: #975031;
+  --accent1-background-default: #DEB887;
+  --accent2-background-default: #AD8888;
+  --overlay-fill: rgb(0, 0, 0, 0.6);
+  --resizer-background-default: rgb(255, 255, 255);
+  --resizer-border-default: rgba(255, 255, 255, 0.5);
 }
 
 *::-webkit-scrollbar {
