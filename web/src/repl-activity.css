@@ -14,8 +14,8 @@
 }
 
 .repl-connect-container {
-    color: #979797;
-    background-color: #F9F9F9;
+    color: var(--neutral-medium-default);
+    background-color: var(--neutral-surface-default);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -63,12 +63,12 @@
     overflow: hidden;
     outline: none;
     font-family: monospace;
-    color: #979797;
-    border-bottom: 1px solid #F4F4F4;  /* hack: match switcher background */
+    color: var(--interactive-medium-default);
+    border-bottom: 1px solid var(--interactive-trim-default);  /* hack: match switcher background */
 }
 
 .repl-active-tab {
-    border-bottom: 1px solid rgb(197, 197, 197);
-    color: #757575;
+    border-bottom: 1px solid var(--interactive-trim-selected);
+    color: var(--interactive-medium-selected);
     font-weight: bold;
 }

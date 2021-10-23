@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: space-between;
     font-family: monospace;
-    color: rgb(117, 117, 117);
+    color: var(--neutral-medium-default);
 }
 
 .modal-content > .message-container > .message {

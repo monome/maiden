@@ -1,18 +1,23 @@
 .help-button-menu {
     font-size: 1.5em;
     font-weight: bold;
-    color: hsl(0, 0%, 59%);
+    color: var(--interactive-medium-default);
     text-align: center;
     height: 24px;
     width: 36px;
     padding: 6px;
+    cursor: pointer;
+}
+
+.help-button-menu:hover {
+    color: var(--interactive-medium-hover);
 }
 
 .help-button-popup {
     font-family: monospace !important; 
-    background-color: #F4F4F4 !important;
+    background-color: var(--neutral-background-default) !important;
     padding: 6px 6px 6px .4em !important;
-    border: 1px solid rgb(130, 130, 130, 0.1) !important;
+    border: 1px solid var(--neutral-trim-default) !important;
     border-left: none !important;
     box-shadow: none !important;
     padding-left: .4em !important;
@@ -20,10 +25,9 @@
 
 .help-button-link, .help-botton-link:visited {
     text-decoration: none;
-    color: hsl(0, 0%, 46%);
+    color: var(--interactive-medium-default);
 }
 
 .help-button-link:hover {
-    color: hsl(0, 0%, 39%);
-
+    color: var(--interactive-medium-hover);
 }

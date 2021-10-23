@@ -4,8 +4,6 @@
 
 .activity-bar {
     flex: 0 0 auto;
-    /* background-color: blue; */
-    background-color: rgb(230, 230, 230);
 }
 
 .workspace-modal-overlay {
@@ -15,7 +13,7 @@
     right: 0;
     bottom: 0;
     z-index: 10;  /* modal must block ace editor which uses z-index: 1 */
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: var(--overlay-fill);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -24,9 +22,9 @@
 .workspace-modal {
     width: 70%;
     margin: 40px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--neutral-trim-default);
     border-radius: 4px;
-    background: #fff;
+    background: var(--neutral-surface-default);
     padding: 20px;
     outline: none;
 

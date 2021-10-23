@@ -20,10 +20,10 @@
   font-family: monospace;
   font-size: 100%;
   /* color: #979797; */
-  color: rgb(117, 117, 117);
+  color: var(--interactive-medium-default);
 
   /*border-bottom: 1px solid #F4F4F4;*/  /* hack: match switcher background */
-  border-bottom: 1px solid rgb(230, 230, 230);
+  border-bottom: 1px solid var(--interactive-trim-default);
 
 
   /* the properties below are to match the file explorer header */
@@ -36,7 +36,8 @@
 }
 
 .switcher-active-tab {
-  border-bottom: 1px solid rgb(197, 197, 197);
+  /*border-bottom: 1px solid rgb(197, 197, 197);*/
+  border-bottom: 1px solid var(--interactive-trim-default);
 }
 
 .switcher-content-container {

@@ -2,10 +2,10 @@ export default {
   tree: {
     base: {
       listStyle: 'none',
-      backgroundColor: '#F4F4F4',
+      backgroundColor: 'var(--neutral-background-default)',
       margin: 0,
       padding: 0,
-      color: '#90',
+      color: 'var(--neutral-medium-default)',
       // overflow: 'scroll',
       // height: '100%',
     },
@@ -35,13 +35,13 @@ export default {
         height: 8,
         width: 8,
         arrow: {
-          fill: '#9DA5AB',
+          fill: 'var(--neutral-medium-default)',
           strokeWidth: 0,
         },
       },
       header: {
         base: {
-          color: '#9DA5AB',
+          color: 'var(--neutral-medium-default)',
         },
         connector: {},
         title: {
@@ -54,7 +54,7 @@ export default {
         paddingLeft: '14px',
       },
       loading: {
-        color: '#E2C089',
+        color: 'var(--accent1-background-default)',
       },
     },
   },

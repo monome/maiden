@@ -3,9 +3,8 @@
   display: flex;
   flex-direction: column;
   font-family: monospace;
-  /* background-color: #F9F9F9; */
-  background-color: rgb(240, 240, 240);
-  color: #979797;
+  background-color: var(--neutral-surface-default);
+  color: var(--neutral-medium-default);
 }
 
 .project-info-top {
@@ -29,11 +28,11 @@
 .project-info-name-link, .project-info-name-link:visited {
   font-weight: bold;
   text-decoration: none;
-  color: #979797;
+  color: var(--interactive-medium-default);
 }
 
 .project-info-name-link:hover {
-  color: hsl(0, 0%, 39%);
+  color: var(--interactive-medium-hover);
 }
 
 .project-info-description {
@@ -44,10 +43,10 @@
 .project-info-version, .project-info-version:visited {
   font-weight: bolder;
   text-decoration: none;
-  color: #979797;
+  color: var(--interactive-medium-default);
   margin-right: 2px;
 }
 
 .project-info-version:hover {
-  color: hsl(0, 0%, 39%);
+  color: var(--interactive-medium-hover);
 }

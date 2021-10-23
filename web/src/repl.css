@@ -10,7 +10,7 @@
     line-height: normal;
     font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace; */
     /* background-color: #EBEBEB; */
-    background-color: #F9F9F9;
+    background-color: var(--neutral-surface-default);
     /* position: relative; */
     /* user-select: none; */
     display: flex;
@@ -59,7 +59,8 @@
 
 .repl-input {
     flex: 0 0 auto;
-    background-color: #EBEBEB;
+    background-color: var(--neutral-subdued-default);
+    color: var(--neutral-medium-default);
     /* height: 20px; */
     display: flex;
     flex-direction: row;
@@ -69,14 +70,15 @@
     flex: 0 0 auto;
     /* height: 40px; */
     padding: 5px 5px 5px 5px;
-    /* color:  rgb(117, 117, 117); */
+    color:  var(--neutral-heavy-default);
     font-size: 16px;
     font-family: monospace;
 }
 
 .repl-input > .value {
     flex: 1 1 auto;
-    background-color: #EBEBEB;
+    background-color: var(--neutral-subdued-default);
+    color:  var(--neutral-heavy-default);
     border: none;
     resize: none;
     overflow: auto;

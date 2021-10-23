@@ -1,6 +1,6 @@
 .project-activity-container {
   /* padding: 8px 60px 10px 0; */
-  background-color: #F4F4F4;
+  background-color: var(--neutral-background-default);
   /* overflow: scroll; */
 }
 
