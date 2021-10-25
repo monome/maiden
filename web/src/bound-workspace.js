@@ -2,14 +2,13 @@ import { connect } from 'react-redux';
 import Workspace from './workspace';
 
 import { activitySelect } from './model/activity-actions';
-
+import { editorConfig } from './model/config-actions';
 import { toggleComponent } from './model/ui-actions';
-
 import { replEndpoints, replConnect } from './model/repl-actions';
-
 import { directoryRead, rootList } from './model/edit-actions';
+
 import { USER_DATA_PATH } from './constants';
-import { DUST_CODE_RESOURCE } from './api';
+import api, { DUST_CODE_RESOURCE } from './api';
 
 const mapStateToProps = state => {
   const selected = state.activity.selected;
@@ -22,6 +21,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   activitySelect: name => {
     dispatch(activitySelect(name));
+  },
+  loadEditorConfig: () => {
+    dispatch(editorConfig(api.editorConfigResource()));
   },
   toggleComponent: name => {
     dispatch(toggleComponent(name));
