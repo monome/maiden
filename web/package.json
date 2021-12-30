@@ -38,7 +38,7 @@
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "proxy": "http://norns2.local",
+  "proxy": "http://localhost:5000",
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@storybook/addon-actions": "^5.0.11",
