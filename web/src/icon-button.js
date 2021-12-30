@@ -11,7 +11,7 @@ const hslRegex = /hsl\((\d{1,3}),\s?(\d{1,3})%,\s?(\d{1,3})%\)/;
 
 class IconButton extends Component {
   static defaultProps = {
-    dark: true,
+    darkenOnHover: true,
   };
 
   constructor(props) {
@@ -38,13 +38,13 @@ class IconButton extends Component {
   }
 
   // For hover color, we'll determine whether to
-  // darken or lighten based on the props.dark
+  // darken or lighten based on the props.darkenOnHover
   get hoverColor() {
     const { h, s, l } = this.parsedColor;
-    if (this.props.dark) {
-      return `hsl(${h}, ${s}%, ${Math.max(0, +l - 20)}%)`;
+    if (this.props.darkenOnHover) {
+      return `hsl(${h}, ${s}%, ${Math.max(0, +l - 30)}%)`;
     }
-    return `hsl(${h}, ${s}%, ${Math.min(100, +l + 20)}%)`;
+    return `hsl(${h}, ${s}%, ${Math.min(100, +l + 30)}%)`;
   }
 
   handleMouseEnter = () => {

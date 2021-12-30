@@ -19,12 +19,11 @@
   outline: none;
   font-family: monospace;
   font-size: 100%;
-  /* color: #979797; */
   color: var(--interactive-medium-default);
 
-  /*border-bottom: 1px solid #F4F4F4;*/  /* hack: match switcher background */
   border-bottom: 1px solid var(--interactive-trim-default);
 
+  text-align: center;
 
   /* the properties below are to match the file explorer header */
   height: 30px;
@@ -32,12 +31,11 @@
   margin-bottom: 8px;
   font-weight: bold;
   padding: 6px 12px;
-  text-align: start;
 }
 
 .switcher-active-tab {
-  /*border-bottom: 1px solid rgb(197, 197, 197);*/
-  border-bottom: 1px solid var(--interactive-trim-default);
+  color: var(--interactive-medium-selected);
+  border-bottom: 1px solid var(--interactive-medium-selected);
 }
 
 .switcher-content-container {

@@ -23,7 +23,7 @@ const Catalog = (props) => {
       <ProjectControl>
         <ProjectInfo project={e} />
         {(installedProjects || []).indexOf(projectName) === -1 ? (
-          <TextButton color="hsl(0, 0%, 45%)"
+          <TextButton
             action={() => props.installAction(catalogURL, projectName)}
           >
             install

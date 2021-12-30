@@ -11,12 +11,12 @@
 }
 
 .project-listing li {
-  margin: 0 0 4px 0;
+  margin: 0 0 8px 0;
 }
 
 .project-update-all-button {
   color: var(--interactive-medium-default);
-  background: var(--interactive-surface-default);
+  background: var(--interactive-background-base);
   padding: 15px;
   width: 95%;
   margin-right: 8px;

@@ -2,8 +2,7 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  background-color: var(--neutral-background-default);
-  /* border-left: 2px solid #979797; */
+  background-color: var(--interactive-background-base);
   margin-left: 2em;
   margin-right: 2em;
   align-items: center;

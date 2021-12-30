@@ -68,7 +68,7 @@
 }
 
 .repl-active-tab {
-    border-bottom: 1px solid var(--interactive-trim-selected);
+    border-bottom: 1px solid var(--interactive-medium-selected);
     color: var(--interactive-medium-selected);
     font-weight: bold;
 }

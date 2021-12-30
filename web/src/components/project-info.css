@@ -3,7 +3,7 @@
   display: flex;
   flex-direction: column;
   font-family: monospace;
-  background-color: var(--neutral-surface-default);
+  background-color: var(--neutral-surface-highlighted);
   color: var(--neutral-medium-default);
 }
 
@@ -22,6 +22,7 @@
 
 .project-info-name {
   font-weight: bold;
+  color: var(--interactive-medium-default);
   /* font-size: 110%; */
 }
 

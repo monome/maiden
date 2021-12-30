@@ -15,10 +15,8 @@
 }
 
 .catalog-refresh-all-button {
-  /*color: rgb(150, 150, 150);*/
   color: var(--interactive-medium-default);
-  /*background: rgb(249, 249, 249);*/
-  background: var(--interactive-surface-default);
+  background: var(--interactive-background-base);
   padding: 15px;
   width: 95%;
   margin-right: 8px;
