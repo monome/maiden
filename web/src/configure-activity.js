@@ -47,12 +47,12 @@ class ConfigureActivity extends Component {
     };
 
     return (
-      <div
+      <button
         className={editorOptionClasses(key, val)}
         onClick={() => this.updateConfiguration(key, val)}
       >
         {label}
-      </div>
+      </button>
     );
   }
 

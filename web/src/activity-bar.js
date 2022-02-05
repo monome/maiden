@@ -12,17 +12,19 @@ class ActivityBar extends Component {
       let button;
 
       if (activity.component) {
-        button = <activity.component key={activity.key} />
+        button = <activity.component key={activity.key} />;
       } else {
-        button = <IconButton
-                    key={activity.selector + activity.toggle}
-                    action={() => this.props.buttonAction(activity)}
-                    tooltipMessage={activity.tooltipMessage}
-                    tooltipPosition={activity.tooltipPosition}
-                    icon={activity.icon}
-                    color="hsl(0, 0%, 59%)"
-                    size="24"
-                  />
+        button = (
+          <IconButton
+            key={activity.selector + activity.toggle}
+            action={() => this.props.buttonAction(activity)}
+            tooltipMessage={activity.tooltipMessage}
+            tooltipPosition={activity.tooltipPosition}
+            icon={activity.icon}
+            color="hsl(0, 0%, 59%)"
+            size="24"
+          />
+        );
       }
 
       if (activity.position && activity.position === 'lower') {

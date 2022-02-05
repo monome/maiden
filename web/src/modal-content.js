@@ -43,9 +43,7 @@ const ModalContent = props => {
         <p />
       </div>
       {props.children}
-      <div className="button-container">
-        {buttons}
-      </div>
+      <div className="button-container">{buttons}</div>
     </div>
   );
 };

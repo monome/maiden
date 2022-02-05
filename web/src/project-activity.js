@@ -5,8 +5,8 @@ import CatalogList from './components/catalog-list';
 import ProjectList from './components/project-list';
 
 import ModalContent from './modal-content';
-//import IconButton from './icon-button';
-//import { ICONS } from './svg-icons';
+// import IconButton from './icon-button';
+// import { ICONS } from './svg-icons';
 
 import { orderResultsByProjectName } from './model/project-actions';
 
@@ -19,12 +19,12 @@ class ProjectActivity extends Component {
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
       summary.get('catalogs').forEach(detail => {
-       const url = detail.get('url');
-       this.props.getCatalogByURL(url);
+        const url = detail.get('url');
+        this.props.getCatalogByURL(url);
       });
     });
     this.props.getProjectSummary();
-  };
+  }
 
   handleTabSelection = name => {
     this.props.projectViewSelect(name);
@@ -34,27 +34,24 @@ class ProjectActivity extends Component {
     console.log('refreshing catalog', url);
 
     const refreshModal = (
-      <ModalProgress
-        message={`Refreshing catalog...`}
-        buttonAction={this.modalDismiss}
-      />
+      <ModalProgress message="Refreshing catalog..." buttonAction={this.modalDismiss} />
     );
 
     this.props.showModal(refreshModal);
 
-    this.props.updateCatalog(url,
+    this.props.updateCatalog(
+      url,
       _ => {
         this.props.hideModal();
       },
       failure => {
         console.log('refresh-catalog failed', failure);
-        this.props.showModal(this.informModalContent(
-          `Refreshing catalog failed`,
-          failure.error));
-      });
+        this.props.showModal(this.informModalContent(`Refreshing catalog failed`, failure.error));
+      },
+    );
   };
 
-  handleRefreshAllAction = (catalogSummary) => {
+  handleRefreshAllAction = catalogSummary => {
     const modalCompletion = choice => {
       if (choice === 'ok') {
         this.props.updateAllCatalogs(catalogSummary, (successArr, failureArr) => {
@@ -63,11 +60,11 @@ class ProjectActivity extends Component {
 
         this.props.showModal(
           <ModalContent
-            message='Refreshing all catalogs'
+            message="Refreshing all catalogs"
             supporting="please wait..."
             buttonAction={this.modalDismiss}
-            confirmOnly={true}
-          />
+            confirmOnly
+          />,
         );
       } else {
         // update request canceled
@@ -76,42 +73,48 @@ class ProjectActivity extends Component {
     };
 
     this.props.showModal(
-      <ModalContent
-        message={`Refresh all catalogs?`}
-        buttonAction={modalCompletion}
-      />
+      <ModalContent message="Refresh all catalogs?" buttonAction={modalCompletion} />,
     );
   };
 
   updateRefreshAllModalContent = (successArr, failureArr) => {
-    let success = undefined;
+    let success;
     if (successArr && successArr.length) {
       success = (
         <div>
-          <span className='project-activity-update-modal-section-header'>Updated</span>
-          <br /><br />
+          <span className="project-activity-update-modal-section-header">Updated</span>
+          <br />
+          <br />
           <table>
             <tbody>
-              {successArr.map(e => (<tr><td>{e.name}</td></tr>))}
+              {successArr.map(e => (
+                <tr>
+                  <td>{e.name}</td>
+                </tr>
+              ))}
             </tbody>
-          </table><br /><br />
+          </table>
+          <br />
+          <br />
         </div>
       );
     }
 
-    let failure = undefined;
+    let failure;
     if (failureArr && failureArr.length) {
       failure = (
         <div>
-          <span className='project-activity-update-modal-section-header'>Failed</span>
-          <br /><br />
+          <span className="project-activity-update-modal-section-header">Failed</span>
+          <br />
+          <br />
           <table>
             <tbody>
               {failureArr.map(e => (
                 <tr>
                   <td style={{ width: '100px' }}>{e.name}</td>
                   <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
-                </tr>))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -119,46 +122,40 @@ class ProjectActivity extends Component {
     }
 
     return (
-      <ModalContent
-        buttonAction={this.modalDismiss}
-        confirmOnly={true}
-      >
+      <ModalContent buttonAction={this.modalDismiss} confirmOnly>
         {success}
         {failure}
       </ModalContent>
-    )
+    );
   };
-
 
   handleInstallAction = (url, name) => {
     console.log('doing install', url, name);
 
     const installModal = (
-      <ModalProgress
-        message={`Installing ${name}...`}
-        buttonAction={this.modalDismiss}
-      />
+      <ModalProgress message={`Installing ${name}...`} buttonAction={this.modalDismiss} />
     );
 
     this.props.showModal(installModal);
 
-    this.props.installProject(url, name,
+    this.props.installProject(
+      url,
+      name,
       _ => {
         // refresh project list
         this.props.getProjectSummary();
         this.props.refreshCodeDir();
         this.props.showModal(
-          this.informModalContent(`Installed project: "${name}"`,
-            SYSTEM_RESTART_RECOMMENDATION,
-          )
+          this.informModalContent(`Installed project: "${name}"`, SYSTEM_RESTART_RECOMMENDATION),
         );
       },
       failure => {
         console.log('install-project failed', failure);
-        this.props.showModal(this.informModalContent(
-          `Installing project "${name}" failed`,
-          failure.error));
-      });
+        this.props.showModal(
+          this.informModalContent(`Installing project "${name}" failed`, failure.error),
+        );
+      },
+    );
   };
 
   modalDismiss = _ => {
@@ -171,55 +168,65 @@ class ProjectActivity extends Component {
         message={message}
         supporting={supporting}
         buttonAction={this.modalDismiss}
-        confirmOnly={true}
+        confirmOnly
       />
     );
-    return(content);
+    return content;
   };
 
   updateSummaryModalContent = (successArr, failureArr) => {
-    let success = undefined;
+    let success;
     if (successArr && successArr.length) {
       success = (
         <div>
-          <span className='project-activity-update-modal-section-header'>Updated</span>
-          <br /><br />
+          <span className="project-activity-update-modal-section-header">Updated</span>
+          <br />
+          <br />
           <table>
             <tbody>
-              {successArr.map(e => (<tr><td>{e.name}</td></tr>))}
+              {successArr.map(e => (
+                <tr>
+                  <td>{e.name}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
           <br />
-          <span className='supporting'>{SYSTEM_RESTART_RECOMMENDATION}</span>
-          <br /><br />
+          <span className="supporting">{SYSTEM_RESTART_RECOMMENDATION}</span>
+          <br />
+          <br />
         </div>
       );
     } else {
       success = (
         <div>
-          <span className='project-activity-update-modal-section-header'>No updates</span>
-          <br /><br />
-          <span className='project-activity-update-modal-section-message'>
+          <span className="project-activity-update-modal-section-header">No updates</span>
+          <br />
+          <br />
+          <span className="project-activity-update-modal-section-message">
             The latest versions are already installed
           </span>
-          <br /><br />
+          <br />
+          <br />
         </div>
       );
     }
 
-    let failure = undefined;
+    let failure;
     if (failureArr && failureArr.length) {
       failure = (
         <div>
-          <span className='project-activity-update-modal-section-header'>Failed</span>
-          <br /><br />
+          <span className="project-activity-update-modal-section-header">Failed</span>
+          <br />
+          <br />
           <table>
             <tbody>
               {failureArr.map(e => (
                 <tr>
                   <td style={{ width: '100px' }}>{e.name}</td>
                   <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
-                </tr>))}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -227,40 +234,43 @@ class ProjectActivity extends Component {
     }
 
     return (
-      <ModalContent
-        buttonAction={this.modalDismiss}
-        confirmOnly={true}
-      >
+      <ModalContent buttonAction={this.modalDismiss} confirmOnly>
         {success}
         {failure}
       </ModalContent>
-    )
+    );
   };
 
-  handleUpdateAllAction = (projectList) => {
+  handleUpdateAllAction = projectList => {
     const modalCompletion = choice => {
       if (choice === 'ok') {
-        this.props.updateAllProjects(projectList,
+        this.props.updateAllProjects(
+          projectList,
           // completion callback
           (successArr, failureArr) => {
+            let success = successArr;
+            let failure = failureArr;
             if (successArr) {
-              successArr = successArr.sort(orderResultsByProjectName).filter(response => response.successResult.updated);
+              success = [...successArr]
+                .sort(orderResultsByProjectName)
+                .filter(response => response.successResult.updated);
             }
             if (failureArr) {
-              failureArr = failureArr.sort(orderResultsByProjectName);
+              failure = [...failureArr].sort(orderResultsByProjectName);
             }
             this.props.getProjectSummary();
             this.props.refreshCodeDir();
-            this.props.showModal(this.updateSummaryModalContent(successArr, failureArr));
-          });
+            this.props.showModal(this.updateSummaryModalContent(success, failure));
+          },
+        );
 
         this.props.showModal(
           <ModalContent
-            message='Updating all projects'
+            message="Updating all projects"
             supporting="Please wait..."
             buttonAction={this.modalDismiss}
-            confirmOnly={true}
-          />
+            confirmOnly
+          />,
         );
       } else {
         // update request canceled
@@ -270,7 +280,7 @@ class ProjectActivity extends Component {
 
     const confirmUpdateAllModalContent = (
       <ModalContent
-        message={`Update all projects?`}
+        message="Update all projects?"
         supporting="Local modifications will be overwritten"
         buttonAction={modalCompletion}
       />
@@ -279,37 +289,41 @@ class ProjectActivity extends Component {
     this.props.showModal(confirmUpdateAllModalContent);
   };
 
-
   handleUpdateAction = (url, name) => {
     console.log('doing update', url);
 
     const modalCompletion = choice => {
       if (choice === 'ok') {
-        this.props.updateProject(url, name,
+        this.props.updateProject(
+          url,
+          name,
           success => {
             console.log('updated', success);
             if (success.updated) {
               this.props.getProjectSummary();
               this.props.refreshCodeDir();
               this.props.showModal(
-                this.informModalContent(`Updated project: "${name}"`,
+                this.informModalContent(
+                  `Updated project: "${name}"`,
                   SYSTEM_RESTART_RECOMMENDATION,
-                )
+                ),
               );
             } else {
               this.props.showModal(
-                this.informModalContent('No updates',
+                this.informModalContent(
+                  'No updates',
                   `The latest version of "${name}" is already installed`,
-                )
+                ),
               );
             }
           },
           failure => {
             console.log('update-project failed', failure);
-            this.props.showModal(this.informModalContent(
-              `Updating project "${name}" failed`,
-              failure.error));
-          });
+            this.props.showModal(
+              this.informModalContent(`Updating project "${name}" failed`, failure.error),
+            );
+          },
+        );
       } else {
         // update request canceled
         this.props.hideModal();
@@ -332,7 +346,9 @@ class ProjectActivity extends Component {
 
     const modalCompletion = choice => {
       if (choice === 'ok') {
-        this.props.removeProject(url, name,
+        this.props.removeProject(
+          url,
+          name,
           _ => {
             // refresh project list
             this.props.getProjectSummary();
@@ -341,10 +357,11 @@ class ProjectActivity extends Component {
           },
           failure => {
             console.log('remove-project failed', failure);
-            this.props.showModal(this.informModalContent(
-              `Removing project "${name}" failed`,
-              failure.error));
-          });
+            this.props.showModal(
+              this.informModalContent(`Removing project "${name}" failed`, failure.error),
+            );
+          },
+        );
       } else {
         // canel or any other outcome
         this.props.hideModal();
@@ -364,38 +381,40 @@ class ProjectActivity extends Component {
 
   render() {
     const switcherSize = {
-      height: this.props.height - 10,  // FIXME: not sure why this is longer than it should be
+      height: this.props.height - 10, // FIXME: not sure why this is longer than it should be
       width: this.props.width,
     };
 
     return (
-      <div className='project-activity-container'>
+      <div className="project-activity-container">
         <Switcher
           size={switcherSize}
           select={this.handleTabSelection}
           activeTab={this.props.activeComponent}
         >
           <ProjectList
-            name='installed'
+            name="installed"
             projects={this.props.projectSummary}
             updateAllAction={this.handleUpdateAllAction}
             updateAction={this.handleUpdateAction}
             removeAction={this.handleRemoveAction}
           />
           <CatalogList
-            name='available'
+            name="available"
             catalogSummary={this.props.catalogSummary}
-            installedProjects={this.props.projectSummary.get('projects') && this.props.projectSummary.get('projects').map(e => e.get('project_name'))}
+            installedProjects={
+              this.props.projectSummary.get('projects') &&
+              this.props.projectSummary.get('projects').map(e => e.get('project_name'))
+            }
             catalogs={this.props.catalogs}
             refreshAllAction={this.handleRefreshAllAction}
             installAction={this.handleInstallAction}
             refreshAction={this.handleRefreshAction}
           />
-         </Switcher>
+        </Switcher>
       </div>
     );
-  };
-
+  }
 }
 
 export default ProjectActivity;

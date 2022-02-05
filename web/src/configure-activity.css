@@ -44,6 +44,8 @@
     margin-right: 10px;
     border: 1px solid transparent;
     color: var(--interactive-medium-default);
+    background: none;
+    font-family: monospace;
 }
 
 .configure-option:hover {

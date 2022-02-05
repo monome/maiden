@@ -35,10 +35,12 @@ const mapDispatchToProps = dispatch => ({
     dispatch(replConnect(component, endpoint));
   },
   userDataList: () => {
-    dispatch(rootList(USER_DATA_PATH, () => {
-      // NB: this directory read is here to ensure that the dust/code directory is materialized ahead of any implicit "untitled.lua" buffer generation in order to ensure the implicity script lands in the code directory instead of the root directory.
-      dispatch(directoryRead(DUST_CODE_RESOURCE));
-    }));
+    dispatch(
+      rootList(USER_DATA_PATH, () => {
+        // NB: this directory read is here to ensure that the dust/code directory is materialized ahead of any implicit "untitled.lua" buffer generation in order to ensure the implicity script lands in the code directory instead of the root directory.
+        dispatch(directoryRead(DUST_CODE_RESOURCE));
+      }),
+    );
   },
 });
 

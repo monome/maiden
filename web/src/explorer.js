@@ -57,7 +57,7 @@ const SectionHeader = props => {
         size="12"
         padding="1"
         color="hsl(0, 0%, 59%)"
-        dark={true}
+        dark
       />
     ));
   }
@@ -300,23 +300,21 @@ class Section extends Component {
       );
     }
 
-    let headerHeight = 17;  // FIXME: this hardcodes .explorer-header.height
-    let treeHeight = this.props.style.height - headerHeight - 20;  // FIXME: where the heck is this -20 coming from 
+    const headerHeight = 17; // FIXME: this hardcodes .explorer-header.height
+    const treeHeight = this.props.style.height - headerHeight - 20; // FIXME: where the heck is this -20 coming from
     // console.log("treeHeight=", headerHeight, treeHeight, this.props.style);
 
     return (
       <div className="explorer-section" ref={elem => (this.section = elem)}>
         <SectionHeader
-          style={{height: headerHeight}}
+          style={{ height: headerHeight }}
           name={this.props.name}
           tools={this.props.tools}
           buttonAction={this.onToolClick}
           headerDoubleClickAction={this.onHeaderToggle}
           showTools={!isCollapsed && this.state.showTools}
         />
-        <div
-          className="explorer-section-tree"
-          style={{height: treeHeight}}>
+        <div className="explorer-section-tree" style={{ height: treeHeight }}>
           {tree}
         </div>
       </div>
@@ -351,7 +349,6 @@ const fileTools = [
     tooltipMessage: 'rename file/folder',
   },
 ];
-
 
 class Explorer extends Component {
   render() {

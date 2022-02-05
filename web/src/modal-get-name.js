@@ -63,7 +63,7 @@ class ModalGetName extends Component {
         errorMessage: 'name already in use',
         newName,
       });
-    } else if (this.textArea.value.startsWith(".")) {
+    } else if (this.textArea.value.startsWith('.')) {
       this.setState({
         errorMessage: 'name cannot start with "."',
         newName,
@@ -76,7 +76,8 @@ class ModalGetName extends Component {
     }
   };
 
-  isValidName = name => (name === this.props.initialName || !this.siblingNames.has(name)) && !name.startsWith(".");
+  isValidName = name =>
+    (name === this.props.initialName || !this.siblingNames.has(name)) && !name.startsWith('.');
 
   complete = choice => {
     const name = this.state.newName;
@@ -105,7 +106,7 @@ class ModalGetName extends Component {
           rows="1"
           maxLength="128"
           wrap="false"
-          autoFocus={true}
+          autoFocus
           onKeyDown={this.handleKeyDown}
           onChange={this.handleOnChange}
         />

@@ -8,7 +8,7 @@ import { commandService, keyService } from './services';
 import './workspace.css';
 
 // https://github.com/reactjs/react-modal/issues/632#issuecomment-378755186
-if (process.env.NODE_ENV !== 'test')  {
+if (process.env.NODE_ENV !== 'test') {
   ReactModal.setAppElement('#root');
 }
 
@@ -110,14 +110,14 @@ class Workspace extends Component {
 
   handleCloseConfigModal = () => {
     this.props.toggleComponent('config');
-  }
+  };
 
-  handleConfigModalAction = (choice) => {
+  handleConfigModalAction = choice => {
     if (choice === 'ok') {
       this.child.save();
     }
     this.handleCloseConfigModal();
-  }
+  };
 
   render() {
     if (this.props.editorTheme === 'dark') {
@@ -156,12 +156,8 @@ class Workspace extends Component {
           className="workspace-modal"
           overlayClassName="workspace-modal-overlay"
         >
-          <ModalContent
-            message="configure"
-            buttonAction={this.handleConfigModalAction}
-          >
-            <BoundConfigureActivity onRef={ref => (this.child = ref)}>
-            </BoundConfigureActivity>
+          <ModalContent message="configure" buttonAction={this.handleConfigModalAction}>
+            <BoundConfigureActivity onRef={ref => (this.child = ref)} />
           </ModalContent>
         </ReactModal>
       </div>

@@ -42,7 +42,7 @@ const mapDispatchToProps = dispatch => ({
   },
   unitMapping: cb => {
     dispatch(unitMapping(cb));
-  }
+  },
 });
 
 const BoundReplActivity = connect(mapStateToProps, mapDispatchToProps)(ReplActivity);

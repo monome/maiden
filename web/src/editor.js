@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import 'ace-builds/src-noconflict/ext-searchbox';
-import 'ace-builds/src-noconflict/mode-lua'
-import 'ace-builds/src-noconflict/mode-json'
+import 'ace-builds/src-noconflict/mode-lua';
+import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/snippets/lua';
 import 'ace-builds/src-noconflict/theme-dawn';
 import 'ace-builds/src-noconflict/keybinding-vim';
@@ -51,12 +51,12 @@ class Editor extends Component {
 
       keyService.bindings.forEach(({ keystroke }) => {
         const cpIndex = keymap.findIndex(x => x.keys === keystroke.vimKey);
-        if (~cpIndex) {
+        if (cpIndex !== -1) {
           keymap.splice(cpIndex, 1);
         }
-      })
+      });
     }
-  }
+  };
 
   onLoad = editor => {
     // grab reference to ace editor
@@ -155,11 +155,11 @@ class Editor extends Component {
   }
 
   handleEval() {
-    var code = this.editor.getSelectedText();
-    if (code==="") {
+    let code = this.editor.getSelectedText();
+    if (code === '') {
       code = this.editor.session.getLine(this.editor.getSelectionRange().start.row);
     }
-    this.props.selectionEval(code.replace(/--.*\n/g,';').replace(/\n/g,';'));
+    this.props.selectionEval(code.replace(/--.*\n/g, ';').replace(/\n/g, ';'));
   }
 
   render() {

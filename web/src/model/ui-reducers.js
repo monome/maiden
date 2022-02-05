@@ -32,9 +32,9 @@ const handleToggleComponent = (state, action) => {
 
     case REPL_COMPONENT:
       return { ...state, replHidden: !state.replHidden };
-    
+
     case CONFIG_COMPONENT:
-      return { ...state, configHidden: !state.configHidden }
+      return { ...state, configHidden: !state.configHidden };
 
     default:
       return state;

@@ -9,20 +9,29 @@ const CatalogList = props => {
     const catalog = props.catalogs.get(name);
     return (
       <li key={name}>
-        <Catalog catalog={catalog} installedProjects={props.installedProjects} installAction={props.installAction} refreshAction={props.refreshAction} />
+        <Catalog
+          catalog={catalog}
+          installedProjects={props.installedProjects}
+          installAction={props.installAction}
+          refreshAction={props.refreshAction}
+        />
       </li>
     );
   });
   return (
-    <div className='catalog-list-container'>
-      {catalogs.size ? (<TextButton
-        classes='catalog-refresh-all-button'
-        color='hsl(0, 0%, 45%)'
-        action={() => props.refreshAllAction(props.catalogSummary)}
-        >refresh all</TextButton>) : ''}
-      <ul className='catalog-list'>
-        {catalogs}
-      </ul>
+    <div className="catalog-list-container">
+      {catalogs.size ? (
+        <TextButton
+          classes="catalog-refresh-all-button"
+          color="hsl(0, 0%, 45%)"
+          action={() => props.refreshAllAction(props.catalogSummary)}
+        >
+          refresh all
+        </TextButton>
+      ) : (
+        ''
+      )}
+      <ul className="catalog-list">{catalogs}</ul>
     </div>
   );
 };

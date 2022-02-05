@@ -6,15 +6,11 @@ const Tab = props => {
   const className = cx(
     'switcher-tab',
     { noselect: true },
-    {'switcher-active-tab': props.isActive },
+    { 'switcher-active-tab': props.isActive },
   );
 
   return (
-    <button
-      className={className}
-      key={props.name}
-      onClick={props.onClick}
-    >
+    <button className={className} key={props.name} onClick={props.onClick}>
       {props.name}
     </button>
   );
@@ -29,7 +25,7 @@ const Switcher = props => {
     width: size.width,
   };
 
-  //console.log('children', children);
+  // console.log('children', children);
 
   const tabs = children.map(c => (
     <Tab
@@ -40,13 +36,10 @@ const Switcher = props => {
     />
   ));
 
-  const which = children.find(c => (
-    c.props.name === activeTab
-  ));
+  const which = children.find(c => c.props.name === activeTab);
 
-  //console.log('which', which);
-  
-  
+  // console.log('which', which);
+
   return (
     <div>
       <div className="switcher-tab-container" style={tabContinerHeight}>
