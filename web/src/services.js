@@ -2,6 +2,17 @@ import OS from './utils';
 import EditorMode from './mode';
 import LuaMode from './mode/lua';
 
+class CommandService {
+  constructor() {
+    this.commands = new Map();
+  }
+  registerCommand(name, cmd) {
+    this.commands.set(name, cmd);
+  }
+}
+
+export const commandService = new CommandService();
+
 const Modifier = {
   CMD: 1,
   win: {
@@ -41,9 +52,9 @@ class KeyStroke {
   get vimKey() {
     return `<C-${this.key}>`;
   }
-  
+
   osModKey(os) {
-    return `${Modifier[os][this.modifier].name}-${this.key}`
+    return `${Modifier[os][this.modifier].name}-${this.key}`;
   }
 
   matches(event) {
@@ -64,28 +75,19 @@ class KeyBinding {
     const name = this.commandId;
     return {
       name,
-      bindKey: { 
+      bindKey: {
         win: this.keystroke.osModKey('win'),
         mac: this.keystroke.osModKey('mac'),
       },
       exec: () => {
         const command = commandService.commands.get(name);
-        command && command();
-      }
-    }
+        if (command) {
+          command();
+        }
+      },
+    };
   }
 }
-
-class CommandService {
-  constructor() {
-    this.commands = new Map();
-  }
-  registerCommand(name, cmd) {
-    this.commands.set(name, cmd);
-  }
-}
-
-export const commandService = new CommandService();
 
 class KeyService {
   constructor() {
@@ -151,8 +153,7 @@ class EditorService {
     if (fileName) {
       if (fileName.endsWith('.lua')) {
         return this.luaMode;
-      }
-      else if(fileName.endsWith('.json')) {
+      } else if (fileName.endsWith('.json')) {
         return this.jsonMode;
       }
     }

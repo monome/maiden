@@ -9,8 +9,8 @@ function apiPath(p) {
 export const DUST_CODE_RESOURCE = apiPath('dust/code');
 export const DUST_AUDIO_RESOURCE = apiPath('dust/audio');
 export const DUST_DATA_RESOURCE = apiPath('dust/data');
-export const DUST_SOURCES_RESOURCE = apiPath('dust/data/sources')
-export const DUST_CATALOGS_RESOURCE = apiPath('dust/data/catalogs')
+export const DUST_SOURCES_RESOURCE = apiPath('dust/data/sources');
+export const DUST_CATALOGS_RESOURCE = apiPath('dust/data/catalogs');
 
 export const DUST_PROTECTED_RESOURCES = new Set([
   DUST_AUDIO_RESOURCE,
@@ -20,9 +20,7 @@ export const DUST_PROTECTED_RESOURCES = new Set([
   DUST_CATALOGS_RESOURCE,
 ]);
 
-export const isProtectedResource = resource => (
-  DUST_PROTECTED_RESOURCES.has(resource)
-);
+export const isProtectedResource = resource => DUST_PROTECTED_RESOURCES.has(resource);
 
 class API {
   static siblingResourceForName(name, siblingResource, category = 'scripts') {
@@ -184,7 +182,7 @@ class API {
 
   static updateCatalog(catalogURL, onSuccess, onFailure) {
     const url = `${catalogURL}/update`;
-    fetch(url, {'method': 'POST'}).then(response => {
+    fetch(url, { method: 'POST' }).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
@@ -216,7 +214,7 @@ class API {
   static installProject(catalogURL, name, onSuccess, onFailure) {
     const encodedName = encodeURIComponent(name);
     const url = `${catalogURL}/install/${encodedName}`;
-    fetch(url, {'method': 'POST'}).then(response => {
+    fetch(url, { method: 'POST' }).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
@@ -227,7 +225,7 @@ class API {
   static installProjectFromURL(sourceURL, onSuccess, onFailure) {
     const encodedURL = encodeURIComponent(sourceURL);
     const url = `${API_ROOT}/project/install?url=${encodedURL}`;
-    fetch(url, {'method': 'POST'}).then(response => {
+    fetch(url, { method: 'POST' }).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
@@ -238,7 +236,7 @@ class API {
   static updateProject(projectURL, onSuccess, onFailure) {
     // FIXME: this really shouldn't be a GET verb
     const url = `${projectURL}?update=`;
-    return fetch(url, {'method': 'GET'}).then(response => {
+    return fetch(url, { method: 'GET' }).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);
@@ -247,7 +245,7 @@ class API {
   }
 
   static removeProject(projectURL, onSuccess, onFailure) {
-    fetch(projectURL, {'method': 'DELETE'}).then(response => {
+    fetch(projectURL, { method: 'DELETE' }).then(response => {
       const cb = response.ok ? onSuccess : onFailure;
       response.json().then(body => {
         cb(body);

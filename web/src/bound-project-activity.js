@@ -16,9 +16,7 @@ import {
   removeProject,
 } from './model/project-actions';
 
-import {
-  directoryRead,
-} from './model/edit-actions';
+import { directoryRead } from './model/edit-actions';
 
 import { DUST_CODE_RESOURCE } from './api';
 

@@ -16,7 +16,7 @@ const ModalProgress = props => {
     />
   );
 
-  let buttons = [cancelButton];
+  const buttons = [cancelButton];
 
   return (
     <div className="modal-content">
@@ -28,9 +28,7 @@ const ModalProgress = props => {
         <p />
       </div>
       {props.children}
-      <div className="button-container">
-        {buttons}
-      </div>
+      <div className="button-container">{buttons}</div>
     </div>
   );
 };

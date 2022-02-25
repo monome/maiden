@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import BoundWorkspace from './bound-workspace';
-import BoundUrlHandler from './bound-url-handler'
+import BoundUrlHandler from './bound-url-handler';
 import activities from './activities';
 import './app.css';
 import './tool-tip.css';

@@ -21,7 +21,7 @@ describe('siblingResourceForName', () => {
     const r = api.siblingResourceForName('foo.lua', '/api/v1/scripts/one/two/three.lua');
     expect(r).toEqual('/api/v1/scripts/one/two/foo.lua');
   });
-})
+});
 
 describe('fileFromResource', () => {
   it('extracts basic path', () => {

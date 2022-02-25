@@ -115,7 +115,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(bufferSelect(resource));
 
     const path = resourceToEditPath(resource);
-    path && dispatch(pushHistory(path));
+    if (path) {
+      dispatch(pushHistory(path));
+    }
   },
   bufferSave: (resource, code, completionCB = () => {}) => {
     dispatch(bufferSave(resource, code, completionCB));
@@ -125,7 +127,7 @@ const mapDispatchToProps = dispatch => ({
     if (file) {
       if (file.includes('/lib/') || file.includes('/data/') || file.includes('/audio/')) {
         console.log('files under /lib/, /data/, and /audio/ cannot be run as a script');
-        return undefined;
+        return;
       }
       const cmd = `norns.script.load("${file}")`;
       dispatch(replSend(MATRON_COMPONENT, cmd));

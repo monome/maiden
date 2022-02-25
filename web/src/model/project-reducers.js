@@ -49,34 +49,42 @@ const handleCatalogSummarySuccess = (action, state) => {
   const sortedCatalogs = action.catalogs.get('catalogs').sort((a, b) => {
     const na = a.get('name');
     const nb = b.get('name');
-    if (na < nb)   { return -1; }
-    if (na > nb)   { return 1; }
+    if (na < nb) {
+      return -1;
+    }
+    if (na > nb) {
+      return 1;
+    }
     return 0;
   });
   return { ...state, catalogSummary: sortedCatalogs };
-}
+};
 
 const handleCatalogGetSuccess = (action, state) => {
   const catalogName = action.catalog.get('name');
   const sortedEntries = action.catalog.get('entries').sort((a, b) => {
     const na = a.get('project_name');
     const nb = b.get('project_name');
-    if (na < nb)   { return -1; }
-    if (na > nb)   { return 1; }
+    if (na < nb) {
+      return -1;
+    }
+    if (na > nb) {
+      return 1;
+    }
     return 0;
   });
   const sortedCatalog = action.catalog.set('entries', sortedEntries);
   const newCatalogs = state.catalogs.set(catalogName, sortedCatalog);
   return { ...state, catalogs: newCatalogs };
-}
+};
 
 const projects = (state = initialProjectState, action) => {
   switch (action.type) {
     case CATALOG_SUMMARY_SUCCESS:
-      return handleCatalogSummarySuccess(action, state)
+      return handleCatalogSummarySuccess(action, state);
 
     case CATALOG_SUCCESS:
-      return handleCatalogGetSuccess(action, state)
+      return handleCatalogGetSuccess(action, state);
 
     case CATALOG_FAILURE:
       // TODO:
@@ -86,11 +94,12 @@ const projects = (state = initialProjectState, action) => {
       // update/refresh ui can be used
       console.log('creating empty catalog: ', action.error.name);
       const emptyCatalog = fromJS({
-        'url': action.error.url,
-        'entries': [],
-        'name': action.error.name,
+        url: action.error.url,
+        entries: [],
+        name: action.error.name,
       });
-      return { ...state,
+      return {
+        ...state,
         catalogs: state.catalogs.set(action.error.name, emptyCatalog),
       };
 
@@ -117,47 +126,59 @@ const projects = (state = initialProjectState, action) => {
       return { ...state, activeComponent: action.component };
 
     case PROJECT_INSTALL_REQUEST:
-      return { ...state,
+      return {
+        ...state,
         installing: state.installing.set(installID(action.catalog, action.name), 'installing...'),
       };
 
     case PROJECT_INSTALL_FAILURE:
-      return { ...state,
-        installing: state.installing.set(installID(action.catalog, action.name), action.error.error),
+      return {
+        ...state,
+        installing: state.installing.set(
+          installID(action.catalog, action.name),
+          action.error.error,
+        ),
       };
 
     case PROJECT_INSTALL_SUCCESS:
-      return { ...state,
+      return {
+        ...state,
         installing: state.installing.delete(installID(action.catalog, action.name)),
       };
 
     case PROJECT_UPDATE_REQUEST:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.set(action.project, 'updating...'),
       };
 
     case PROJECT_UPDATE_FAILURE:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.set(action.project, action.error.error),
       };
 
     case PROJECT_UPDATE_SUCCESS:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.delete(action.project),
       };
 
     case PROJECT_REMOVE_REQUEST:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.set(action.project, 'removing...'),
       };
 
     case PROJECT_REMOVE_FAILURE:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.set(action.project, action.error.error),
       };
 
     case PROJECT_REMOVE_SUCCESS:
-      return { ...state,
+      return {
+        ...state,
         mutating: state.mutating.delete(action.project),
       };
 

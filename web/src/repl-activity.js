@@ -131,7 +131,6 @@ const ReplSwitcher = props => {
       >
         <ReplConnect {...contentSize} activeRepl={activeRepl} connectAction={props.handleConnect} />
       </Repl>
-
     </div>
   );
 };

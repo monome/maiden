@@ -1,5 +1,5 @@
-import 'jest'
-import * as urlUtils from './url-utils'
+import 'jest';
+import * as urlUtils from './url-utils';
 
 describe('url-utils', () => {
   describe('resourceToEditPath', () => {
@@ -18,7 +18,7 @@ describe('url-utils', () => {
     it('returns resource path for valid edit path fragment', () => {
       const result = urlUtils.pathToResource('#edit/dust/one/two.lua');
       expect(result).toBe('/api/v1/dust/one/two.lua');
-    })
+    });
 
     it('returns null for invalid edit path', () => {
       const result = urlUtils.pathToResource('/api/v1/secret.lua');
@@ -36,5 +36,5 @@ describe('url-utils', () => {
       const result = urlUtils.isEditPath('not-edit/anything');
       expect(result).toBe(false);
     });
-  })
+  });
 });

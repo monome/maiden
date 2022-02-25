@@ -1,7 +1,11 @@
 import { Map } from 'immutable';
 import api, { DUST_CODE_RESOURCE } from '../api';
 import { directoryRead } from './edit-actions';
-import { projectInstallURLSuccess, projectInstallURLRequest, projectInstallURLFailure } from './project-actions';
+import {
+  projectInstallURLSuccess,
+  projectInstallURLRequest,
+  projectInstallURLFailure,
+} from './project-actions';
 
 export const REPL_ENDPOINTS_REQUEST = 'REPL_ENDPOINTS_REQUEST';
 export const REPL_ENDPOINTS_SUCCESS = 'REPL_ENDPOINTS_SUCCESS';
@@ -126,20 +130,25 @@ export const replInput = (component, value) => (dispatch, getState) => {
   if (input.startsWith(';')) {
     const operation = input.slice(1).split(/\s+/);
     if (operation[0] === 'install') {
-      console.log("doing install for:", operation);
+      console.log('doing install for:', operation);
       const projectURL = operation[1];
       dispatch(projectInstallURLRequest(projectURL));
-      dispatch(replEcho(component, ';' + operation.join(" "))); // inject into command history
-      dispatch(replReceive(component, "starting..."));
-      api.installProjectFromURL(projectURL, successResponse => {
+      dispatch(replEcho(component, `;${operation.join(' ')}`)); // inject into command history
+      dispatch(replReceive(component, 'starting...'));
+      api.installProjectFromURL(
+        projectURL,
+        successResponse => {
           dispatch(projectInstallURLSuccess(successResponse, projectURL));
-          dispatch(replReceive(component, `installed "${successResponse.catalog_entry.project_name}"!`));
+          dispatch(
+            replReceive(component, `installed "${successResponse.catalog_entry.project_name}"!`),
+          );
           dispatch(directoryRead(DUST_CODE_RESOURCE));
         },
         failResponse => {
           dispatch(projectInstallURLFailure(failResponse.error, projectURL));
           dispatch(replReceive(component, failResponse.error));
-        });
+        },
+      );
     } else {
       // default to assuming this is a unit operation
       const state = getState().repl;

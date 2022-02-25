@@ -43,8 +43,6 @@ export const PROJECT_INSTALL_URL_REQUEST = 'PROJECT_INSTALL_URL_REQUEST';
 export const PROJECT_INSTALL_URL_SUCCESS = 'PROJECT_INSTALL_URL_SUCCESS';
 export const PROJECT_INSTALL_URL_FAILURE = 'PROJECT_INSTALL_URL_FAILURE';
 
-
-
 //
 // sync action creators
 //
@@ -58,11 +56,18 @@ export const catalogSuccess = (name, catalog) => ({ type: CATALOG_SUCCESS, name,
 export const catalogFailure = (name, error) => ({ type: CATALOG_FAILURE, name, error });
 
 export const catalogUpdateRequest = url => ({ type: CATALOG_UPDATE_REQUEST, url });
-export const catalogUpdateSuccess = (url, catalog) => ({ type: CATALOG_UPDATE_SUCCESS, url, catalog });
+export const catalogUpdateSuccess = (url, catalog) => ({
+  type: CATALOG_UPDATE_SUCCESS,
+  url,
+  catalog,
+});
 export const catalogUpdateFailure = error => ({ type: CATALOG_UPDATE_FAILURE, error });
 
-export const catalogUpdateAllComplete = (successArr, failureArr) => ({ type: CATALOG_UPDATE_ALL_COMPLETE, successArr, failureArr });
-
+export const catalogUpdateAllComplete = (successArr, failureArr) => ({
+  type: CATALOG_UPDATE_ALL_COMPLETE,
+  successArr,
+  failureArr,
+});
 
 export const projectSummaryRequest = () => ({ type: PROJECT_SUMMARY_REQUEST });
 export const projectSummarySuccess = projects => ({ type: PROJECT_SUMMARY_SUCCESS, projects });
@@ -74,23 +79,75 @@ export const projectFailure = error => ({ type: PROJECT_FAILURE, error });
 
 export const projectViewSelect = component => ({ type: PROJECT_VIEW_SELECT, component });
 
-export const projectInstallRequest = (catalog, name) => ({ type: PROJECT_INSTALL_REQUEST, catalog, name });
-export const projectInstallSuccess = (project, catalog, name) => ({ type: PROJECT_INSTALL_SUCCESS, project, catalog, name });
-export const projectInstallFailure = (error, catalog, name) => ({ type: PROJECT_INSTALL_FAILURE, error, catalog, name });
+export const projectInstallRequest = (catalog, name) => ({
+  type: PROJECT_INSTALL_REQUEST,
+  catalog,
+  name,
+});
+export const projectInstallSuccess = (project, catalog, name) => ({
+  type: PROJECT_INSTALL_SUCCESS,
+  project,
+  catalog,
+  name,
+});
+export const projectInstallFailure = (error, catalog, name) => ({
+  type: PROJECT_INSTALL_FAILURE,
+  error,
+  catalog,
+  name,
+});
 
-export const projectUpdateAllComplete = (successArr, failureArr) => ({ type: PROJECT_UPDATE_ALL_COMPLETE, successArr, failureArr });
+export const projectUpdateAllComplete = (successArr, failureArr) => ({
+  type: PROJECT_UPDATE_ALL_COMPLETE,
+  successArr,
+  failureArr,
+});
 
-export const projectUpdateRequest = (project, name) => ({ type: PROJECT_UPDATE_REQUEST, project, name });
-export const projectUpdateSuccess = (project, name) => ({ type: PROJECT_UPDATE_SUCCESS, project, name });
-export const projectUpdateFailure = (error, project, name) => ({ type: PROJECT_UPDATE_FAILURE, error, project, name });
+export const projectUpdateRequest = (project, name) => ({
+  type: PROJECT_UPDATE_REQUEST,
+  project,
+  name,
+});
+export const projectUpdateSuccess = (project, name) => ({
+  type: PROJECT_UPDATE_SUCCESS,
+  project,
+  name,
+});
+export const projectUpdateFailure = (error, project, name) => ({
+  type: PROJECT_UPDATE_FAILURE,
+  error,
+  project,
+  name,
+});
 
-export const projectRemoveRequest = (project, name) => ({ type: PROJECT_REMOVE_REQUEST, project, name });
-export const projectRemoveSuccess = (project, name) => ({ type: PROJECT_REMOVE_SUCCESS, project, name });
-export const projectRemoveFailure = (error, project, name) => ({ type: PROJECT_REMOVE_FAILURE, error, project, name });
+export const projectRemoveRequest = (project, name) => ({
+  type: PROJECT_REMOVE_REQUEST,
+  project,
+  name,
+});
+export const projectRemoveSuccess = (project, name) => ({
+  type: PROJECT_REMOVE_SUCCESS,
+  project,
+  name,
+});
+export const projectRemoveFailure = (error, project, name) => ({
+  type: PROJECT_REMOVE_FAILURE,
+  error,
+  project,
+  name,
+});
 
-export const projectInstallURLRequest = (url) => ({ type: PROJECT_INSTALL_URL_REQUEST, url });
-export const projectInstallURLSuccess = (project, url) => ({ type: PROJECT_INSTALL_URL_SUCCESS, project, url });
-export const projectInstallURLFailure = (error, url) => ({ type: PROJECT_INSTALL_URL_FAILURE, error, url });
+export const projectInstallURLRequest = url => ({ type: PROJECT_INSTALL_URL_REQUEST, url });
+export const projectInstallURLSuccess = (project, url) => ({
+  type: PROJECT_INSTALL_URL_SUCCESS,
+  project,
+  url,
+});
+export const projectInstallURLFailure = (error, url) => ({
+  type: PROJECT_INSTALL_URL_FAILURE,
+  error,
+  url,
+});
 
 //
 // async actions
@@ -109,7 +166,8 @@ export const getCatalogSummary = cb => dispatch => {
 
 export const getCatalogByURL = (url, onSuccess, onFailure) => dispatch => {
   dispatch(catalogRequest(url));
-  return API.getCatalogByURL(url,
+  return API.getCatalogByURL(
+    url,
     successResponse => {
       const c = fromJS(successResponse);
       dispatch(catalogSuccess(url, c));
@@ -122,12 +180,14 @@ export const getCatalogByURL = (url, onSuccess, onFailure) => dispatch => {
       if (onFailure) {
         onFailure(failureResult);
       }
-    });
+    },
+  );
 };
 
 export const getCatalog = (name, onSuccess, onFailure) => dispatch => {
   dispatch(catalogRequest(name));
-  return API.getCatalog(name,
+  return API.getCatalog(
+    name,
     successResponse => {
       const c = fromJS(successResponse);
       dispatch(catalogSuccess(name, c));
@@ -140,25 +200,28 @@ export const getCatalog = (name, onSuccess, onFailure) => dispatch => {
       if (onFailure) {
         onFailure(failureResult);
       }
-    });
+    },
+  );
 };
 
 export const updateCatalog = (url, onSuccess, onFailure) => dispatch => {
   dispatch(catalogUpdateRequest(url));
-  return API.updateCatalog(url,
+  return API.updateCatalog(
+    url,
     successResponse => {
       const catalog = fromJS(successResponse);
-      dispatch(catalogUpdateSuccess(url, catalog))
+      dispatch(catalogUpdateSuccess(url, catalog));
       if (onSuccess) {
         onSuccess(catalog);
       }
     },
     failureResult => {
-      dispatch(catalogUpdateFailure(failureResult))
+      dispatch(catalogUpdateFailure(failureResult));
       if (onFailure) {
-        onFailure(failureResult)
+        onFailure(failureResult);
       }
-    });
+    },
+  );
 };
 
 export const updateAllCatalogs = (catalogSummary, onComplete) => dispatch => {
@@ -169,18 +232,20 @@ export const updateAllCatalogs = (catalogSummary, onComplete) => dispatch => {
     const name = c.get('name');
     const url = c.get('url');
     dispatch(catalogUpdateRequest(url));
-    const promise = new Promise((resolve) => {
-      API.updateCatalog(url,
+    const promise = new Promise(resolve => {
+      API.updateCatalog(
+        url,
         successResult => {
-          successArr.push({successResult, url, name});
+          successArr.push({ successResult, url, name });
           const catalog = fromJS(successResult);
-          dispatch(catalogUpdateSuccess(url, catalog))
+          dispatch(catalogUpdateSuccess(url, catalog));
           resolve('resolved');
         },
         failureResult => {
-          failureArr.push({failureResult, url, name});
+          failureArr.push({ failureResult, url, name });
           resolve('resolved');
-        });
+        },
+      );
     });
     requestsArr.push(promise);
   });
@@ -216,7 +281,9 @@ export const getProject = (name, cb) => dispatch => {
 
 export const installProject = (catalog, name, onSuccess, onFailure) => dispatch => {
   dispatch(projectInstallRequest(catalog, name));
-  return API.installProject(catalog, name,
+  return API.installProject(
+    catalog,
+    name,
     successResult => {
       dispatch(projectInstallSuccess(successResult, catalog, name));
       if (onSuccess) {
@@ -228,27 +295,30 @@ export const installProject = (catalog, name, onSuccess, onFailure) => dispatch 
       if (onFailure) {
         onFailure(failureResult);
       }
-    });
+    },
+  );
 };
 
-export const orderResultsByProjectName = (a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
+export const orderResultsByProjectName = (a, b) => a.name.localeCompare(b.name);
 
 export const updateAllProjects = (projects, onComplete) => dispatch => {
   const successArr = [];
   const failureArr = [];
   const requestsArr = [];
-  projects.forEach(({url,name}) => {
+  projects.forEach(({ url, name }) => {
     dispatch(projectUpdateRequest(url, name));
-    const promise = new Promise((resolve) => {
-      API.updateProject(url,
+    const promise = new Promise(resolve => {
+      API.updateProject(
+        url,
         successResult => {
-          successArr.push({successResult, url, name});
+          successArr.push({ successResult, url, name });
           resolve('resolved');
         },
         failureResult => {
-          failureArr.push({failureResult, url, name});
+          failureArr.push({ failureResult, url, name });
           resolve('resolved');
-        });
+        },
+      );
     });
     requestsArr.push(promise);
   });
@@ -262,7 +332,8 @@ export const updateAllProjects = (projects, onComplete) => dispatch => {
 
 export const updateProject = (project, name, onSuccess, onFailure) => dispatch => {
   dispatch(projectUpdateRequest(project, name));
-  return API.updateProject(project,
+  return API.updateProject(
+    project,
     successResult => {
       dispatch(projectUpdateSuccess(successResult, project, name));
       if (onSuccess) {
@@ -274,12 +345,14 @@ export const updateProject = (project, name, onSuccess, onFailure) => dispatch =
       if (onFailure) {
         onFailure(failureResult, name);
       }
-    });
+    },
+  );
 };
 
 export const removeProject = (project, name, onSuccess, onFailure) => dispatch => {
   dispatch(projectRemoveRequest(project, name));
-  return API.removeProject(project,
+  return API.removeProject(
+    project,
     successResult => {
       dispatch(projectRemoveSuccess(successResult, project, name));
       if (onSuccess) {
@@ -291,12 +364,14 @@ export const removeProject = (project, name, onSuccess, onFailure) => dispatch =
       if (onFailure) {
         onFailure(failureResult, name);
       }
-    });
+    },
+  );
 };
 
 export const installProjectFromURL = (url, onSuccess, onFailure) => dispatch => {
   dispatch(projectInstallURLRequest(url));
-  return API.installProjectFromURL(url,
+  return API.installProjectFromURL(
+    url,
     successResult => {
       dispatch(projectInstallSuccess(successResult, url));
       if (onSuccess) {
@@ -308,14 +383,12 @@ export const installProjectFromURL = (url, onSuccess, onFailure) => dispatch => 
       if (onFailure) {
         onFailure(failureResult);
       }
-    });
+    },
+  );
 };
-
 
 //
 // helpers
 //
 
-export const installID = (catalog, name) => (
-  `${name}::${catalog}`
-);
+export const installID = (catalog, name) => `${name}::${catalog}`;

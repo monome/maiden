@@ -99,7 +99,7 @@ class EditActivity extends Component {
 
   replSplitSizing() {
     return {
-      size: this.props.ui.replHidden? 0 : this.state.replHeight,
+      size: this.props.ui.replHidden ? 0 : this.state.replHeight,
       minSize: this.props.ui.replMinHeight,
       defaultSize: this.props.ui.replMinHeight,
       maxSize: this.props.height - this.props.ui.editorMinHeight,
@@ -107,7 +107,9 @@ class EditActivity extends Component {
   }
 
   getEditorHeight() {
-    return this.props.ui.replHidden ? this.props.height : this.props.height - this.state.replHeight - 1;
+    return this.props.ui.replHidden
+      ? this.props.height
+      : this.props.height - this.state.replHeight - 1;
   }
 
   editorSize() {
@@ -208,13 +210,9 @@ class EditActivity extends Component {
     this.props.explorerResourceRename(resource, name, virtual);
   };
 
-  isText = buffer => {
-    return buffer && bufferIsEditable(buffer);
-  };
+  isText = buffer => buffer && bufferIsEditable(buffer);
 
-  isAudio = buffer => {
-    return buffer && bufferIsAudio(buffer);
-  };
+  isAudio = buffer => buffer && bufferIsAudio(buffer);
 
   render() {
     const activeBuffer = this.props.activeBuffer;

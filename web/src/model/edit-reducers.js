@@ -66,7 +66,7 @@ edit: {
 
 const handleScriptNew = (action, state) => {
   if (action.name === undefined && action.siblingResource === undefined) {
-    console.log("ignoring script new request, neither name nor placement specified");
+    console.log('ignoring script new request, neither name nor placement specified');
     return state;
   }
 

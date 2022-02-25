@@ -41,7 +41,7 @@ export const outputAppend = (buffer, limit, line) => {
 
 const handleReplEcho = (action, state, input) => {
   // add command to history list
-  let history = state.history.get(action.component).unshift(input);
+  const history = state.history.get(action.component).unshift(input);
   // echo command to output buffer
   let buffer = state.buffers.get(action.component);
   buffer = outputAppend(buffer, state.scrollbackLimit, input);
@@ -161,7 +161,7 @@ const repl = (state = initialReplState, action) => {
       };
 
     case REPL_UNIT_MAP_SUCCESS:
-      //console.log('Units:', action.units);
+      // console.log('Units:', action.units);
       return {
         ...state,
         units: action.units,

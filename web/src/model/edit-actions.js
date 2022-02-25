@@ -222,6 +222,23 @@ export const bufferRead = resource => dispatch => {
     });
 };
 
+export const directoryRead = resource => dispatch => {
+  dispatch(directoryReadRequest(resource));
+  return fetch(resource)
+    .then(response => {
+      if (response.ok) {
+        response.json().then(data => {
+          dispatch(directoryReadSuccess(resource, data));
+        });
+      } else {
+        dispatch(directoryReadFailure(resource));
+      }
+    })
+    .catch(error => {
+      dispatch(directoryReadFailure(resource, error));
+    });
+};
+
 // This is async because nested directories don't
 // like opening until their parents have loaded
 export const directoryReadRecursive = resource => async dispatch => {
@@ -252,23 +269,6 @@ export const directoryReadRecursive = resource => async dispatch => {
     await dispatch(directoryRead(node.url));
     return `${url}/${name}`;
   });
-}
-
-export const directoryRead = resource => dispatch => {
-  dispatch(directoryReadRequest(resource));
-  return fetch(resource)
-    .then(response => {
-      if (response.ok) {
-        response.json().then(data => {
-          dispatch(directoryReadSuccess(resource, data));
-        });
-      } else {
-        dispatch(directoryReadFailure(resource));
-      }
-    })
-    .catch(error => {
-      dispatch(directoryReadFailure(resource, error));
-    });
 };
 
 export const bufferSave = (resource, value, cb) => dispatch => {
