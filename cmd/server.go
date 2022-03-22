@@ -277,7 +277,7 @@ func (s *server) listingHandler(ctx *gin.Context) {
 	// https://github.com/monome/maiden/issues/219
 	// if the file extension is .sc force `text/plain; charset=utf-8`
 	ext := filepath.Ext(path)
-	if ext == ".sc" {
+	if ext == ".sc" || ext == ".scd" {
 		logger.Debugf("overriding content type for: %s", ext)
 		ctx.Header("Content-Type", "text/plain; charset=utf-8")
 	}
