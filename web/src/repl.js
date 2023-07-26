@@ -53,7 +53,7 @@ class ReplOutput extends Component {
 class ReplInput extends Component {
   constructor(props) {
     super(props);
-    this.histroyIdx = 0;
+    this.historyIdx = 0;
   }
 
   onKeyDown = event => {
