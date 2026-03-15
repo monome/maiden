@@ -5,17 +5,31 @@ GO_LDFLAGS += -X github.com/monome/maiden/cmd.compileTime=$(shell date -u +%Y-%m
 export GO_LDFLAGS
 
 build:
-	go build -ldflags="${GO_LDFLAGS}"
+	./tool/go/run.sh go build -ldflags="${GO_LDFLAGS}"
 
 release:
-	tool/release.sh -o linux -a arm
+	./tool/release.sh
 
 release-local:
-	tool/release.sh
+	./tool/go/run.sh go build -ldflags="${GO_LDFLAGS}"
 
 clean:
 	rm -rf dist
 	rm -f maiden maiden.arm
 	rm -rf web/build
 
-.PHONY: clean release build default
+clean-tools:
+	./tool/go/clean.sh
+	./tool/node/clean.sh
+	rm -rf .gopath 2>/dev/null || true
+
+help:
+	@echo "Available targets:"
+	@echo "  build         - Build the project"
+	@echo "  release       - Build release for Linux ARM and package"
+	@echo "  release-local - Build locally (no packaging)"
+	@echo "  clean         - Remove build artifacts"
+	@echo "  clean-tools   - Remove downloaded build tools"
+	@echo "  help          - Show this help"
+
+.PHONY: clean release build default clean-tools help
