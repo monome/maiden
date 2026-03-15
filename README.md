@@ -6,45 +6,94 @@ self contained web based editor for norns
 
 ## setup
 
-development can either be done directly on the device or on a linux/macos machine by installing the toolchain.
+development can either be done directly on the device or on a linux/macos machine using the self-contained build environment.
 
-* install [go](https://golang.org)
+### built-in toolchain
 
-known compatible versions:
+`maiden` includes a self-contained build environment in the `tool/` directory:
 
-tool | version
------|---------
-go   | 1.12+
+- **Go 1.16.15** - downloaded and cached automatically
+- **Node.js 16.20.2** - installed via nvm and cached automatically
 
-on macos (for development) this is easily done with brew:
-```
-brew install go
-```
+no manual installation of go, node, or yarn is required. the `tool/*/run.sh` scripts will download and cache the appropriate versions on first use.
 
 ## building
 
-`maiden` uses the go module system to manage dependencies. in order for the go module system work the `maiden` source tree must *not* be in a directory below `$GOPATH/src`, if you've previously cloned/build `maiden` you'll likely need to move the source tree outside of your existing go workspace before the build will work.
+`maiden` uses the go module system to manage dependencies.
 
-to build, `cd` into the source directory and run:
-```
-go build
+### building with make
+
+the simplest way to build is using the included makefile:
+
+```bash
+make build       # build the backend
+make release     # build release for linux arm and package in dist/maiden.tgz
+make help        # show available targets
 ```
 
-if developing on a linux or macos it is trivial to cross compile for arm
-```
-GOOS=linux GOARCH=arm go build -o maiden.arm
-```
-**tip:** _install FUSE on your linux/macos machine and then mount the device filesystem using sshfs - the build results can then be written directly to the device._
+### manual build
 
+if you prefer to build manually:
 
-...one also needs to build the [**ui**](web/README.md) as well.
+#### backend
+
+```bash
+./tool/go/run.sh go build -ldflags="-X github.com/monome/maiden/cmd.version=$(git describe --tags) -X github.com/monome/maiden/cmd.compileTime=$(date -u +%Y-%m-%dT%H:%M)"
+```
+
+#### frontend (ui)
+
+from the `web/` directory in the `maiden` source tree:
+
+```bash
+../tool/node/run.sh yarn install
+../tool/node/run.sh yarn build
+```
+
+running `../tool/node/run.sh yarn build` will output static, bundled, and minified js, css, and html files suitable for release in the `build` directory. the built results are self contained and do not depend on node or any of the associated react toolchain.
+
+**note:** the frontend must be built using `../tool/node/run.sh yarn` - do not use the system's node/yarn as they may have incompatible versions.
+
+### cross-compiling
+
+if developing on a linux or macos it is trivial to cross compile for arm (raspberry pi):
+
+```bash
+GOOS=linux GOARCH=arm ./tool/go/run.sh go build -ldflags="${GO_LDFLAGS}" -o dist/maiden/maiden
+```
+
+**note:** the release target in `tool/release.sh` automatically builds for linux arm.
+
+**tip:** install FUSE on your linux/macos machine and then mount the device filesystem using sshfs - the build results can then be written directly to the device.
 
 ## testing
 
-```
+```bash
 ./maiden server --debug --app web/build/ --data <norns_repo>/lua
 ```
 
+## development
 
+for development with the built-in toolchain:
 
+```bash
+# build backend
+./tool/go/run.sh go build
 
+# build frontend
+cd web
+../tool/node/run.sh yarn install
+../tool/node/run.sh yarn build
+../tool/node/run.sh yarn start
+
+# run backend in a separate shell
+./maiden server --debug --app web/build/ --data ~/dust
+```
+
+## known compatible versions
+
+tool | version
+-----|---------
+go   | 1.16.15 (with go1.12-compatible code)
+node.js | 16.20.2 (npm 8.19.4, yarn 1.22.22)
+yarn | 1.22.22 (compatible with react-scripts 1.0.17)

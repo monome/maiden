@@ -17,3 +17,19 @@ maiden-v*.tgz
 .DS_Store
 *.pdf
 *.tgz
+
+# build tools
+tool/go/go
+tool/node/nvm
+.gopath/
+web/yarn.lock
+
+# node modules
+node_modules/
+web/node_modules/
+
+# build tools
+tool/node/.nvmrc
+
+# generated files
+web/src/gen-version-output.js

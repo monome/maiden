@@ -2,30 +2,10 @@
 
 set -e
 
-# quick and dirty release script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-help() {
-      echo "Provide the following build arguments:"
-      echo " -o   operating system for GOOS"
-      echo " -a   architecture for GOARCH"
-}
-
-while getopts ":o:a:" opt; do
-  case ${opt} in
-    o) GOOS=$OPTARG ;;
-    a) GOARCH=$OPTARG ;;
-    \? )
-      echo "Invalid Option: -$OPTARG" 1>&2
-      help
-      exit 1
-      ;;
-    : )
-      echo "Invalid Option: -$OPTARG requires an argument" 1>&2
-      help
-      exit 1
-      ;;
-  esac
-done
+# quick and dirty release script for Linux ARM
 
 REL_DIR=./dist/maiden
 
@@ -35,9 +15,7 @@ mkdir -pv $REL_DIR
 # maiden
 echo -e "building maiden"
 echo "====================="
-cmd="GOOS=$GOOS GOARCH=$GOARCH go build -ldflags='${GO_LDFLAGS}' -o $REL_DIR/maiden"
-echo $cmd
-eval $cmd
+GOOS=linux GOARCH=arm "$REPO_ROOT/tool/go/run.sh" go build -ldflags="${GO_LDFLAGS}" -o $REL_DIR/maiden
 # for compatibility with old systemd unit setup
 cp -v tool/start.sh $REL_DIR
 cp -v tool/project-setup.sh $REL_DIR
@@ -50,15 +28,28 @@ cp -v sources/*.json $REL_DIR/dist/sources/
 # app
 echo -e "\nbuilding app"
 echo "====================="
-cmd='(cd web; rm -rf build && yarn install && yarn build)'
-echo $cmd
-eval $cmd
+cd web
+"$REPO_ROOT/tool/node/run.sh" yarn install
+"$REPO_ROOT/tool/node/run.sh" yarn build
+cd ..
+
 mkdir -pv ${REL_DIR}/app
 cp -rv ./web/build ${REL_DIR}/app
 
 # tarball
 echo -e "\nmaking release"
 echo "====================="
-cmd='(cd ./dist; tar czvf maiden.tgz maiden)'
-echo $cmd
-eval $cmd
+(cd ./dist; tar czvf maiden.tgz maiden)
+
+# version manifest
+echo -e "creating version manifest"
+echo "====================="
+cat > ${REL_DIR}/VERSIONS.json << VERSION_EOF
+{
+  "go": "$("$REPO_ROOT/tool/go/run.sh" go version | cut -d ' ' -f 3)",
+  "node": "$("$REPO_ROOT/tool/node/run.sh" node --version)",
+  "yarn": "$("$REPO_ROOT/tool/node/run.sh" yarn --version)"
+}
+VERSION_EOF
+
+echo "Release created: dist/maiden.tgz"

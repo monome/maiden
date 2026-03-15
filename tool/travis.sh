@@ -11,4 +11,4 @@ if [ -n "$UNFORMATTED_FILES" ]; then
 fi
 
 # Lint JS.
-(cd app && ./node_modules/.bin/eslint src/)
+(cd "$REPO_ROOT/app" && ./node_modules/.bin/eslint src/)
