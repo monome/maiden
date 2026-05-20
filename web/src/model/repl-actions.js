@@ -87,7 +87,24 @@ export const replEndpoints = cb => dispatch => {
   });
 };
 
-export const replConnect = (component, endpoint, retryCount) => dispatch => {
+export const replDisconnect = (component) => (dispatch, getState) => {
+  const existing = getState().repl.connections.get(component);
+  if (!existing) return;
+  const socket = existing.get('socket');
+  if (socket) {
+    // detach handlers so that an orphaned connection's late onclose doesn't
+    // clobber the new socket's state
+    socket.onopen = null;
+    socket.onerror = null;
+    socket.onclose = null;
+    socket.onmessage = null;
+    socket.close();
+  }
+  dispatch(replConnectClose(component));
+};
+
+export const replConnect = (component, endpoint, retryCount) => (dispatch, getState) => {
+  dispatch(replDisconnect(component));
   dispatch(replConnectDial(component, endpoint));
   const socket = new WebSocket(endpoint, ['bus.sp.nanomsg.org']);
   socket.onopen = () => {
