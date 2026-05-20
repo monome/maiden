@@ -7,9 +7,9 @@ as a user/tinkerer/musician i would like to:
 - start a new script
 - start a new script from one (of many) existing templates
 - mark a script as being a template or not
-- load current script into matron
+- load current script
 - be presented with a list of syntax errors which i can click on to bring me to that point in the editor
-- see log output from matron and crone
+- see log output
 - run commands (repl)
 - organize my scripts into folders
 - rename existing scripts, samples
