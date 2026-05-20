@@ -12,6 +12,7 @@ const openLinkAction = url => () => {
 const ProjectInfo = props => {
   // NOTE: props.project is an immutablejs map
   const name = props.project.get('project_name');
+  const author = props.project.get('author');
   const description = props.project.get('description');
   const tags = props.project.get('tags');
   const projectVersion = props.project.get('version');
@@ -32,11 +33,11 @@ const ProjectInfo = props => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {name}
+        {name} / {author}
       </a>
     );
   } else {
-    title = <span className="project-info-name">{name}</span>;
+    title = <span className="project-info-name">{name} / {author}</span>;
   }
 
   let documentation;
