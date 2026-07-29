@@ -1,9 +1,9 @@
 #!/bin/bash
-set -e
+# set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-NODE_VERSION=$(cat "$SCRIPT_DIR/.nvmrc" 2>/dev/null || echo "16.20.2")
+NODE_VERSION=$(cat "$SCRIPT_DIR/.nvmrc" 2>/dev/null || echo "22.23.2")
 NVM_DIR="$SCRIPT_DIR/nvm"
 
 # Install nvm to tool directory if not available
