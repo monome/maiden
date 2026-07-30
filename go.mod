@@ -13,9 +13,9 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
-	github.com/monome/maiden/pkg/catalog v0.0.0-00010101000000-000000000000
-	github.com/monome/maiden/pkg/dust v0.0.0-00010101000000-000000000000
-	github.com/monome/maiden/pkg/lines v0.0.0-00010101000000-000000000000
+	github.com/monome/maiden/pkg/catalog v0.0.0
+	github.com/monome/maiden/pkg/dust v0.0.0
+	github.com/monome/maiden/pkg/lines v0.0.0
 	github.com/sirupsen/logrus v1.4.1
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
