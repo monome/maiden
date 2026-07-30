@@ -772,7 +772,7 @@ func (s *server) getProjectHandler(ctx *gin.Context) {
 			}
 		}
 
-		logger.Debugf("update ok: %s %s", p.Name, updated)
+		logger.Debugf("update ok: %s %t", p.Name, updated)
 		// report update results
 		ctx.JSON(http.StatusOK, gin.H{
 			"name":    p.Name,
