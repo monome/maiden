@@ -378,8 +378,9 @@ func (p *Project) Update(force bool, entry *catalog.Entry) (bool, error) {
 	md := readMetaData(p.metaDataPath())
 
 	err = w.Pull(&git.PullOptions{
-		RemoteName: "origin",
-		// Force:      force,
+		RemoteName:        "origin",
+		RecurseSubmodules: git.DefaultSubmoduleRecursionDepth,
+		// Force:           force,
 	})
 	updated := true
 	if err != nil {
