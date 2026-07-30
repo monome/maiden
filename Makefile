@@ -7,6 +7,12 @@ export GO_LDFLAGS
 build:
 	./tool/go/run.sh go build -ldflags="${GO_LDFLAGS}"
 
+test:
+	./tool/go/run.sh go test .
+	./tool/go/run.sh go test ./cmd/...
+	cd pkg/catalog && ../../tool/go/run.sh go test ./...
+	cd pkg/dust && ../../tool/go/run.sh go test ./...
+
 release:
 	./tool/release.sh
 
@@ -26,10 +32,11 @@ clean-tools:
 help:
 	@echo "Available targets:"
 	@echo "  build         - Build the project"
+	@echo "  test          - Run Go tests"
 	@echo "  release       - Build release for Linux ARM and package"
 	@echo "  release-local - Build locally (no packaging)"
 	@echo "  clean         - Remove build artifacts"
 	@echo "  clean-tools   - Remove downloaded build tools"
 	@echo "  help          - Show this help"
 
-.PHONY: clean release build default clean-tools help
+.PHONY: clean release build test default clean-tools help
