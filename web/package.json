@@ -6,8 +6,20 @@
   "engines": {
     "node": "22.23.2"
   },
+  "packageManager": "yarn@1.22.22",
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "yarn",
+      "onFail": "error"
+    }
+  },
   "dependencies": {
     "@vitejs/plugin-react": "^6.0.4",
+    "babel-eslint": "^10.1.0",
     "classname": "^0.0.0",
     "connected-react-router": "^6.5.2",
     "history": "^4.7.2",
