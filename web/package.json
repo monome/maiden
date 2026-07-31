@@ -33,16 +33,16 @@
     "vite-plugin-commonjs": "^0.10.4"
   },
   "scripts": {
-    "start": "./gen-version.sh && vite",
+    "start": "./gen-version.sh && MAIDEN_PROXY=norns vite dev",
+    "start_local": "./gen-version.sh && MAIDEN_PROXY=local vite dev",
     "build": "./gen-version.sh && vite build",
-    "preview": "./gen-version.sh && vite preview",
+    "preview": "./gen-version.sh && MAIDEN_PROXY=norns vite preview",
     "test": "vitest",
     "lint": "./node_modules/.bin/eslint --ext .js --ext .jsx src",
     "format": "yarn lint --fix",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
-  "proxy": "http://localhost:5000",
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@storybook/addon-actions": "^5.0.11",
