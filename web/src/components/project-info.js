@@ -13,6 +13,7 @@ const ProjectInfo = props => {
   // NOTE: props.project is an immutablejs map
   const name = props.project.get('project_name');
   const author = props.project.get('author');
+  const label = author ? `${name} / ${author}` : name;
   const description = props.project.get('description');
   const tags = props.project.get('tags');
   const projectVersion = props.project.get('version');
@@ -20,7 +21,16 @@ const ProjectInfo = props => {
 
   let badges;
   if (tags) {
-    badges = tags.map(t => <Badge key={t}>{t}</Badge>);
+    const { selectedTags, tagAction } = props;
+    badges = tags.map(t => (
+      <Badge
+        key={t}
+        selected={selectedTags && selectedTags.has(t)}
+        action={tagAction && (() => tagAction(t))}
+      >
+        {t}
+      </Badge>
+    ));
   }
 
   let title;
@@ -33,11 +43,11 @@ const ProjectInfo = props => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {name} / {author}
+        {label}
       </a>
     );
   } else {
-    title = <span className="project-info-name">{name} / {author}</span>;
+    title = <span className="project-info-name">{label}</span>;
   }
 
   let documentation;
