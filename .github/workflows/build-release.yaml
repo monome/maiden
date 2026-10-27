@@ -24,6 +24,11 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22.23
+          cache: 'yarn'
+
       - name: Build release
         run: |
           chmod +x tool/*.sh
