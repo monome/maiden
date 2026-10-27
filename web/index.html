@@ -14,6 +14,11 @@
     <link rel="icon" type="image/png" href="maiden_32.png" sizes="32x32">  
     <link rel="icon" type="image/png" href="maiden_96.png" sizes="96x96">  
 
+    <script>
+      if (global === undefined) {
+        var global = window;
+      }
+    </script>
 
     <!--
       manifest.json provides metadata used when your web app is added to the
@@ -36,6 +41,8 @@
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
-    <div id="root"></div>
+    <div id="root">
+    </div>
+    <script type="module" src="src/index.js"></script>
   </body>
 </html>

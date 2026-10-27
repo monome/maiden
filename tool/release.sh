@@ -29,8 +29,8 @@ cp -v sources/*.json $REL_DIR/dist/sources/
 echo -e "\nbuilding app"
 echo "====================="
 cd web
-"$REPO_ROOT/tool/node/run.sh" yarn install
-"$REPO_ROOT/tool/node/run.sh" yarn build
+yarn install
+yarn build
 cd ..
 
 mkdir -pv ${REL_DIR}/app
@@ -47,8 +47,8 @@ echo "====================="
 cat > ${REL_DIR}/VERSIONS.json << VERSION_EOF
 {
   "go": "$("$REPO_ROOT/tool/go/run.sh" go version | cut -d ' ' -f 3)",
-  "node": "$("$REPO_ROOT/tool/node/run.sh" node --version)",
-  "yarn": "$("$REPO_ROOT/tool/node/run.sh" yarn --version)"
+  "node": "$(node --version)",
+  "yarn": "$(yarn --version)"
 }
 VERSION_EOF
 

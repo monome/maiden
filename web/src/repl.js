@@ -99,7 +99,7 @@ class ReplInput extends Component {
   render() {
     return (
       <div className="repl-input">
-        <span className="label">>></span>
+        <span className="label">&gt;&gt;</span>
         <textarea
           className="value"
           ref={e => {

@@ -26,7 +26,6 @@ clean:
 
 clean-tools:
 	./tool/go/clean.sh
-	./tool/node/clean.sh
 	rm -rf .gopath 2>/dev/null || true
 
 help:

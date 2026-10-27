@@ -24,6 +24,12 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: 'web/package.json'
+          cache: 'yarn'
+          cache-dependency-path: 'web/yarn.lock'
+
       - name: Build release
         run: |
           chmod +x tool/*.sh
