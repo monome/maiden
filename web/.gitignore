@@ -22,3 +22,6 @@ yarn-error.log*
 
 # auto generated
 src/version.js
+
+# storybook
+debug-storybook.log
