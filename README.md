@@ -74,6 +74,8 @@ GOOS=linux GOARCH=arm ./tool/go/run.sh go build -ldflags="${GO_LDFLAGS}" -o dist
 
 ## development
 
+for development with the front-end only, using a norns device on the local network as the backend, see [web/README.md](web/README.md).
+
 for development with the built-in toolchain:
 
 ```bash
@@ -84,7 +86,7 @@ for development with the built-in toolchain:
 cd web
 ../tool/node/run.sh yarn install
 ../tool/node/run.sh yarn build
-../tool/node/run.sh yarn start
+../tool/node/run.sh yarn start_local
 
 # run backend in a separate shell
 ./maiden server --debug --app web/build/ --data ~/dust
