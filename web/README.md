@@ -32,6 +32,8 @@ note: using a different version of node or yarn may result in incompatible depen
 
 ## testing the frontend in development mode
 
+by default, `yarn start` will only run the frontend, and rely on a backend running on norns.
+
 make sure your norns is running and connected to wifi, then run:
 
 ```bash
@@ -41,6 +43,12 @@ yarn start
 ```
 
 the development server runs on port 5001 and proxies to the maiden backend at `http://norns.local:80`. It will also connect to the norns/supercollider websockets at `ws://norns.local:5555` and `:5556`.
+
+if you want to proxy to a device with a different hostname, you can set the MAIDEN_PROXY environment variable manually, for example:
+
+```bash
+$ MAIDEN_PROXY=http://norns-shield.local yarn run vite dev
+```
 
 installing both the `reactjs` and `redux` devtools browser extensions is highly recommended.
 
@@ -52,5 +60,5 @@ To test with development versions of both the frontend and backend, use this wor
 * create a local copy of the norns home dir, or use `sshfs` to mount the `we` home directory locally - `sshfs we@norns.local: ~/norns`
 * build the frontend with `cd web; yarn install; yarn build`
 * start the backend locally with `./tool/go/run.sh go build && ./maiden server --app web/build/ --data ~/norns/dust --doc ~/norns/norns/doc --debug`. The backend will serve the precompiled frontend at http://localhost:5000.
-* (optional) start the hot-reload development server with `cd web; yarn start_local`. The development frontend will run at http://localhost:5001.
-* (optional) if you want to also run the norns and supercollider processes locally, edit `web/public/repl-endpoints.js` to point to local addresses.
+* start the hot-reload development server with `cd web; yarn start_local`. The development frontend will run at http://localhost:5001.
+* if you want to have access to the norns and supercollider REPLs, start those processes (with ws-wrapper) locally as well.

@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "/maiden",
   "engines": {
-    "node": "22.23.2"
+    "node": "22"
   },
   "packageManager": "yarn@1.22.22",
   "devEngines": {
@@ -45,10 +45,10 @@
     "vite-plugin-commonjs": "^0.10.4"
   },
   "scripts": {
-    "start": "./gen-version.sh && MAIDEN_PROXY=norns vite dev",
-    "start_local": "./gen-version.sh && MAIDEN_PROXY=local vite dev",
+    "start": "./gen-version.sh && MAIDEN_PROXY=http://norns.local vite dev",
+    "start_local": "./gen-version.sh && vite dev",
     "build": "./gen-version.sh && vite build",
-    "preview": "./gen-version.sh && MAIDEN_PROXY=norns vite preview",
+    "preview": "./gen-version.sh && MAIDEN_PROXY=http://norns.local vite preview",
     "test": "vitest",
     "lint": "./node_modules/.bin/eslint --ext .js --ext .jsx src",
     "format": "yarn lint --fix",
