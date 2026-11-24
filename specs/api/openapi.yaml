@@ -1,0 +1,1097 @@
+openapi: 3.0.3
+info:
+  title: maiden server api
+  description: |
+    http api for the maiden backend server.
+
+    covers the resources exposed under the `/api/v1` endpoint providing dust
+    file access, project management, catalogs, and service unit operations.
+    static resources for the frontend (`/maiden`) and documentation (`/doc`) are
+    not part of this specification.
+  version: 1.0.0
+  license:
+    name: GPL-3.0-or-later
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+servers:
+  - url: http://127.0.0.1:5000
+    description: default local server (`maiden server --port 5000`)
+
+# maiden does not implement http authentication on these endpoints.
+security: []
+
+tags:
+  - name: info
+    description: api version and build information
+  - name: dust
+    description: file and directory operations below the dust root (scripts, audio, data)
+  - name: unit
+    description: device service (systemd) unit status and operations
+  - name: catalog
+    description: operations on catalogs and catalog-based install
+  - name: project
+    description: operations on projects (scripts and related support files) under dust/code
+
+paths:
+  /api/v1:
+    get:
+      tags: [info]
+      operationId: getApiInfo
+      summary: retrieve implentation/api name and build version
+      responses:
+        "200":
+          description: api name and build version
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiInfo"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/dust:
+    get:
+      tags: [dust]
+      operationId: listDustRoot
+      summary: list the dust root directory
+      description: |
+        returns a directory listing for the dust root. entries whose names start
+        with `.` are omitted. trailing slash (`/api/v1/dust/`) yields the same
+        listing.
+      responses:
+        "200":
+          description: directory listing
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              $ref: "#/components/headers/LastModified"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DustListing"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    head:
+      tags: [dust]
+      operationId: headDustRoot
+      summary: headers for the dust root listing
+      description: same headers as get with an empty body.
+      responses:
+        "200":
+          description: headers only
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              $ref: "#/components/headers/LastModified"
+            Content-Length:
+              description: length of the json body that get would return
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+                maxLength: 0
+        "404":
+          description: path does not exist (empty body for head)
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    put:
+      tags: [dust]
+      operationId: putDustRoot
+      summary: create a directory or upload a file at the dust root
+      description: |
+        with `kind=directory`, creates a directory. otherwise expects a
+        multipart form part named `value` containing the file bytes.
+      parameters:
+        - $ref: "#/components/parameters/DustKind"
+        - $ref: "#/components/parameters/IfUnmodifiedSince"
+      requestBody:
+        $ref: "#/components/requestBodies/DustPut"
+      responses:
+        "200":
+          description: directory created or file uploaded
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              description: present after a successful file upload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    patch:
+      tags: [dust]
+      operationId: patchDustRoot
+      summary: rename an entry at the dust root
+      requestBody:
+        $ref: "#/components/requestBodies/DustRename"
+      responses:
+        "200":
+          description: renamed; body contains the new resource url
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DustRenameResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    delete:
+      tags: [dust]
+      operationId: deleteDustRoot
+      summary: delete a path at the dust root
+      description: deleting the dust root itself removes the configured data directory tree.
+      responses:
+        "200":
+          description: deleted
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/dust/{path}:
+    parameters:
+      - $ref: "#/components/parameters/DustPath"
+    get:
+      tags: [dust]
+      operationId: getDust
+      summary: get a directory listing or file
+      description: |
+        directories paths return a `DustListing` json body with content-type
+        `application/json`. files paths return raw bytes with content-type
+        determined by the extension. content-type for files comes from the
+        extension map in the server (`extType`): `.html`, `.js`, `.css`,
+        `.json`, `.map`, images, fonts, `.txt`, `.wasm`, `.sc` / `.scd`,
+        text-like extensions (`.lua`, `.md`, `.csv`, `.yml`, `.yaml`, `.toml`,
+        `.xml`), and common audio types. unknown extensions are sniffed; text
+        becomes `text/plain; charset=utf-8`, otherwise
+        `application/octet-stream`.
+      responses:
+        "200":
+          description: directory listing or file contents
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              $ref: "#/components/headers/LastModified"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DustListing"
+              examples:
+                directory:
+                  summary: directory listing
+                  value:
+                    path: code
+                    url: /api/v1/dust/code
+                    entries:
+                      - name: awake
+                        url: /api/v1/dust/code/awake
+                        children: []
+            text/plain:
+              schema:
+                type: string
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    head:
+      tags: [dust]
+      operationId: headDust
+      summary: headers for a given path
+      description: same headers as get with an empty body. missing paths return 404 with an empty body.
+      responses:
+        "200":
+          description: headers only
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              $ref: "#/components/headers/LastModified"
+            Content-Length:
+              description: length of the body that get would return
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                type: string
+                maxLength: 0
+            text/plain:
+              schema:
+                type: string
+                maxLength: 0
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+                maxLength: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          description: path does not exist (empty body for head)
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    put:
+      tags: [dust]
+      operationId: putDust
+      summary: create a directory or upload a file
+      description: |
+        with `kind=directory`, creates a directory (including parents as needed)
+        and returns `{ "message": "created directory ..." }`. directory creation
+        does not check `If-Unmodified-Since`.
+
+        for files the body must be `multipart/form-data` with a part named
+        `value`. missing that part returns `400` with error `http: no such
+        file`. when the target already exists and `If-Unmodified-Since` is older
+        than the file mtime, returns `412` with error `file has been modified`.
+        the header is ignored when the file does not yet exist.
+      parameters:
+        - $ref: "#/components/parameters/DustKind"
+        - $ref: "#/components/parameters/IfUnmodifiedSince"
+      requestBody:
+        $ref: "#/components/requestBodies/DustPut"
+      responses:
+        "200":
+          description: directory created or file uploaded
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+            Last-Modified:
+              description: present after a successful file upload
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "412":
+          $ref: "#/components/responses/PreconditionFailed"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    patch:
+      tags: [dust]
+      operationId: patchDust
+      summary: rename a file or directory
+      description: |
+        form field `name` is the new basename (same parent directory).
+        returns `{ "url": "/api/v1/dust/..." }` for the renamed resource.
+        missing `name` returns `400` with error `missing 'name' key in form`.
+      requestBody:
+        $ref: "#/components/requestBodies/DustRename"
+      responses:
+        "200":
+          description: renamed
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DustRenameResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    delete:
+      tags: [dust]
+      operationId: deleteDust
+      summary: delete a file or directory
+      description: removes a file or directory tree. missing path returns 404.
+      responses:
+        "200":
+          description: deleted
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/unit/{name}:
+    get:
+      tags: [unit]
+      operationId: getUnit
+      summary: systemd unit status or operation
+      description: |
+        without `do`, returns `ActiveState` and `SubState` as `state` and
+        `sub_state`. with `do` set to `start`, `stop`, or `restart`, runs that
+        operation and returns `job_id` (always `0`) and `result` (`done`).
+        the 200 schema lists all four properties as optional; exactly one pair
+        is present depending on whether `do` was supplied.
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: systemd unit name (for example `norns-main.service`)
+          schema:
+            type: string
+        - name: do
+          in: query
+          required: false
+          description: when present, run this operation instead of returning status
+          schema:
+            type: string
+            enum: [start, stop, restart]
+      responses:
+        "200":
+          description: unit status or completed operation
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UnitStatus"
+        "400":
+          description: unrecognized operation (when dbus is available)
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: unknown unit
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "503":
+          description: no dbus / systemctl connection
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                error: no dbus connection
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/catalogs:
+    get:
+      tags: [catalog]
+      operationId: listCatalogs
+      summary: list known/configured catalog
+      responses:
+        "200":
+          description: catalog summary list
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogList"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/catalog/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: catalog name
+        schema:
+          type: string
+    get:
+      tags: [catalog]
+      operationId: getCatalog
+      summary: get a catalog by name
+      responses:
+        "200":
+          description: catalog document
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+        "404":
+          $ref: "#/components/responses/CatalogNotFound"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/catalog/{name}/update:
+    post:
+      tags: [catalog]
+      operationId: updateCatalog
+      summary: refresh a catalog from its configured source
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: catalog name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: updated catalog document
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Catalog"
+        "404":
+          $ref: "#/components/responses/CatalogNotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/catalog/{name}/install/{project}:
+    post:
+      tags: [catalog]
+      operationId: installFromCatalog
+      summary: install a project from a catalog entry
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: catalog name
+          schema:
+            type: string
+        - name: project
+          in: path
+          required: true
+          description: project name within the catalog
+          schema:
+            type: string
+      responses:
+        "201":
+          description: project installed
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstallResult"
+        "404":
+          description: unknown catalog or project not in catalog
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/projects:
+    get:
+      tags: [project]
+      operationId: listProjects
+      summary: list installed projects
+      responses:
+        "200":
+          description: project summaries
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectList"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/project/install:
+    post:
+      tags: [project]
+      operationId: installProjectFromUrl
+      summary: install a project from a zip or git url
+      parameters:
+        - name: url
+          in: query
+          required: true
+          description: |
+            source url. the server percent-decodes query values once; do not
+            double-encode. missing `url` returns `400` with
+            `url query arg missing`. a decoded value of `%` returns `400`
+            with an `invalid url:` message.
+          schema:
+            type: string
+            format: uri
+      responses:
+        "201":
+          description: project installed
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstallResult"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /api/v1/project/{name}:
+    parameters:
+      - name: name
+        in: path
+        required: true
+        description: project directory name under dust/code
+        schema:
+          type: string
+    get:
+      tags: [project]
+      operationId: getProject
+      summary: get a project or trigger an update
+      description: |
+        without query parameters, returns the project object. when the `update`
+        query parameter is present (the ui sends `?update=` with an empty
+        value; any present value triggers an update), performs a git pull for
+        managed projects or a catalog-based replace for unmanaged ones, and
+        returns `{ "name", "updated" }` instead of the project detail.
+      parameters:
+        - name: update
+          in: query
+          required: false
+          description: presence triggers an update; value is ignored
+          schema:
+            type: string
+          allowEmptyValue: true
+      responses:
+        "200":
+          description: project detail or update result
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Project"
+                  - $ref: "#/components/schemas/ProjectUpdate"
+              examples:
+                detail:
+                  summary: project detail
+                  value:
+                    project_name: awake
+                    managed: true
+                    version: 0d5e4ba
+                    url: /api/v1/project/awake
+                update:
+                  summary: update result
+                  value:
+                    name: awake
+                    updated: true
+        "404":
+          description: unknown project, or update cannot find a catalog entry
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+    delete:
+      tags: [project]
+      operationId: deleteProject
+      summary: remove an installed project
+      responses:
+        "200":
+          description: removed
+          headers:
+            Cache-Control:
+              $ref: "#/components/headers/NoStore"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+        "405":
+          $ref: "#/components/responses/MethodNotAllowed"
+
+components:
+  headers:
+    NoStore:
+      description: json and dust responses disable caching
+      schema:
+        type: string
+        enum: [no-store]
+    LastModified:
+      description: imf-fix http-date (exactly 29 characters), for example `Sun, 06 Nov 1994 08:49:37 GMT`
+      schema:
+        type: string
+
+  parameters:
+    DustPath:
+      name: path
+      in: path
+      required: true
+      allowReserved: true
+      description: |
+        relative path under dust. may contain `/` (use generators that honor
+        `allowReserved`). each path segment is percent-encoded by clients
+        (`#` → `%23`); the server percent-decodes the path once. paths
+        containing `..` or a bare `%` escape return `400` with error
+        `invalid path`.
+      schema:
+        type: string
+    DustKind:
+      name: kind
+      in: query
+      required: false
+      description: set to `directory` to create a directory instead of uploading a file
+      schema:
+        type: string
+        enum: [directory]
+    IfUnmodifiedSince:
+      name: If-Unmodified-Since
+      in: header
+      required: false
+      description: |
+        imf-fix http-date (exactly 29 characters). for file uploads only;
+        when the existing file is newer, the server returns `412`. ignored
+        when creating a directory or when the target does not exist.
+      schema:
+        type: string
+
+  requestBodies:
+    DustPut:
+      description: |
+        required for file upload. omit the body when creating a directory
+        with `?kind=directory`.
+      required: false
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              value:
+                type: string
+                format: binary
+                description: file contents (part name must be `value`)
+    DustRename:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+                description: new basename within the same parent directory
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            required: [name]
+            properties:
+              name:
+                type: string
+                description: new basename within the same parent directory
+
+  responses:
+    BadRequest:
+      description: invalid request
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: resource not found
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    MethodNotAllowed:
+      description: method not allowed on this path
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: method not allowed
+    PreconditionFailed:
+      description: if-unmodified-since precondition failed
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: file has been modified
+    InternalError:
+      description: server error
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    CatalogNotFound:
+      description: unknown catalog
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CatalogNotFound"
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    CatalogNotFound:
+      allOf:
+        - $ref: "#/components/schemas/Error"
+        - type: object
+          required: [name, url]
+          properties:
+            name:
+              type: string
+            url:
+              type: string
+              description: request url that produced the error
+
+    Message:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+
+    ApiInfo:
+      type: object
+      required: [api, version]
+      properties:
+        api:
+          type: string
+          enum: [maiden]
+        version:
+          type: string
+          description: process build version string
+
+    DustEntry:
+      type: object
+      required: [name, url]
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          description: absolute path under `/api/v1/dust`
+        children:
+          type: array
+          description: present only for directories; always an empty array (listing is not recursive)
+          items:
+            type: object
+          maxItems: 0
+
+    DustListing:
+      type: object
+      required: [path, url, entries]
+      properties:
+        path:
+          type: string
+          description: relative path under dust; empty string for the root
+        url:
+          type: string
+          description: absolute api url for this directory
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/DustEntry"
+
+    DustRenameResult:
+      type: object
+      required: [url]
+      properties:
+        url:
+          type: string
+          description: absolute api url of the renamed resource
+
+    CatalogSummary:
+      type: object
+      required: [name, date, url]
+      properties:
+        name:
+          type: string
+        date:
+          type: string
+          format: date-time
+          description: catalog date, or `0001-01-01T00:00:00Z` when unset
+        url:
+          type: string
+          description: "`/api/v1/catalog/{name}`"
+
+    CatalogList:
+      type: object
+      required: [catalogs, url]
+      properties:
+        catalogs:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogSummary"
+        url:
+          type: string
+          description: request url for this listing
+
+    CatalogEntry:
+      type: object
+      required: [project_name, description]
+      properties:
+        project_name:
+          type: string
+        description:
+          type: string
+          description: always present; may be empty
+        project_url:
+          type: string
+          description: omitted when empty
+        author:
+          type: string
+          description: omitted when empty
+        home_page:
+          type: string
+          description: omitted when empty
+        discussion_url:
+          type: string
+          description: omitted when empty
+        documentation_url:
+          type: string
+          description: omitted when empty
+        origin:
+          type: string
+          description: omitted when empty
+        version:
+          type: string
+          description: omitted when empty
+        tags:
+          type: array
+          description: omitted when empty
+          items:
+            type: string
+          minItems: 1
+          uniqueItems: true
+
+    Catalog:
+      type: object
+      required: [name, updated, entries, url]
+      properties:
+        name:
+          type: string
+        updated:
+          type: string
+          format: date-time
+          description: catalog date, or `0001-01-01T00:00:00Z` when unset
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogEntry"
+        url:
+          type: string
+          description: "`/api/v1/catalog/{name}`"
+
+    ProjectMeta:
+      type: object
+      required: [file_info, installed_on, project_url]
+      properties:
+        file_info:
+          type: object
+          required: [kind, version]
+          properties:
+            kind:
+              type: string
+              enum: [project_metadata]
+            version:
+              type: integer
+              enum: [1]
+        installed_on:
+          type: string
+          format: date-time
+        updated_on:
+          type: string
+          format: date-time
+          description: omitted when unset
+        project_url:
+          type: string
+        catalog_entry:
+          description: omitted when absent
+          allOf:
+            - $ref: "#/components/schemas/CatalogEntry"
+
+    Project:
+      type: object
+      required: [project_name, managed, version, url]
+      properties:
+        project_name:
+          type: string
+        managed:
+          type: boolean
+          description: true when the project directory contains a `.git` directory
+        version:
+          type: string
+          description: git short head for managed projects; empty string otherwise
+        url:
+          type: string
+          description: "`/api/v1/project/{name}`"
+        meta_data:
+          description: omitted when the project has no `.project` metadata file
+          allOf:
+            - $ref: "#/components/schemas/ProjectMeta"
+
+    ProjectList:
+      type: object
+      required: [projects, url]
+      properties:
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        url:
+          type: string
+          description: request url for this listing
+
+    ProjectUpdate:
+      type: object
+      required: [name, updated]
+      properties:
+        name:
+          type: string
+        updated:
+          type: boolean
+          description: true when content changed; false when already up to date
+
+    InstallResult:
+      type: object
+      required: [catalog_entry, url]
+      properties:
+        catalog_entry:
+          $ref: "#/components/schemas/CatalogEntry"
+        url:
+          type: string
+          description: "`/api/v1/project/{project_name}`"
+
+    UnitStatus:
+      type: object
+      description: |
+        status response includes `state` and `sub_state`. operation response
+        includes `job_id` and `result`. exactly one pair is present.
+      properties:
+        state:
+          type: string
+          description: systemd `ActiveState`
+        sub_state:
+          type: string
+          description: systemd `SubState`
+        job_id:
+          type: integer
+          format: int32
+          description: always `0` on success (systemctl does not expose a dbus job id)
+        result:
+          type: string
+          description: always `done` on success
