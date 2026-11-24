@@ -122,6 +122,13 @@ pub fn load(allocator: std.mem.Allocator, explicit_path: ?[]const u8) !Config {
         log.debug("used confg: ", .{});
     }
 
+    log.debug("cfg.catalog_output_dir: {s}", .{cfg.catalog_output_dir});
+    log.debug("cfg.dust_path: {s}", .{cfg.dust_path});
+    log.debug("cfg.dust_code: {s}", .{cfg.dust_code});
+    log.debug("cfg.web_path: {s}", .{cfg.web_path});
+    log.debug("cfg.doc_path: {s}", .{cfg.doc_path});
+    log.debug("cfg.config_used: {?s}", .{cfg.config_used});
+
     return cfg;
 }
 
