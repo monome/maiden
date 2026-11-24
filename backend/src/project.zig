@@ -7,6 +7,7 @@ pub const devicePath = @import("project/dust.zig").devicePath;
 pub const resourcePath = @import("project/dust.zig").resourcePath;
 pub const listDir = @import("project/dust.zig").listDir;
 pub const getProjects = @import("project/dust.zig").getProjects;
+pub const freeProjects = @import("project/dust.zig").freeProjects;
 pub const searchProjects = @import("project/dust.zig").searchProjects;
 pub const inferProjectNameFromURL = @import("project/dust.zig").inferProjectNameFromURL;
 pub const readMeta = @import("project/dust.zig").readMeta;

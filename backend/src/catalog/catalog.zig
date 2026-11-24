@@ -159,10 +159,7 @@ pub const Cache = struct {
 
         for (cfg.catalogs.items) |pattern| {
             const paths = try globMatch(self.allocator, pattern);
-            defer {
-                for (paths) |p| self.allocator.free(p);
-                self.allocator.free(paths);
-            }
+            defer freePaths(self.allocator, paths);
             for (paths) |p| {
                 const st = fsx.statFile(p) catch |err| {
                     log.warn("failed to stat catalog {s}: {s}", .{ p, @errorName(err) });
@@ -235,7 +232,7 @@ pub fn loadCatalogFile(allocator: std.mem.Allocator, path: []const u8, mtime_ns:
 }
 
 /// Load every catalog matched by `cfg.catalogs`, sorted by path.
-/// A file that fails to parse is skipped. Caller `deinit`s each catalog, then frees the slice.
+/// A file that fails to parse is skipped. Caller frees via `freeCatalogs`.
 pub fn loadCatalogs(allocator: std.mem.Allocator, cfg: *const config.Config) ![]Catalog {
     var catalogs: std.ArrayListUnmanaged(Catalog) = .empty;
     errdefer {
@@ -244,10 +241,7 @@ pub fn loadCatalogs(allocator: std.mem.Allocator, cfg: *const config.Config) ![]
     }
     for (cfg.catalogs.items) |pattern| {
         const paths = try globMatch(allocator, pattern);
-        defer {
-            for (paths) |p| allocator.free(p);
-            allocator.free(paths);
-        }
+        defer freePaths(allocator, paths);
         for (paths) |p| {
             const st = fsx.statFile(p) catch |err| {
                 log.warn("failed to stat catalog {s}: {s}", .{ p, @errorName(err) });
@@ -262,6 +256,12 @@ pub fn loadCatalogs(allocator: std.mem.Allocator, cfg: *const config.Config) ![]
     }
     std.mem.sort(Catalog, catalogs.items, {}, catalogLess);
     return try catalogs.toOwnedSlice(allocator);
+}
+
+/// Free each catalog then the slice from `loadCatalogs`.
+pub fn freeCatalogs(allocator: std.mem.Allocator, catalogs: []Catalog) void {
+    for (catalogs) |*c| c.deinit();
+    allocator.free(catalogs);
 }
 
 fn catalogLess(_: void, a: Catalog, b: Catalog) bool {
@@ -307,7 +307,7 @@ pub const Source = struct {
 };
 
 /// Load every catalog source matched by `cfg.sources`.
-/// A file that fails to parse is skipped. Caller `deinit`s each source, then frees the slice.
+/// A file that fails to parse is skipped. Caller frees via `freeSources`.
 pub fn loadSources(allocator: std.mem.Allocator, cfg: *const config.Config) ![]Source {
     var sources: std.ArrayListUnmanaged(Source) = .empty;
     errdefer {
@@ -316,10 +316,7 @@ pub fn loadSources(allocator: std.mem.Allocator, cfg: *const config.Config) ![]S
     }
     for (cfg.sources.items) |pattern| {
         const paths = try globMatch(allocator, pattern);
-        defer {
-            for (paths) |p| allocator.free(p);
-            allocator.free(paths);
-        }
+        defer freePaths(allocator, paths);
         for (paths) |p| {
             const s = loadSourceFile(allocator, p) catch |err| {
                 log.warn("failed to load source {s}: {s}", .{ p, @errorName(err) });
@@ -329,6 +326,12 @@ pub fn loadSources(allocator: std.mem.Allocator, cfg: *const config.Config) ![]S
         }
     }
     return try sources.toOwnedSlice(allocator);
+}
+
+/// Free each source then the slice from `loadSources`.
+pub fn freeSources(allocator: std.mem.Allocator, sources: []Source) void {
+    for (sources) |*s| s.deinit();
+    allocator.free(sources);
 }
 
 fn loadSourceFile(allocator: std.mem.Allocator, path: []const u8) !Source {
@@ -387,6 +390,11 @@ pub fn downloadToFile(allocator: std.mem.Allocator, io: Io, url: []const u8, out
     try fsx.rename(tmp, output_path);
     committed = true;
     fsx.syncParent(output_path);
+}
+
+fn freePaths(allocator: std.mem.Allocator, paths: [][]u8) void {
+    for (paths) |p| allocator.free(p);
+    allocator.free(paths);
 }
 
 fn globMatch(allocator: std.mem.Allocator, pattern: []const u8) ![][]u8 {

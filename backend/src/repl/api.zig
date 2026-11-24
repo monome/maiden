@@ -91,6 +91,45 @@ pub const ApiResult = struct {
     }
 };
 
+const HttpResponse = struct {
+    status: std.http.Status,
+    body: []u8,
+
+    pub fn deinit(self: HttpResponse, allocator: std.mem.Allocator) void {
+        allocator.free(self.body);
+    }
+
+    fn text(self: HttpResponse) []const u8 {
+        return std.mem.trim(u8, self.body, " \t\r\n");
+    }
+};
+
+fn fetchHttp(
+    allocator: std.mem.Allocator,
+    io: Io,
+    request_url: []const u8,
+    method: std.http.Method,
+    payload: ?[]const u8,
+) !HttpResponse {
+    var body: std.Io.Writer.Allocating = .init(allocator);
+    errdefer body.deinit();
+
+    var client: std.http.Client = .{ .allocator = allocator, .io = io };
+    defer client.deinit();
+
+    const result = try client.fetch(.{
+        .location = .{ .url = request_url },
+        .method = method,
+        .payload = payload,
+        .response_writer = &body.writer,
+        .keep_alive = false,
+    });
+    return .{
+        .status = result.status,
+        .body = try body.toOwnedSlice(),
+    };
+}
+
 /// POST install and return a user-facing message. Caller frees `ApiResult.message`.
 pub fn installFromUrl(allocator: std.mem.Allocator, io: Io, api_base: []const u8, url: []const u8) !ApiResult {
     const encoded = try urlx.percentEncode(allocator, url);
@@ -101,29 +140,17 @@ pub fn installFromUrl(allocator: std.mem.Allocator, io: Io, api_base: []const u8
     });
     defer allocator.free(request_url);
 
-    var body: std.Io.Writer.Allocating = .init(allocator);
-    defer body.deinit();
-
-    var client: std.http.Client = .{ .allocator = allocator, .io = io };
-    defer client.deinit();
-
-    const result = client.fetch(.{
-        .location = .{ .url = request_url },
-        .method = .POST,
-        .payload = "",
-        .response_writer = &body.writer,
-        .keep_alive = false,
-    }) catch |err| {
+    const response = fetchHttp(allocator, io, request_url, .POST, "") catch |err| {
         return .{
             .ok = false,
             .message = try std.fmt.allocPrint(allocator, "install request failed: {s}", .{@errorName(err)}),
         };
     };
+    defer response.deinit(allocator);
 
-    const text = std.mem.trim(u8, body.written(), " \t\r\n");
-    const parsed = parseBody(InstallBody, allocator, text);
+    const parsed = parseBody(InstallBody, allocator, response.text());
     defer if (parsed) |p| p.deinit();
-    if (result.status == .created or result.status == .ok) {
+    if (response.status == .created or response.status == .ok) {
         if (parsed) |p| if (p.value.project_name.len > 0) {
             return .{
                 .ok = true,
@@ -142,7 +169,7 @@ pub fn installFromUrl(allocator: std.mem.Allocator, io: Io, api_base: []const u8
     };
     return .{
         .ok = false,
-        .message = try std.fmt.allocPrint(allocator, "install failed (HTTP {d})", .{@backingInt(result.status)}),
+        .message = try std.fmt.allocPrint(allocator, "install failed (HTTP {d})", .{@backingInt(response.status)}),
     };
 }
 
@@ -156,28 +183,17 @@ pub fn removeProject(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     });
     defer allocator.free(request_url);
 
-    var body: std.Io.Writer.Allocating = .init(allocator);
-    defer body.deinit();
-
-    var client: std.http.Client = .{ .allocator = allocator, .io = io };
-    defer client.deinit();
-
-    const result = client.fetch(.{
-        .location = .{ .url = request_url },
-        .method = .DELETE,
-        .response_writer = &body.writer,
-        .keep_alive = false,
-    }) catch |err| {
+    const response = fetchHttp(allocator, io, request_url, .DELETE, null) catch |err| {
         return .{
             .ok = false,
             .message = try std.fmt.allocPrint(allocator, "delete request failed: {s}", .{@errorName(err)}),
         };
     };
+    defer response.deinit(allocator);
 
-    const text = std.mem.trim(u8, body.written(), " \t\r\n");
-    const parsed = parseBody(MessageBody, allocator, text);
+    const parsed = parseBody(MessageBody, allocator, response.text());
     defer if (parsed) |p| p.deinit();
-    if (result.status == .ok) {
+    if (response.status == .ok) {
         return .{
             .ok = true,
             .message = try std.fmt.allocPrint(allocator, "deleted \"{s}\"", .{name}),
@@ -194,7 +210,7 @@ pub fn removeProject(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     }
     return .{
         .ok = false,
-        .message = try std.fmt.allocPrint(allocator, "delete failed (HTTP {d})", .{@backingInt(result.status)}),
+        .message = try std.fmt.allocPrint(allocator, "delete failed (HTTP {d})", .{@backingInt(response.status)}),
     };
 }
 
@@ -208,28 +224,17 @@ pub fn updateProject(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     });
     defer allocator.free(request_url);
 
-    var body: std.Io.Writer.Allocating = .init(allocator);
-    defer body.deinit();
-
-    var client: std.http.Client = .{ .allocator = allocator, .io = io };
-    defer client.deinit();
-
-    const result = client.fetch(.{
-        .location = .{ .url = request_url },
-        .method = .GET,
-        .response_writer = &body.writer,
-        .keep_alive = false,
-    }) catch |err| {
+    const response = fetchHttp(allocator, io, request_url, .GET, null) catch |err| {
         return .{
             .ok = false,
             .message = try std.fmt.allocPrint(allocator, "update request failed: {s}", .{@errorName(err)}),
         };
     };
+    defer response.deinit(allocator);
 
-    const text = std.mem.trim(u8, body.written(), " \t\r\n");
-    const parsed = parseBody(UpdateBody, allocator, text);
+    const parsed = parseBody(UpdateBody, allocator, response.text());
     defer if (parsed) |p| p.deinit();
-    if (result.status == .ok) {
+    if (response.status == .ok) {
         if (parsed) |p| if (p.value.updated) |updated| {
             if (updated) {
                 return .{
@@ -254,7 +259,7 @@ pub fn updateProject(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     };
     return .{
         .ok = false,
-        .message = try std.fmt.allocPrint(allocator, "update failed (HTTP {d})", .{@backingInt(result.status)}),
+        .message = try std.fmt.allocPrint(allocator, "update failed (HTTP {d})", .{@backingInt(response.status)}),
     };
 }
 
@@ -267,28 +272,17 @@ pub fn unitOperation(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     });
     defer allocator.free(request_url);
 
-    var body: std.Io.Writer.Allocating = .init(allocator);
-    defer body.deinit();
-
-    var client: std.http.Client = .{ .allocator = allocator, .io = io };
-    defer client.deinit();
-
-    const result = client.fetch(.{
-        .location = .{ .url = request_url },
-        .method = .GET,
-        .response_writer = &body.writer,
-        .keep_alive = false,
-    }) catch |err| {
+    const response = fetchHttp(allocator, io, request_url, .GET, null) catch |err| {
         return .{
             .ok = false,
             .message = try std.fmt.allocPrint(allocator, "unit request failed: {s}", .{@errorName(err)}),
         };
     };
+    defer response.deinit(allocator);
 
-    const text = std.mem.trim(u8, body.written(), " \t\r\n");
-    const parsed = parseBody(UnitBody, allocator, text);
+    const parsed = parseBody(UnitBody, allocator, response.text());
     defer if (parsed) |p| p.deinit();
-    if (result.status == .ok) {
+    if (response.status == .ok) {
         if (parsed) |p| if (p.value.result.len > 0) {
             return .{
                 .ok = true,
@@ -308,7 +302,7 @@ pub fn unitOperation(allocator: std.mem.Allocator, io: Io, api_base: []const u8,
     };
     return .{
         .ok = false,
-        .message = try std.fmt.allocPrint(allocator, ";{s} => HTTP {d}", .{ operation, @backingInt(result.status) }),
+        .message = try std.fmt.allocPrint(allocator, ";{s} => HTTP {d}", .{ operation, @backingInt(response.status) }),
     };
 }
 
@@ -355,26 +349,16 @@ pub fn fetchReplEndpoints(allocator: std.mem.Allocator, io: Io, api_base: []cons
     });
     defer allocator.free(request_url);
 
-    var body: std.Io.Writer.Allocating = .init(allocator);
-    defer body.deinit();
+    const response = fetchHttp(allocator, io, request_url, .GET, null) catch return error.ReplEndpointsFetchFailed;
+    defer response.deinit(allocator);
 
-    var client: std.http.Client = .{ .allocator = allocator, .io = io };
-    defer client.deinit();
-
-    const result = client.fetch(.{
-        .location = .{ .url = request_url },
-        .method = .GET,
-        .response_writer = &body.writer,
-        .keep_alive = false,
-    }) catch return error.ReplEndpointsFetchFailed;
-
-    if (result.status != .ok) return error.ReplEndpointsFetchFailed;
+    if (response.status != .ok) return error.ReplEndpointsFetchFailed;
 
     const EndpointsJson = struct {
         norns: []const u8,
         supercollider: []const u8,
     };
-    const parsed = std.json.parseFromSlice(EndpointsJson, allocator, body.written(), .{
+    const parsed = std.json.parseFromSlice(EndpointsJson, allocator, response.body, .{
         .allocate = .alloc_always,
         .ignore_unknown_fields = true,
     }) catch return error.ReplEndpointsParseFailed;

@@ -156,10 +156,7 @@ fn runList(
     var cfg = try config.load(allocator, config_path);
     defer cfg.deinit();
     const catalogs = try catalog.loadCatalogs(allocator, &cfg);
-    defer {
-        for (catalogs) |*c| c.deinit();
-        allocator.free(catalogs);
-    }
+    defer catalog.freeCatalogs(allocator, catalogs);
     if (catalogs.len == 0) {
         log.warn("no catalog files loaded", .{});
         return;

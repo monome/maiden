@@ -12,10 +12,7 @@ pub fn updateCatalogs(allocator: std.mem.Allocator, io: Io, cfg: *config.Config)
 
 pub fn updateConfiguredCatalogs(allocator: std.mem.Allocator, io: Io, cfg: *config.Config) !void {
     const sources = try catalog.loadSources(allocator, cfg);
-    defer {
-        for (sources) |*s| s.deinit();
-        allocator.free(sources);
-    }
+    defer catalog.freeSources(allocator, sources);
     for (sources) |src| {
         if (cfg.catalog_output_dir.len == 0) continue;
         if (src.method().len == 0) {
