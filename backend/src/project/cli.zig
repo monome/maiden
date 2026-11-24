@@ -222,13 +222,7 @@ fn runList(
     defer cfg.deinit();
 
     const projects = try dust.getProjects(allocator, cfg.dust_code);
-    defer {
-        for (projects) |p| {
-            allocator.free(p.name);
-            allocator.free(p.root);
-        }
-        allocator.free(projects);
-    }
+    defer dust.freeProjects(allocator, projects);
     std.debug.print("project\tgit\tversion\tdir\t\n", .{});
     std.debug.print("-------\t---\t-------\t---\t\n", .{});
     const selected = res.positionals[0];
@@ -270,10 +264,7 @@ fn runInstall(
     defer cfg.deinit();
 
     const catalogs = try catalog.loadCatalogs(allocator, &cfg);
-    defer {
-        for (catalogs) |*c| c.deinit();
-        allocator.free(catalogs);
-    }
+    defer catalog.freeCatalogs(allocator, catalogs);
     for (names) |arg| {
         var project_url: []const u8 = arg;
         var project_name: []const u8 = dust.inferProjectNameFromURL(arg);
@@ -317,18 +308,9 @@ fn runUpdate(
     defer cfg.deinit();
 
     const catalogs = try catalog.loadCatalogs(allocator, &cfg);
-    defer {
-        for (catalogs) |*c| c.deinit();
-        allocator.free(catalogs);
-    }
+    defer catalog.freeCatalogs(allocator, catalogs);
     const projects = try dust.getProjects(allocator, cfg.dust_code);
-    defer {
-        for (projects) |p| {
-            allocator.free(p.name);
-            allocator.free(p.root);
-        }
-        allocator.free(projects);
-    }
+    defer dust.freeProjects(allocator, projects);
 
     if (res.args.all != 0) {
         for (projects) |p| try updateOne(allocator, io, cfg.dust_code, catalogs, p);
@@ -399,13 +381,7 @@ fn runRemove(
     defer cfg.deinit();
 
     const projects = try dust.getProjects(allocator, cfg.dust_code);
-    defer {
-        for (projects) |p| {
-            allocator.free(p.name);
-            allocator.free(p.root);
-        }
-        allocator.free(projects);
-    }
+    defer dust.freeProjects(allocator, projects);
     for (names) |name| {
         if (dust.searchProjects(projects, name)) |p| {
             std.debug.print("Removing: {s} ({s})... ", .{ p.name, p.root });

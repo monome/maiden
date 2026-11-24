@@ -573,42 +573,28 @@ const App = struct {
     }
 };
 
+fn apiResultOrFail(job: *HttpJob, outcome: anyerror!repl_api.ApiResult) ?repl_api.ApiResult {
+    return outcome catch |err| .{
+        .ok = false,
+        .message = job.allocator.dupe(u8, @errorName(err)) catch {
+            job.allocator.free(job.echo);
+            return null;
+        },
+    };
+}
+
 fn httpWorker(job: *HttpJob) void {
     defer {
         job.allocator.free(job.arg);
         job.allocator.destroy(job);
     }
 
-    const result: repl_api.ApiResult = switch (job.kind) {
-        .install => repl_api.installFromUrl(job.allocator, job.io, job.api_base, job.arg) catch |err| repl_api.ApiResult{
-            .ok = false,
-            .message = job.allocator.dupe(u8, @errorName(err)) catch {
-                job.allocator.free(job.echo);
-                return;
-            },
-        },
-        .unit => repl_api.unitOperation(job.allocator, job.io, job.api_base, job.component, job.arg) catch |err| repl_api.ApiResult{
-            .ok = false,
-            .message = job.allocator.dupe(u8, @errorName(err)) catch {
-                job.allocator.free(job.echo);
-                return;
-            },
-        },
-        .update => repl_api.updateProject(job.allocator, job.io, job.api_base, job.arg) catch |err| repl_api.ApiResult{
-            .ok = false,
-            .message = job.allocator.dupe(u8, @errorName(err)) catch {
-                job.allocator.free(job.echo);
-                return;
-            },
-        },
-        .remove => repl_api.removeProject(job.allocator, job.io, job.api_base, job.arg) catch |err| repl_api.ApiResult{
-            .ok = false,
-            .message = job.allocator.dupe(u8, @errorName(err)) catch {
-                job.allocator.free(job.echo);
-                return;
-            },
-        },
-    };
+    const result = (switch (job.kind) {
+        .install => apiResultOrFail(job, repl_api.installFromUrl(job.allocator, job.io, job.api_base, job.arg)),
+        .unit => apiResultOrFail(job, repl_api.unitOperation(job.allocator, job.io, job.api_base, job.component, job.arg)),
+        .update => apiResultOrFail(job, repl_api.updateProject(job.allocator, job.io, job.api_base, job.arg)),
+        .remove => apiResultOrFail(job, repl_api.removeProject(job.allocator, job.io, job.api_base, job.arg)),
+    }) orelse return;
 
     job.results.push(.{
         .component = job.component,

@@ -5,7 +5,9 @@ pub const Source = @import("catalog/catalog.zig").Source;
 
 pub const loadCatalogFile = @import("catalog/catalog.zig").loadCatalogFile;
 pub const loadCatalogs = @import("catalog/catalog.zig").loadCatalogs;
+pub const freeCatalogs = @import("catalog/catalog.zig").freeCatalogs;
 pub const loadSources = @import("catalog/catalog.zig").loadSources;
+pub const freeSources = @import("catalog/catalog.zig").freeSources;
 pub const searchCatalogs = @import("catalog/catalog.zig").searchCatalogs;
 pub const emptyCatalogJson = @import("catalog/catalog.zig").emptyCatalogJson;
 pub const downloadToFile = @import("catalog/catalog.zig").downloadToFile;

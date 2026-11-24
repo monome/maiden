@@ -12,6 +12,11 @@ pub const Project = struct {
     name: []const u8,
     root: []const u8,
 
+    pub fn deinit(self: Project, allocator: std.mem.Allocator) void {
+        allocator.free(self.name);
+        allocator.free(self.root);
+    }
+
     /// True when `root/.git` exists and is a directory.
     pub fn isManaged(self: Project) bool {
         var path_buf: [std.fs.max_path_bytes]u8 = undefined;
@@ -20,6 +25,12 @@ pub const Project = struct {
         return st.kind == .directory;
     }
 };
+
+/// Free each project then the slice from `getProjects`.
+pub fn freeProjects(allocator: std.mem.Allocator, projects: []Project) void {
+    for (projects) |p| p.deinit(allocator);
+    allocator.free(projects);
+}
 
 pub const Meta = struct {
     installed_on: []const u8 = "",
@@ -61,20 +72,22 @@ pub const FileInfo = struct {
     name: []const u8,
     url: []const u8,
     is_dir: bool,
+
+    pub fn deinit(self: FileInfo, allocator: std.mem.Allocator) void {
+        allocator.free(self.name);
+        allocator.free(self.url);
+    }
 };
 
 /// List non-hidden entries of `abs_path`, sorted by name, with URLs under `url_prefix`.
-/// Caller frees each `name` and `url`, then the slice.
+/// Caller frees each entry via `FileInfo.deinit`, then the slice.
 pub fn listDir(allocator: std.mem.Allocator, abs_path: []const u8, url_prefix: []const u8) ![]FileInfo {
     var dir = try fsx.openDirIterate(abs_path);
     defer fsx.closeDir(dir);
 
     var entries: std.ArrayListUnmanaged(FileInfo) = .empty;
     errdefer {
-        for (entries.items) |e| {
-            allocator.free(e.name);
-            allocator.free(e.url);
-        }
+        for (entries.items) |e| e.deinit(allocator);
         entries.deinit(allocator);
     }
 
@@ -100,17 +113,14 @@ fn fileLess(_: void, a: FileInfo, b: FileInfo) bool {
 }
 
 /// Non-hidden directories in `code_dir`, sorted by name. Dot-directories are skipped.
-/// Caller frees each `name` and `root`, then the slice.
+/// Caller frees via `freeProjects`.
 pub fn getProjects(allocator: std.mem.Allocator, code_dir: []const u8) ![]Project {
     var dir = try fsx.openDirIterate(code_dir);
     defer fsx.closeDir(dir);
 
     var projects: std.ArrayListUnmanaged(Project) = .empty;
     errdefer {
-        for (projects.items) |p| {
-            allocator.free(p.name);
-            allocator.free(p.root);
-        }
+        for (projects.items) |p| p.deinit(allocator);
         projects.deinit(allocator);
     }
 

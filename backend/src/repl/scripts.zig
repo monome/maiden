@@ -10,11 +10,27 @@ pub const ScriptFile = struct {
     load_path: []const u8,
     /// Basename shown in the tree.
     name: []const u8,
+
+    pub fn deinit(self: ScriptFile, allocator: std.mem.Allocator) void {
+        allocator.free(self.abs_path);
+        allocator.free(self.load_path);
+        allocator.free(self.name);
+    }
 };
+
+fn freeScriptFiles(allocator: std.mem.Allocator, files: []ScriptFile) void {
+    for (files) |f| f.deinit(allocator);
+    allocator.free(files);
+}
 
 pub const ProjectScripts = struct {
     name: []const u8,
     files: []ScriptFile,
+
+    pub fn deinit(self: ProjectScripts, allocator: std.mem.Allocator) void {
+        freeScriptFiles(allocator, self.files);
+        allocator.free(self.name);
+    }
 };
 
 pub const Catalog = struct {
@@ -26,20 +42,18 @@ pub const Catalog = struct {
     child_arrays: [][]zigtui.TreeNode = &.{},
 
     pub fn deinit(self: *Catalog) void {
-        for (self.projects) |p| {
-            for (p.files) |f| {
-                self.allocator.free(f.abs_path);
-                self.allocator.free(f.load_path);
-                self.allocator.free(f.name);
-            }
-            self.allocator.free(p.files);
-            self.allocator.free(p.name);
-        }
+        for (self.projects) |p| p.deinit(self.allocator);
         self.allocator.free(self.projects);
+        self.freeTreeStorage();
+        self.* = .{ .allocator = self.allocator };
+    }
+
+    fn freeTreeStorage(self: *Catalog) void {
         for (self.child_arrays) |arr| self.allocator.free(arr);
         self.allocator.free(self.child_arrays);
         self.allocator.free(self.roots);
-        self.* = .{ .allocator = self.allocator };
+        self.child_arrays = &.{};
+        self.roots = &.{};
     }
 };
 
@@ -57,37 +71,18 @@ pub fn scan(allocator: std.mem.Allocator, code_dir: []const u8) !Catalog {
         },
         else => return err,
     };
-    defer {
-        for (projects) |p| {
-            allocator.free(p.name);
-            allocator.free(p.root);
-        }
-        allocator.free(projects);
-    }
+    defer dust.freeProjects(allocator, projects);
 
     var out_projects: std.ArrayListUnmanaged(ProjectScripts) = .empty;
     errdefer {
-        for (out_projects.items) |p| {
-            for (p.files) |f| {
-                allocator.free(f.abs_path);
-                allocator.free(f.load_path);
-                allocator.free(f.name);
-            }
-            allocator.free(p.files);
-            allocator.free(p.name);
-        }
+        for (out_projects.items) |p| p.deinit(allocator);
         out_projects.deinit(allocator);
     }
 
     for (projects) |p| {
         const files = try listProjectScripts(allocator, p.name, p.root);
         if (files.len == 0) {
-            for (files) |f| {
-                allocator.free(f.abs_path);
-                allocator.free(f.load_path);
-                allocator.free(f.name);
-            }
-            allocator.free(files);
+            freeScriptFiles(allocator, files);
             continue;
         }
         try out_projects.append(allocator, .{
@@ -107,11 +102,7 @@ fn listProjectScripts(allocator: std.mem.Allocator, project_name: []const u8, ro
 
     var files: std.ArrayListUnmanaged(ScriptFile) = .empty;
     errdefer {
-        for (files.items) |f| {
-            allocator.free(f.abs_path);
-            allocator.free(f.load_path);
-            allocator.free(f.name);
-        }
+        for (files.items) |f| f.deinit(allocator);
         files.deinit(allocator);
     }
 
@@ -149,9 +140,7 @@ fn scriptLess(_: void, a: ScriptFile, b: ScriptFile) bool {
 }
 
 fn rebuildTree(catalog: *Catalog) !void {
-    for (catalog.child_arrays) |arr| catalog.allocator.free(arr);
-    catalog.allocator.free(catalog.child_arrays);
-    catalog.allocator.free(catalog.roots);
+    catalog.freeTreeStorage();
 
     const child_arrays = try catalog.allocator.alloc([]zigtui.TreeNode, catalog.projects.len);
     errdefer {
@@ -180,19 +169,53 @@ fn rebuildTree(catalog: *Catalog) !void {
     catalog.roots = roots;
 }
 
+const FlatTreeItem = union(enum) {
+    project: []const u8,
+    script: ScriptFile,
+};
+
+const FlatTreeIter = struct {
+    catalog: *const Catalog,
+    project_i: usize = 0,
+    at_project: bool = true,
+    file_i: usize = 0,
+    index: usize = 0,
+
+    fn next(self: *FlatTreeIter) ?struct { index: usize, item: FlatTreeItem } {
+        while (self.project_i < self.catalog.projects.len) {
+            const p = self.catalog.projects[self.project_i];
+            if (self.at_project) {
+                const idx = self.index;
+                self.index += 1;
+                self.at_project = false;
+                self.file_i = 0;
+                return .{ .index = idx, .item = .{ .project = p.name } };
+            }
+            const expanded = if (self.project_i < self.catalog.roots.len) self.catalog.roots[self.project_i].expanded else true;
+            if (expanded and self.file_i < p.files.len) {
+                const idx = self.index;
+                const f = p.files[self.file_i];
+                self.file_i += 1;
+                self.index += 1;
+                return .{ .index = idx, .item = .{ .script = f } };
+            }
+            self.project_i += 1;
+            self.at_project = true;
+        }
+        return null;
+    }
+};
+
 /// Resolve the focused script from a flat tree selection index (same order as ZigTUI Tree).
 pub fn scriptAtSelection(catalog: *const Catalog, selected: ?usize) ?ScriptFile {
     const sel = selected orelse return null;
-    var idx: usize = 0;
-    for (catalog.projects, 0..) |p, pi| {
-        if (idx == sel) return null; // project directory node
-        idx += 1;
-        const expanded = if (pi < catalog.roots.len) catalog.roots[pi].expanded else true;
-        if (!expanded) continue;
-        for (p.files) |f| {
-            if (idx == sel) return f;
-            idx += 1;
-        }
+    var it: FlatTreeIter = .{ .catalog = catalog };
+    while (it.next()) |visit| {
+        if (visit.index != sel) continue;
+        return switch (visit.item) {
+            .project => null,
+            .script => |f| f,
+        };
     }
     return null;
 }
@@ -200,27 +223,24 @@ pub fn scriptAtSelection(catalog: *const Catalog, selected: ?usize) ?ScriptFile 
 /// Resolve the project name when a top-level directory node is selected.
 pub fn projectAtSelection(catalog: *const Catalog, selected: ?usize) ?[]const u8 {
     const sel = selected orelse return null;
-    var idx: usize = 0;
-    for (catalog.projects, 0..) |p, pi| {
-        if (idx == sel) return p.name;
-        idx += 1;
-        const expanded = if (pi < catalog.roots.len) catalog.roots[pi].expanded else true;
-        if (!expanded) continue;
-        idx += p.files.len;
+    var it: FlatTreeIter = .{ .catalog = catalog };
+    while (it.next()) |visit| {
+        if (visit.index != sel) continue;
+        return switch (visit.item) {
+            .project => |name| name,
+            .script => null,
+        };
     }
     return null;
 }
 
 /// Flat tree index of the script with `load_path`, if currently visible.
 pub fn selectionForLoadPath(catalog: *const Catalog, load_path: []const u8) ?usize {
-    var idx: usize = 0;
-    for (catalog.projects, 0..) |p, pi| {
-        idx += 1;
-        const expanded = if (pi < catalog.roots.len) catalog.roots[pi].expanded else true;
-        if (!expanded) continue;
-        for (p.files) |f| {
-            if (std.mem.eql(u8, f.load_path, load_path)) return idx;
-            idx += 1;
+    var it: FlatTreeIter = .{ .catalog = catalog };
+    while (it.next()) |visit| {
+        switch (visit.item) {
+            .project => {},
+            .script => |f| if (std.mem.eql(u8, f.load_path, load_path)) return visit.index,
         }
     }
     return null;
