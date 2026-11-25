@@ -7,3 +7,20 @@
 
   font-family: monospace;
 }
+
+.badge-button {
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 100%;
+}
+
+.badge-button:hover {
+  background-color: var(--interactive-surface-hover);
+}
+
+.badge-selected,
+.badge-selected:hover {
+  color: var(--neutral-background-default);
+  background-color: var(--neutral-heavy-default);
+}

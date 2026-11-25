@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Set } from 'immutable';
 
 import Switcher from './components/switcher';
 import CatalogList from './components/catalog-list';
@@ -16,6 +17,11 @@ import ModalProgress from './modal-progress';
 const SYSTEM_RESTART_RECOMMENDATION = 'Run SYSTEM > RESTART to ensure engine changes take effect';
 
 class ProjectActivity extends Component {
+  state = {
+    filterQuery: '',
+    filterTags: new Set(),
+  };
+
   componentDidMount() {
     this.props.getCatalogSummary(summary => {
       summary.get('catalogs').forEach(detail => {
@@ -25,6 +31,22 @@ class ProjectActivity extends Component {
     });
     this.props.getProjectSummary();
   }
+
+  handleFilterQuery = query => {
+    this.setState({ filterQuery: query });
+  };
+
+  handleFilterTagToggle = tag => {
+    this.setState(state => ({
+      filterTags: state.filterTags.has(tag)
+        ? state.filterTags.delete(tag)
+        : state.filterTags.add(tag),
+    }));
+  };
+
+  handleFilterClear = () => {
+    this.setState({ filterQuery: '', filterTags: new Set() });
+  };
 
   handleTabSelection = name => {
     this.props.projectViewSelect(name);
@@ -385,6 +407,13 @@ class ProjectActivity extends Component {
       width: this.props.width,
     };
 
+    const filterProps = {
+      filter: { query: this.state.filterQuery, tags: this.state.filterTags },
+      setQuery: this.handleFilterQuery,
+      toggleTag: this.handleFilterTagToggle,
+      clear: this.handleFilterClear,
+    };
+
     return (
       <div className="project-activity-container">
         <Switcher
@@ -395,6 +424,7 @@ class ProjectActivity extends Component {
           <ProjectList
             name="installed"
             projects={this.props.projectSummary}
+            filterProps={filterProps}
             updateAllAction={this.handleUpdateAllAction}
             updateAction={this.handleUpdateAction}
             removeAction={this.handleRemoveAction}
@@ -407,6 +437,7 @@ class ProjectActivity extends Component {
               this.props.projectSummary.get('projects').map(e => e.get('project_name'))
             }
             catalogs={this.props.catalogs}
+            filterProps={filterProps}
             refreshAllAction={this.handleRefreshAllAction}
             installAction={this.handleInstallAction}
             refreshAction={this.handleRefreshAction}
