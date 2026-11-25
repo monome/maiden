@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import Icon from './icon';
 import './icon-button.css';
 
@@ -20,6 +20,11 @@ class IconButton extends Component {
     // Parse the hsl values from props.color
     const [, h, s, l] = this.props.color.match(hslRegex);
     this.parsedColor = { h, s, l };
+
+    // Stable id so hover re-renders (color change) do not break react-tooltip v5
+    this.tooltipId = `icon-button-${Math.random()
+      .toString(36)
+      .slice(2, 11)}`;
 
     this.state = {
       color: this.color,
@@ -74,41 +79,39 @@ class IconButton extends Component {
   render() {
     const style = { padding: this.props.padding || 6 };
     const tooltipPosition = this.props.tooltipPosition || 'bottom';
+    const { tooltipMessage } = this.props;
 
-    function guid() {
-      function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-          .toString(16)
-          .substring(1);
-      }
-      return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
-    }
-
-    const uniqueId = guid();
-
+    // Keep Tooltip outside <button>: a tooltip <div> inside a button is invalid
+    // HTML and breaks react-tooltip v5 show/hide. display:contents preserves
+    // toolbar flex layout so the button remains the flex item.
     return (
-      <button
-        className="icon-button"
-        onClick={this.handleClick}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        data-tip={this.props.tooltipMessage}
-        data-place={this.props.tooltipMessage && tooltipPosition}
-        data-for={this.props.tooltipMessage && uniqueId}
-        style={style}
-        disabled={this.props.disabled}
-      >
-        <Icon icon={this.props.icon} size={this.props.size} color={this.state.color} />
-        {this.props.tooltipMessage && (
-          <ReactTooltip
-            id={uniqueId}
-            effect="solid"
+      <span style={{ display: 'contents' }}>
+        <button
+          className="icon-button"
+          onClick={this.handleClick}
+          onMouseEnter={this.handleMouseEnter}
+          onMouseLeave={this.handleMouseLeave}
+          data-tooltip-content={tooltipMessage}
+          data-tooltip-place={tooltipMessage ? tooltipPosition : undefined}
+          data-tooltip-id={tooltipMessage ? this.tooltipId : undefined}
+          style={style}
+          disabled={this.props.disabled}
+        >
+          <Icon icon={this.props.icon} size={this.props.size} color={this.state.color} />
+        </button>
+        {tooltipMessage && (
+          <Tooltip
+            id={this.tooltipId}
+            place={tooltipPosition}
             delayShow={1000}
             delayHide={500}
             className="customTooltip"
+            positionStrategy="fixed"
+            openEvents={{ mouseenter: true, focus: true }}
+            closeEvents={{ mouseleave: true, blur: true }}
           />
         )}
-      </button>
+      </span>
     );
   }
 }

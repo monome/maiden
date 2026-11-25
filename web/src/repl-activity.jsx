@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ReactTooltip from 'react-tooltip';
+import { Tooltip } from 'react-tooltip';
 import cx from 'classname';
 import Repl from './repl';
 import ToolBar from './tool-bar';
@@ -71,14 +71,13 @@ const ReplSwitcherTab = props => {
         className={className}
         key={props.name}
         onClick={props.onClick}
-        data-tip={tooltipMessage}
-        data-for={props.name}
+        data-tooltip-content={tooltipMessage}
+        data-tooltip-id={props.name}
       >
         {props.name}
       </button>
-      <ReactTooltip
+      <Tooltip
         id={props.name}
-        effect="solid"
         className="customTooltip"
         delayShow={1000}
         delayHide={500}

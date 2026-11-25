@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import BoundWorkspace from './bound-workspace';
 import BoundUrlHandler from './bound-url-handler';
 import activities from './activities';
+import 'react-tooltip/dist/react-tooltip.css';
 import './app.css';
 import './tool-tip.css';
 
