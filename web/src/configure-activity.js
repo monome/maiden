@@ -64,7 +64,7 @@ class ConfigureActivity extends Component {
           <div className="configure-item">
             <div className="configure-label">key bindings:</div>
             <div className="configure-options">
-              {this.renderEditorOption('keyBoardHandler', null, 'default (ace)')}
+              {this.renderEditorOption('keyBoardHandler', null, 'default')}
               {this.renderEditorOption('keyBoardHandler', 'ace/keyboard/vim', 'vim')}
               {this.renderEditorOption('keyBoardHandler', 'ace/keyboard/emacs', 'emacs')}
             </div>
@@ -81,6 +81,13 @@ class ConfigureActivity extends Component {
             <div className="configure-options">
               {this.renderEditorOption('editorTheme', 'light', 'light')}
               {this.renderEditorOption('editorTheme', 'dark', 'dark')}
+            </div>
+          </div>
+          <div className="configure-item">
+            <div className="configure-label">minimap:</div>
+            <div className="configure-options">
+              {this.renderEditorOption('minimap', false, 'off')}
+              {this.renderEditorOption('minimap', true, 'on')}
             </div>
           </div>
         </div>

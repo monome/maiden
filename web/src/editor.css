@@ -1,95 +1,97 @@
-/* anti-alias where supported */
-* {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+.monaco-editor-host {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
 }
 
-/* https://stackoverflow.com/questions/26210839/hide-scrollbars-if-not-necessary-ace-editor */
-body .ace_scrollbar {
-    -webkit-transition: opacity .3s ease-in-out;
-       -moz-transition: opacity .3s ease-in-out;
-        -ms-transition: opacity .3s ease-in-out;
-         -o-transition: opacity .3s ease-in-out;
-            transition: opacity .3s ease-in-out;
-    opacity: 0;
-}
-body .ace_editor .ace_scrollbar:hover {
-    opacity: 1;
+.monaco-editor-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
 }
 
-.ace_editor.ace_gutter-cell.ace_error {
-    background-image: url("icons/red_x.png");
-    background-repeat: no-repeat;
-    background-position: 2px center;
-}
-
-.ace_editor.ace_autocomplete.ace_dark .ace_marker-layer .ace_active-line {
-    background-color: rgba(12, 65, 134, 0.486);
-    z-index: 1;
-}
-
-.ace_editor.ace_autocomplete.ace_dark .ace_completion-highlight {
-    color:  rgba(0, 151, 251, 0.911);
-    text-shadow: 0 0 0.01em;
-}
-
-.ace_editor.ace_autocomplete.ace_dark  {
-    width: 280px;
-    z-index: 200000;
-    background: #2f3135;
-    color: #f9f9f9;
-    border: 1px lightgray solid;
-    position: fixed;
-    box-shadow: 2px 3px 5px rgba(0,0,0,.2);
-    line-height: 1.4;
-}
-
-.ace_tooltip {
-    background-color: #FFF;
-    background-image: none;
-    border: 1px solid gray;
-    border-radius: 1px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    color: black;
-    font-family: monospace;
-    max-width: 100%;
-    padding: 3px 4px;
-    position: fixed;
-    z-index: 999999;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    cursor: default;
-    white-space: pre;
-    word-wrap: break-word;
-    line-height: normal;
-    font-style: normal;
-    font-weight: normal;
-    letter-spacing: normal;
+/* Vim normal / overwrite indicator — floats over the buffer, no layout cost. */
+.monaco-editor-mode-badge {
+    position: absolute;
+    top: 6px;
+    /* `right` is set inline from Monaco layout (left of minimap / scrollbar). */
+    z-index: 5;
     pointer-events: none;
+    font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    padding: 3px 6px;
+    border-radius: 3px;
+    background: var(--neutral-surface-default);
+    color: var(--neutral-heavy-default);
+    border: 1px solid var(--neutral-trim-default);
+    opacity: 0.92;
+    user-select: none;
 }
 
-.ace_dark ~ .ace_tooltip, .ace_dark .ace_tooltip {
-    background-color: #2f3135;
-    background-image: none;
-    border: 1px solid gray;
-    border-radius: 1px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    color: whitesmoke;
-    font-family: monospace;
-    max-width: 100%;
-    padding: 3px 4px;
-    position: fixed;
-    z-index: 999999;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-    cursor: default;
-    white-space: pre;
-    word-wrap: break-word;
-    line-height: normal;
-    font-style: normal;
-    font-weight: normal;
-    letter-spacing: normal;
-    pointer-events: none;
+/*
+ * Host for monaco-vim status DOM (`:` / search prompts). Visibility is toggled
+ * from JS when an input or notification is present — no permanent strip.
+ */
+.monaco-editor-vim-prompt {
+    display: none;
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    z-index: 6;
+    font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
+    font-size: 12px;
+    line-height: 20px;
+    padding: 2px 8px;
+    background: var(--neutral-surface-default);
+    color: var(--neutral-heavy-default);
+    border: 1px solid var(--neutral-trim-default);
+    border-radius: 3px;
+}
+
+/* Mode / key-buffer spans from monaco-vim — badge covers mode; hide the rest. */
+.monaco-editor-vim-prompt > span:nth-child(1),
+.monaco-editor-vim-prompt > span:nth-child(4) {
+    display: none;
+}
+
+.monaco-editor-vim-prompt input {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
+/*
+ * Monaco gives fold carets `margin-left: 2px`, which shifts them toward the
+ * gutter edge and makes the gap after the line number larger than the gap
+ * before the gutter edge. Zero it so those spaces match.
+ */
+.monaco-editor .margin-view-overlays .cldr.codicon-folding-expanded,
+.monaco-editor .margin-view-overlays .cldr.codicon-folding-collapsed,
+.monaco-editor .margin-view-overlays .cldr.codicon-folding-manual-expanded,
+.monaco-editor .margin-view-overlays .cldr.codicon-folding-manual-collapsed {
+    margin-left: 0 !important;
+}
+
+/*
+ * Inset text from the gutter's right edge (editor canvas, not gutter chrome).
+ * Use px so lines-content and view-overlays stay aligned — those nodes do not
+ * share the same font-size, so em would diverge. 3px = 0.25em at fontSize 12.
+ */
+.monaco-editor .lines-content,
+.monaco-editor .view-overlays {
+    padding-left: 3px !important;
+}
+
+/* Keep Monaco overflow widgets (suggest, hover, find) below workspace modals */
+.monaco-editor .suggest-widget,
+.monaco-editor .monaco-hover,
+.monaco-editor .find-widget {
+    z-index: 40;
 }

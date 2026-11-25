@@ -12,7 +12,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 10;  /* modal must block ace editor which uses z-index: 1 */
+    z-index: 100;  /* above Monaco suggest/hover/find widgets */
     background-color: var(--overlay-fill);
     display: flex;
     flex-direction: column;

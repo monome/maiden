@@ -1,6 +1,4 @@
 import OS from './utils';
-import EditorMode from './mode';
-import LuaMode from './mode/lua';
 
 class CommandService {
   constructor() {
@@ -61,7 +59,8 @@ class KeyStroke {
     if (!this.osModifier.matches(event)) {
       return false;
     }
-    return event.key === this.key;
+    // KeyboardEvent.key is 'Enter'; Ace bindings historically used 'enter'.
+    return event.key.toLowerCase() === this.key.toLowerCase();
   }
 }
 
@@ -69,23 +68,6 @@ class KeyBinding {
   constructor(keystroke, commandId) {
     this.keystroke = keystroke;
     this.commandId = commandId;
-  }
-
-  get aceCommand() {
-    const name = this.commandId;
-    return {
-      name,
-      bindKey: {
-        win: this.keystroke.osModKey('win'),
-        mac: this.keystroke.osModKey('mac'),
-      },
-      exec: () => {
-        const command = commandService.commands.get(name);
-        if (command) {
-          command();
-        }
-      },
-    };
   }
 }
 
@@ -128,37 +110,45 @@ keyService.bindings = [
   new KeyBinding(new KeyStroke(Modifier.CMD, 'enter'), 'eval'),
 ];
 
-class TextMode extends EditorMode {
-  constructor() {
-    super('text');
-    // https://github.com/monome/maiden/issues/129
-    this.enableSnippets = false;
+/** Persisted editor.json values for vim/emacs (kept for existing configs). */
+export const KEYBOARD_VIM = 'ace/keyboard/vim';
+export const KEYBOARD_EMACS = 'ace/keyboard/emacs';
+
+export function keyboardModeFromHandler(keyBoardHandler) {
+  if (keyBoardHandler === KEYBOARD_VIM) {
+    return 'vim';
   }
+  if (keyBoardHandler === KEYBOARD_EMACS) {
+    return 'emacs';
+  }
+  return 'default';
 }
 
-class JsonMode extends EditorMode {
-  constructor() {
-    super('json');
-    this.enableSnippets = false;
+const EXTENSION_LANGUAGE = {
+  lua: 'lua',
+  md: 'markdown',
+  markdown: 'markdown',
+  json: 'json',
+  yaml: 'yaml',
+  yml: 'yaml',
+  sh: 'shell',
+  bash: 'shell',
+};
+
+export function languageIdForFileName(fileName) {
+  if (!fileName) {
+    return 'plaintext';
   }
+  const match = fileName.toLowerCase().match(/\.([^.\\/]+)$/);
+  if (!match) {
+    return 'plaintext';
+  }
+  return EXTENSION_LANGUAGE[match[1]] || 'plaintext';
 }
 
 class EditorService {
-  constructor() {
-    this.luaMode = new LuaMode();
-    this.textMode = new TextMode();
-    this.jsonMode = new JsonMode();
-  }
-  getMode(fileName) {
-    if (fileName) {
-      if (fileName.endsWith('.lua')) {
-        return this.luaMode;
-      } else if (fileName.endsWith('.json')) {
-        return this.jsonMode;
-      }
-    }
-    // fall back to a simple text mode for non-lua files.
-    return this.textMode;
+  getLanguageId(fileName) {
+    return languageIdForFileName(fileName);
   }
 }
 
