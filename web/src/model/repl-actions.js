@@ -87,7 +87,7 @@ export const replEndpoints = cb => dispatch => {
   });
 };
 
-export const replDisconnect = (component) => (dispatch, getState) => {
+export const replDisconnect = component => (dispatch, getState) => {
   const existing = getState().repl.connections.get(component);
   if (!existing) return;
   const socket = existing.get('socket');

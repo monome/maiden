@@ -45,6 +45,9 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundReplActivity = connect(mapStateToProps, mapDispatchToProps)(ReplActivity);
+const BoundReplActivity = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ReplActivity);
 
 export default BoundReplActivity;

@@ -206,6 +206,9 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundEditActivity = connect(mapStateToProps, mapDispatchToProps)(EditActivity);
+const BoundEditActivity = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(EditActivity);
 
 export default BoundEditActivity;

@@ -37,7 +37,11 @@ const ProjectInfo = props => {
       </a>
     );
   } else {
-    title = <span className="project-info-name">{name} / {author}</span>;
+    title = (
+      <span className="project-info-name">
+        {name} / {author}
+      </span>
+    );
   }
 
   let documentation;

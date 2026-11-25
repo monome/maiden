@@ -73,6 +73,9 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundProjectActivity = connect(mapStateToProps, mapDispatchToProps)(ProjectActivity);
+const BoundProjectActivity = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ProjectActivity);
 
 export default BoundProjectActivity;

@@ -56,11 +56,7 @@ class HelpButton extends Component {
     const { open } = this.state;
 
     return (
-      <div
-        className="help-button"
-        onMouseEnter={this.handleEnter}
-        onMouseLeave={this.handleLeave}
-      >
+      <div className="help-button" onMouseEnter={this.handleEnter} onMouseLeave={this.handleLeave}>
         <div className="help-button-menu">?</div>
         {open && (
           <div className="help-button-popup-panel">

@@ -3,12 +3,7 @@ import { initVimMode } from 'monaco-vim';
 import { EmacsExtension } from 'monaco-emacs';
 
 import api from './api';
-import {
-  commandService,
-  editorService,
-  keyService,
-  keyboardModeFromHandler,
-} from './services';
+import { commandService, editorService, keyService, keyboardModeFromHandler } from './services';
 import { ensureMonaco } from './monaco-setup';
 import { themeNameForEditorTheme } from './theme/maiden-themes';
 
@@ -17,8 +12,7 @@ import './editor.css';
 // Match Ace's default editor chrome (font stack + normal line-height at 12px).
 const EDITOR_FONT_SIZE = 12;
 const EDITOR_LINE_HEIGHT = 16;
-const EDITOR_FONT_FAMILY =
-  'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace';
+const EDITOR_FONT_FAMILY = 'Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace';
 
 /** Badge labels for vim modes we surface (visual stays unmarked). */
 function vimBadgeLabel(modeName) {
@@ -165,7 +159,6 @@ class Editor extends Component {
     ) {
       this.applyEditorOptions(this.props.editorOptions);
     }
-
   }
 
   componentWillUnmount() {

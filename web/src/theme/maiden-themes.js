@@ -26,7 +26,18 @@ const light = {
   editorFg: '#080808',
 };
 
-function chromeColors({ background, surface, highlighted, selected, selectedSolid, medium, heavy, trim, editorFg, hover }) {
+function chromeColors({
+  background,
+  surface,
+  highlighted,
+  selected,
+  selectedSolid,
+  medium,
+  heavy,
+  trim,
+  editorFg,
+  hover,
+}) {
   const focus = selectedSolid || selected || hover || highlighted;
   return {
     'editor.background': background,

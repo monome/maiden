@@ -142,7 +142,10 @@ const repl = (state = initialReplState, action) => {
         ...state,
         connections: state.connections.set(action.component, conn.merge(changes)),
         buffers: state.buffers.set(action.component, new List()),
-        history: state.history.set(action.component, new List(loadHistoryFromLocalStorage(action.component))),
+        history: state.history.set(
+          action.component,
+          new List(loadHistoryFromLocalStorage(action.component)),
+        ),
       };
 
     case REPL_RECEIVE:

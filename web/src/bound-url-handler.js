@@ -53,5 +53,8 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundUrlHandler = connect(mapStateToProps, mapDispatchToProps)(UrlHandler);
+const BoundUrlHandler = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(UrlHandler);
 export default BoundUrlHandler;

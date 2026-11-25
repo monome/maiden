@@ -17,6 +17,9 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundConfigureActivity = connect(mapStateToProps, mapDispatchToProps)(ConfigureActivity);
+const BoundConfigureActivity = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ConfigureActivity);
 
 export default BoundConfigureActivity;

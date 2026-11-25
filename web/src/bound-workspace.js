@@ -44,6 +44,9 @@ const mapDispatchToProps = dispatch => ({
   },
 });
 
-const BoundWorkspace = connect(mapStateToProps, mapDispatchToProps)(Workspace);
+const BoundWorkspace = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Workspace);
 
 export default BoundWorkspace;

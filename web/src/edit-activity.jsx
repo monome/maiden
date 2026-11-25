@@ -20,7 +20,9 @@ const resourceBasename = resource => {
   if (!resource) {
     return '';
   }
-  const parts = String(resource).split('/').filter(Boolean);
+  const parts = String(resource)
+    .split('/')
+    .filter(Boolean);
   return parts[parts.length - 1] || resource;
 };
 
