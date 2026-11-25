@@ -75,6 +75,21 @@
     justify-content: center;
 }
 
+.spinner {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 3px solid #F1F1F1;
+    border-top-color: #979797;
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+@keyframes spinner-rotate {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .landing-pane {
     color: var(--neutral-medium-default);
     background-color: var(--neutral-surface-default);

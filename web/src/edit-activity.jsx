@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
 import ReactAudioPlayer from 'react-audio-player';
-import { ImpulseSpinner } from 'react-spinners-kit';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
@@ -357,7 +356,7 @@ class EditActivity extends Component {
 
     const loading = (
       <div className="spinner-pane">
-        <ImpulseSpinner frontColor="#979797" backColor="#F1F1F1" loading />
+        <div className="spinner" />
       </div>
     );
 
