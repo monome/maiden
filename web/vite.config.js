@@ -81,6 +81,21 @@ export default defineConfig(({ mode }) => {
     base: "/maiden/",
     build: {
       outDir: 'build',
+      // Vite 8 / rolldown: treat source .js as JSX (maiden keeps JSX in .js files).
+      rolldownOptions: {
+        moduleTypes: {
+          '.js': 'jsx',
+        },
+      },
+    },
+    // Same mapping for the dependency scanner; without it, optimizeDeps fails on
+    // JSX in .js and skips pre-bundling.
+    optimizeDeps: {
+      rolldownOptions: {
+        moduleTypes: {
+          '.js': 'jsx',
+        },
+      },
     },
     server: {
       port: 5001,
