@@ -2,9 +2,10 @@
 
 ## editor
 
-maiden uses an embedded [ace editor](https://ace.c9.io/) and supports its
-default keybindings. a full list of default shortcuts can be found on the [ace
-wiki](https://github.com/ajaxorg/ace/wiki/Default-Keyboard-Shortcuts).
+maiden uses an embedded [monaco editor](https://microsoft.github.io/monaco-editor/)
+and supports its default (VS Code–style) keybindings. a full list of default
+shortcuts can be found in the [VS Code keyboard shortcuts
+reference](https://code.visualstudio.com/docs/editor/codebasics#_keyboard-shortcuts).
 
 a few useful ones include:
 
@@ -12,8 +13,8 @@ a few useful ones include:
 |:----|:-------------:| :------|
 | ⌘ f | ctrl+f | find |
 | ⌘ / | ctrl+/ | toggle comment |
-| ⌘ d | ctrl+d | remove line |
-| ⌘ shift d | ctrl+shift+d | duplicate line |
+| ⌘ d | ctrl+d | add selection to next find match |
+| ⌘ shift d | ctrl+shift+d | (unbound by default; use ⌘⇧K / ctrl+shift+k to delete line) |
 | tab | tab | indent |
 | shift+tab | shift+tab | outdent |
 | ctrl+space | ctrl+space | see code completions, snippets |
@@ -33,5 +34,6 @@ in addition, some  common maiden actions also have shortcuts.  in particular:
 | ⌘ ; | ctrl+; | open the configuration page |
 | ⌘ s | ctrl+s | save script |
 | ⌘ p | ctrl+p | run script |
+| ⌘ enter / ⌘ 8 | ctrl+enter / ctrl+8 | evaluate selection (or current line) |
 
 with more to come!
