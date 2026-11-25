@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import SplitPane from 'react-split-pane';
-import ReactAudioPlayer from 'react-audio-player';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
 import IconButton from './icon-button';
 import ModalContent from './modal-content';
+import AudioListener from './audio-listener';
 import { ICONS } from './svg-icons';
 import { commandService } from './services';
 import OS from './utils';
@@ -348,11 +348,12 @@ class EditActivity extends Component {
       </div>
     );
 
-    const listener = (
-      <div className="listener-pane">
-        <ReactAudioPlayer className="listener-container" src={activeBuffer} autoPlay controls />
-      </div>
-    );
+    const listener =
+      buffer && canListen ? (
+        <div className="listener-pane">
+          <AudioListener key={activeBuffer} blob={buffer.get('value')} />
+        </div>
+      ) : null;
 
     const loading = (
       <div className="spinner-pane">
