@@ -1,5 +1,80 @@
 // Dark tokens from the previous Ace "norns_dark" / Tomorrow Night theme.
-// Light tokens follow Ace Dawn, with chrome colors from maiden CSS variables.
+// Light tokens follow Ace Dawn, with chrome colors from maiden CSS variables
+// in index.css (--neutral-*).
+
+const dark = {
+  background: '#1D1F21', // --neutral-background-default
+  surface: '#25282C', // --neutral-surface-default
+  highlighted: '#1F2123', // --neutral-surface-highlighted
+  selected: '#4B4231', // --neutral-surface-selected
+  medium: '#969896', // --neutral-medium-default
+  heavy: '#AAAAAA', // --neutral-heavy-default
+  trim: '#333333', // --neutral-trim-default
+  editorFg: '#C5C8C6',
+  hover: '#444444', // --interactive-surface-hover
+};
+
+const light = {
+  background: '#F4F4F4', // --neutral-background-default
+  surface: '#f7f7f7', // --neutral-surface-default
+  highlighted: '#f0f0f0', // --neutral-surface-highlighted
+  selected: '#89b5f14f', // --neutral-surface-selected
+  selectedSolid: '#d3d3d3', // --interactive-surface-hover (opaque menu hover)
+  medium: '#757575', // --neutral-medium-default
+  heavy: '#434351', // --neutral-heavy-default
+  trim: '#DADADA', // --neutral-trim-default
+  editorFg: '#080808',
+};
+
+function chromeColors({ background, surface, highlighted, selected, selectedSolid, medium, heavy, trim, editorFg, hover }) {
+  const focus = selectedSolid || selected || hover || highlighted;
+  return {
+    'editor.background': background,
+    'editor.foreground': editorFg,
+    'editorLineNumber.foreground': medium,
+    'editorGutter.background': surface,
+    'editor.lineHighlightBackground': highlighted,
+    'editor.selectionBackground': selected,
+    'editorLineNumber.activeForeground': editorFg,
+    'editorWidget.background': surface,
+    'editorWidget.foreground': medium,
+    'editorWidget.border': trim,
+    'editorSuggestWidget.background': surface,
+    'editorSuggestWidget.foreground': medium,
+    'editorSuggestWidget.border': trim,
+    'editorSuggestWidget.selectedBackground': focus,
+    'editorHoverWidget.background': surface,
+    'editorHoverWidget.foreground': medium,
+    'editorHoverWidget.border': trim,
+    // Context menu — foreground matches file explorer (--neutral-medium-default)
+    'menu.background': surface,
+    'menu.foreground': medium,
+    'menu.separatorBackground': trim,
+    'menu.border': trim,
+    'menu.selectionBackground': focus,
+    'menu.selectionForeground': medium,
+    // Command palette / quick input
+    'quickInput.background': surface,
+    'quickInput.foreground': medium,
+    'quickInputTitle.background': highlighted,
+    'quickInputList.focusBackground': focus,
+    'quickInputList.focusForeground': medium,
+    'pickerGroup.foreground': medium,
+    'pickerGroup.border': trim,
+    'keybindingLabel.background': highlighted,
+    'keybindingLabel.foreground': medium,
+    'keybindingLabel.border': trim,
+    'keybindingLabel.bottomBorder': trim,
+    'input.background': background,
+    'input.foreground': medium,
+    'input.border': trim,
+    'list.hoverBackground': highlighted,
+    'list.activeSelectionBackground': focus,
+    'list.activeSelectionForeground': medium,
+    'list.focusBackground': focus,
+    'list.focusForeground': medium,
+  };
+}
 
 export function defineMaidenThemes(monaco) {
   monaco.editor.defineTheme('maiden-dark', {
@@ -23,22 +98,10 @@ export function defineMaidenThemes(monaco) {
       { token: 'operator', foreground: '8ABEB7' },
     ],
     colors: {
-      'editor.background': '#1D1F21',
-      'editor.foreground': '#C5C8C6',
-      'editorLineNumber.foreground': '#C5C8C6',
-      'editorGutter.background': '#25282C',
+      ...chromeColors({ ...dark, selectedSolid: dark.selected }),
       'editorCursor.foreground': '#AEAFAD',
-      'editor.selectionBackground': '#373B41',
-      'editor.lineHighlightBackground': '#282A2E',
-      'editorLineNumber.activeForeground': '#C5C8C6',
       'editorIndentGuide.background': '#4B4E55',
       'editorWhitespace.foreground': '#4B4E55',
-      'editorWidget.background': '#2f3135',
-      'editorSuggestWidget.background': '#2f3135',
-      'editorSuggestWidget.foreground': '#f9f9f9',
-      'editorSuggestWidget.selectedBackground': '#0c41867c',
-      'editorHoverWidget.background': '#2f3135',
-      'editorHoverWidget.foreground': '#f5f5f5',
     },
   });
 
@@ -59,17 +122,7 @@ export function defineMaidenThemes(monaco) {
       { token: 'tag', foreground: '794938' },
       { token: 'attribute.name', foreground: '994D95' },
     ],
-    colors: {
-      'editor.background': '#F4F4F4',
-      'editor.foreground': '#080808',
-      'editorLineNumber.foreground': '#757575',
-      'editorGutter.background': '#f7f7f7',
-      'editor.lineHighlightBackground': '#f0f0f0',
-      'editor.selectionBackground': '#89b5f14f',
-      'editorWidget.background': '#FFFFFF',
-      'editorSuggestWidget.background': '#FFFFFF',
-      'editorHoverWidget.background': '#FFFFFF',
-    },
+    colors: chromeColors(light),
   });
 }
 

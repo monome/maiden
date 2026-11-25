@@ -95,3 +95,28 @@
 .monaco-editor .find-widget {
     z-index: 40;
 }
+
+/*
+ * Command palette lives in the light DOM — style it here. Context menu lives
+ * in Monaco's `.shadow-root-host` shadow tree (see monaco-setup.js); document
+ * CSS cannot set its font, only these light-DOM widgets.
+ */
+.quick-input-widget,
+.quick-input-widget .quick-input-filter,
+.quick-input-widget .monaco-inputbox,
+.quick-input-widget .monaco-inputbox input,
+.quick-input-widget input,
+.quick-input-widget .monaco-list,
+.quick-input-widget .monaco-list-row,
+.quick-input-widget .monaco-keybinding,
+.quick-input-widget .monaco-keybinding > * {
+    font-family: monospace !important;
+}
+
+.quick-input-widget {
+    border: 1px solid var(--neutral-trim-default) !important;
+    border-radius: 4px;
+    overflow: hidden;
+    /* Maiden modals are flat; drop Monaco's default elevated shadow. */
+    box-shadow: none !important;
+}
