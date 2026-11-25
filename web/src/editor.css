@@ -81,11 +81,11 @@
 
 /*
  * Inset text from the gutter's right edge (editor canvas, not gutter chrome).
- * Use px so lines-content and view-overlays stay aligned — those nodes do not
- * share the same font-size, so em would diverge. 3px = 0.25em at fontSize 12.
+ * Pad only `.lines-content` — `.view-overlays` (selection, current line) is a
+ * child of it, so padding both double-shifts the selection under the glyphs.
+ * 3px = 0.25em at fontSize 12.
  */
-.monaco-editor .lines-content,
-.monaco-editor .view-overlays {
+.monaco-editor .lines-content {
     padding-left: 3px !important;
 }
 
