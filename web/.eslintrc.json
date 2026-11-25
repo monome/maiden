@@ -4,7 +4,6 @@
     "rules": {
         "arrow-parens": "off",
         "function-paren-newline": "off",
-        "react/jsx-filename-extension": [1, {"extensions": [".js"]}],
         //TODO: audit (maiden/issues/55)
         "class-methods-use-this": "off",
         "no-unused-vars": ["error", {"args": "after-used", "argsIgnorePattern": "^_"}],
