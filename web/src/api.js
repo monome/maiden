@@ -1,4 +1,4 @@
-import parsePath from 'parse-filepath';
+import parsePath from './path-utils';
 
 const API_ROOT = '/api/v1';
 

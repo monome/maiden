@@ -1,5 +1,5 @@
 import { Map, List, fromJS } from 'immutable';
-import parsePath from 'parse-filepath';
+import parsePath from '../path-utils';
 
 export const keyPathForResource = (listing, resource) => {
   const walk = (nodes, acc) => {

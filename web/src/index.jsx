@@ -1,19 +1,15 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'connected-react-router';
 import './index.css';
 import App from './app';
-import store, { history } from './model/store';
+import store from './model/store';
 
 // https://stackoverflow.com/questions/39962757/prevent-scrolling-using-css-on-react-rendered-components
 document.body.style.overflow = 'hidden';
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <App />
-    </ConnectedRouter>
+    <App />
   </Provider>,
-  document.getElementById('root'),
 );

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
-import { push as pushHistory } from 'connected-react-router';
 import EditActivity from './edit-activity';
+import { push as pushHistory } from './model/router';
 import { MATRON_COMPONENT, UNTITLED_SCRIPT, USER_DATA_PATH } from './constants';
 import { nodeForResource } from './model/listing';
 import api, { DUST_CODE_RESOURCE } from './api';
