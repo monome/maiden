@@ -14,7 +14,7 @@ known compatible versions:
 tool | version
 -----|--------
 node.js | 22
-yarn | 1.22.22
+yarn | 4.19.0
 
 ## running
 
