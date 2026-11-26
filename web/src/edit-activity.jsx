@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import SplitPane from 'react-split-pane';
+import { Group, Panel, Separator } from 'react-resizable-panels';
 import Explorer from './explorer';
 import Editor from './editor';
 import ToolBar from './tool-bar';
@@ -77,6 +77,47 @@ class EditActivity extends Component {
       sidebarWidth: props.ui.sidebarWidth,
       replHeight: props.ui.replHeight,
     };
+
+    // defaultSize must stay stable: react-resizable-panels re-registers the panel
+    // when it changes, which cancels an in-progress drag.
+    this.sidebarDefaultSize = props.ui.sidebarHidden ? 1 : props.ui.sidebarWidth;
+    this.replDefaultSize = props.ui.replHidden ? 0 : props.ui.replHeight;
+    this.sidebarPanelRef = React.createRef();
+    this.replPanelRef = React.createRef();
+  }
+
+  syncCollapsedPanels() {
+    const sidebarPanel = this.sidebarPanelRef.current;
+    if (sidebarPanel) {
+      if (this.props.ui.sidebarHidden) {
+        sidebarPanel.collapse();
+      } else if (sidebarPanel.isCollapsed()) {
+        sidebarPanel.expand();
+        sidebarPanel.resize(this.state.sidebarWidth);
+      }
+    }
+    const replPanel = this.replPanelRef.current;
+    if (replPanel) {
+      if (this.props.ui.replHidden) {
+        replPanel.collapse();
+      } else if (replPanel.isCollapsed()) {
+        replPanel.expand();
+        replPanel.resize(this.state.replHeight);
+      }
+    }
+  }
+
+  componentDidMount() {
+    this.syncCollapsedPanels();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.ui.sidebarHidden !== this.props.ui.sidebarHidden ||
+      prevProps.ui.replHidden !== this.props.ui.replHidden
+    ) {
+      this.syncCollapsedPanels();
+    }
   }
 
   componentWillReceiveProps(newProps) {
@@ -103,26 +144,8 @@ class EditActivity extends Component {
     }
   }
 
-  sidebarSplitSizing() {
-    return {
-      size: this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth,
-      minSize: this.props.ui.sidebarMinWidth,
-      defaultSize: this.props.ui.sidebarWidth,
-      maxSize: this.props.ui.sidebarMaxWidth,
-    };
-  }
-
   getSidebarWidth() {
     return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
-  }
-
-  replSplitSizing() {
-    return {
-      size: this.props.ui.replHidden ? 0 : this.state.replHeight,
-      minSize: this.props.ui.replMinHeight,
-      defaultSize: this.props.ui.replMinHeight,
-      maxSize: this.props.height - this.props.ui.editorMinHeight,
-    };
   }
 
   getEditorHeight() {
@@ -160,28 +183,38 @@ class EditActivity extends Component {
     };
   }
 
-  handleSidebarSplitChange = size => {
-    if (size <= this.props.ui.sidebarMinWidth && this.props.ui.sidebarHidden) {
-      // it is hidden so allow resize to reveal
+  handleSidebarResize = panelSize => {
+    const size = panelSize.inPixels;
+    if (this.props.ui.sidebarHidden && size > 1) {
+      // reveal when dragging out of the collapsed strip
       this.props.sidebarToggle();
     }
-    this.setState({
-      sidebarWidth: size,
-    });
+    if (size > 1) {
+      this.setState({
+        sidebarWidth: size,
+      });
+    }
   };
 
-  handleSidebarSplitDragFinish = () => {
-    this.props.sidebarSize(this.state.sidebarWidth);
+  handleSidebarLayoutChanged = (_layout, meta) => {
+    if (meta.isUserInteraction && this.state.sidebarWidth > 1) {
+      this.props.sidebarSize(this.state.sidebarWidth);
+    }
   };
 
-  handleReplSplitChange = size => {
-    this.setState({
-      replHeight: size,
-    });
+  handleReplResize = panelSize => {
+    const size = panelSize.inPixels;
+    if (size > 0) {
+      this.setState({
+        replHeight: size,
+      });
+    }
   };
 
-  handleReplSplitDragFinish = () => {
-    this.props.replSize(this.state.replHeight);
+  handleReplLayoutChanged = (_layout, meta) => {
+    if (meta.isUserInteraction && this.state.replHeight > 0) {
+      this.props.replSize(this.state.replHeight);
+    }
   };
 
   getActiveBuffer = () => this.props.buffers.get(this.props.activeBuffer);
@@ -396,47 +429,84 @@ class EditActivity extends Component {
       element = landing;
     }
 
+    const { ui } = this.props;
+    // Panel defaults to overflow:auto via inline style; only the style prop overrides it.
+    const panelStyle = { overflow: 'hidden' };
+
     return (
-      <SplitPane
-        split="vertical"
+      <Group
+        orientation="horizontal"
+        className="edit-activity-split"
         style={sidebarSplitStyle}
-        {...this.sidebarSplitSizing()}
-        onChange={this.handleSidebarSplitChange}
-        onDragFinished={this.handleSidebarSplitDragFinish}
-        paneClassName="editor-pane-common"
+        onLayoutChanged={this.handleSidebarLayoutChanged}
       >
-        <Explorer
-          className="explorer-container"
-          hidden={this.props.ui.sidebarHidden}
-          style={explorerStyle}
-          data={this.props.explorerData}
-          bufferSelect={this.props.bufferSelect}
-          directoryRead={this.props.directoryRead}
-          directoryCreate={this.props.explorerDirectoryCreate}
-          scriptCreate={this.props.explorerScriptNew}
-          scriptDuplicate={this.props.explorerScriptDuplicate}
-          resourceDelete={this.props.explorerResourceDelete}
-          resourceRename={this.handleResourceRename}
-          collapsedCategories={this.props.collapsedCategories}
-          explorerToggleCategory={this.props.explorerToggleCategory}
-          explorerToggleNode={this.props.explorerToggleNode}
-          explorerActiveNode={this.props.explorerActiveNode}
-          activeBuffer={activeBuffer}
-          activeNode={this.props.activeNode}
-          showModal={this.props.showModal}
-          hideModal={this.props.hideModal}
-        />
-        <SplitPane
-          split="horizontal"
-          primary="second"
-          {...this.replSplitSizing()}
-          onChange={this.handleReplSplitChange}
-          onDragFinished={this.handleReplSplitDragFinish}
+        <Panel
+          id="sidebar"
+          className="editor-pane-common"
+          style={panelStyle}
+          panelRef={this.sidebarPanelRef}
+          collapsible
+          collapsedSize={1}
+          defaultSize={this.sidebarDefaultSize}
+          minSize={ui.sidebarMinWidth}
+          maxSize={ui.sidebarMaxWidth}
+          onResize={this.handleSidebarResize}
         >
-          {element}
-          <ReplActivity {...this.replSize()} />
-        </SplitPane>
-      </SplitPane>
+          <Explorer
+            className="explorer-container"
+            hidden={ui.sidebarHidden}
+            style={explorerStyle}
+            data={this.props.explorerData}
+            bufferSelect={this.props.bufferSelect}
+            directoryRead={this.props.directoryRead}
+            directoryCreate={this.props.explorerDirectoryCreate}
+            scriptCreate={this.props.explorerScriptNew}
+            scriptDuplicate={this.props.explorerScriptDuplicate}
+            resourceDelete={this.props.explorerResourceDelete}
+            resourceRename={this.handleResourceRename}
+            collapsedCategories={this.props.collapsedCategories}
+            explorerToggleCategory={this.props.explorerToggleCategory}
+            explorerToggleNode={this.props.explorerToggleNode}
+            explorerActiveNode={this.props.explorerActiveNode}
+            activeBuffer={activeBuffer}
+            activeNode={this.props.activeNode}
+            showModal={this.props.showModal}
+            hideModal={this.props.hideModal}
+          />
+        </Panel>
+        <Separator className="edit-activity-separator edit-activity-separator-vertical" />
+        <Panel id="main" className="editor-pane-common" style={panelStyle}>
+          <Group
+            orientation="vertical"
+            className="edit-activity-split"
+            style={{ height: '100%', width: '100%' }}
+            onLayoutChanged={this.handleReplLayoutChanged}
+          >
+            <Panel
+              id="editor"
+              className="editor-pane-common"
+              style={panelStyle}
+              minSize={ui.editorMinHeight}
+            >
+              {element}
+            </Panel>
+            <Separator className="edit-activity-separator edit-activity-separator-horizontal" />
+            <Panel
+              id="repl"
+              className="editor-pane-common"
+              style={panelStyle}
+              panelRef={this.replPanelRef}
+              collapsible
+              collapsedSize={0}
+              defaultSize={this.replDefaultSize}
+              minSize={ui.replMinHeight}
+              onResize={this.handleReplResize}
+            >
+              <ReplActivity {...this.replSize()} />
+            </Panel>
+          </Group>
+        </Panel>
+      </Group>
     );
   }
 }
