@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { decorators, Treebeard } from 'react-treebeard';
 import cx from 'classname';
+import Tree, { decorators } from './components/tree';
 import treeStyle from './explorer-style';
-import treeAnim from './explorer-animation';
 import './explorer.css';
 
 import ModalContent from './modal-content';
@@ -25,12 +24,15 @@ const TreeHeader = props => {
 
 const TreeToggle = ({ style }) => {
   const { height, width } = style;
+  // Base inset so the triangle centroid sits at the SVG center; rotate(90deg)
+  // then keeps the open (down) state aligned with the label.
+  const baseX = (3 * (width / 2) - width) / 2; // => width/4 for square icons
   const midHeight = height * 0.5;
-  const points = `0,0 0,${height} ${width},${midHeight}`;
+  const points = `${baseX},0 ${baseX},${height} ${width},${midHeight}`;
 
   return (
-    <span className="explorer-tree-toggle" style={style.base}>
-      <svg height={height} width={width}>
+    <span style={style.base}>
+      <svg height={height} width={width} style={{ display: 'block' }}>
         <polygon points={points} style={style.arrow} />
       </svg>
     </span>
@@ -290,9 +292,8 @@ class Section extends Component {
     let tree;
     if (!isCollapsed) {
       tree = (
-        <Treebeard
+        <Tree
           style={treeStyle}
-          animations={treeAnim}
           data={data}
           onToggle={this.onToggle}
           decorators={explorerDecorators}

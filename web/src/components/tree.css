@@ -1,0 +1,37 @@
+.explorer-tree-toggle,
+.explorer-tree-toggle-spacer {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 8px;
+    height: 8px;
+    margin-left: -8px;
+    margin-right: 3px;
+    line-height: 0;
+}
+
+.explorer-tree-toggle {
+    transition: transform 100ms ease;
+    transform: rotate(0deg);
+    transform-origin: 50% 50%;
+}
+
+.explorer-tree-toggle.toggled {
+    transform: rotate(90deg);
+}
+
+.explorer-tree-subtree {
+    animation: explorer-tree-slide-down 100ms ease;
+}
+
+@keyframes explorer-tree-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
