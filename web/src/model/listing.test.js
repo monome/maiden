@@ -8,7 +8,7 @@ import {
   spliceNodes,
   keyPathParent,
   virtualRoot,
-  orderByName,
+  orderByTypeThenName,
 } from './listing';
 
 // keyPath data
@@ -204,7 +204,13 @@ it('splice nodes works on all levels', () => {
 
   // expect(spliceNodes(new List(), new List([n0]))).toEqual(new List([n0]))
 
-  const r0 = root.setIn([0, 'children', 2], n0);
+  const r0 = root.setIn(
+    [0, 'children'],
+    root
+      .getIn([0, 'children'])
+      .push(n0)
+      .sort(orderByTypeThenName),
+  );
   expect(spliceNodes(root, new List([n0]))).toEqual(r0);
 
   // splice in existing is a no-op
@@ -235,14 +241,14 @@ it('splice nodes works for directories', () => {
   const c0 = root
     .getIn([0, 'children'])
     .push(d0)
-    .sort(orderByName);
+    .sort(orderByTypeThenName);
   const r0 = root.setIn([0, 'children'], c0);
   expect(spliceNodes(root, new List([d0]))).toEqual(r0);
 
   const c1 = root
     .getIn([0, 'children', 1, 'children'])
     .push(d1)
-    .sort(orderByName);
+    .sort(orderByTypeThenName);
   const r1 = root.setIn([0, 'children', 1, 'children'], c1);
   expect(spliceNodes(root, new List([d1]))).toEqual(r1);
 });
