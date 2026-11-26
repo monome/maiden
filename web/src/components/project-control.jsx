@@ -2,7 +2,7 @@ import React from 'react';
 
 import './project-control.css';
 
-const ProjectControl = props => {
+const ProjectControl = (props) => {
   const summary = props.children[0];
   const controls = props.children.slice(1);
 

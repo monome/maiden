@@ -126,7 +126,10 @@ const existing = fromJS([
   { name: 'untitled.lua', url: '/untitled.lua' },
 ]);
 
-const adds = fromJS([{ name: 'b.lua', url: '/b.lua' }, { name: 'a.lua', url: '/a.lua' }]);
+const adds = fromJS([
+  { name: 'b.lua', url: '/b.lua' },
+  { name: 'a.lua', url: '/a.lua' },
+]);
 
 it('append of empty list should be a no-op', () => {
   expect(appendNodes(existing, new List())).toEqual(existing);
@@ -206,10 +209,7 @@ it('splice nodes works on all levels', () => {
 
   const r0 = root.setIn(
     [0, 'children'],
-    root
-      .getIn([0, 'children'])
-      .push(n0)
-      .sort(orderByTypeThenName),
+    root.getIn([0, 'children']).push(n0).sort(orderByTypeThenName),
   );
   expect(spliceNodes(root, new List([n0]))).toEqual(r0);
 
@@ -238,17 +238,11 @@ it('splice nodes works for directories', () => {
     ]),
   );
 
-  const c0 = root
-    .getIn([0, 'children'])
-    .push(d0)
-    .sort(orderByTypeThenName);
+  const c0 = root.getIn([0, 'children']).push(d0).sort(orderByTypeThenName);
   const r0 = root.setIn([0, 'children'], c0);
   expect(spliceNodes(root, new List([d0]))).toEqual(r0);
 
-  const c1 = root
-    .getIn([0, 'children', 1, 'children'])
-    .push(d1)
-    .sort(orderByTypeThenName);
+  const c1 = root.getIn([0, 'children', 1, 'children']).push(d1).sort(orderByTypeThenName);
   const r1 = root.setIn([0, 'children', 1, 'children'], c1);
   expect(spliceNodes(root, new List([d1]))).toEqual(r1);
 });

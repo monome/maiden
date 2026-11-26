@@ -11,7 +11,7 @@ import { ICONS } from './svg-icons';
 import api, { isProtectedResource } from './api';
 import { USER_DATA_PATH } from './constants';
 
-const TreeHeader = props => {
+const TreeHeader = (props) => {
   const className = cx(
     'explorer-entry',
     'noselect',
@@ -46,10 +46,10 @@ const explorerDecorators = {
 };
 
 // TODO: turn this in a containing component called Section so that individual sections can be collapsed and expanded
-const SectionHeader = props => {
+const SectionHeader = (props) => {
   let buttons;
   if (props.showTools) {
-    buttons = props.tools.map(tool => (
+    buttons = props.tools.map((tool) => (
       <IconButton
         key={tool.name}
         tooltipMessage={tool.tooltipMessage}
@@ -113,7 +113,7 @@ class Section extends Component {
     this.props.explorerToggleCategory(this.getCategory());
   };
 
-  onToolClick = name => {
+  onToolClick = (name) => {
     console.log('activeNode: ', this.props.activeNode ? this.props.activeNode.toJS() : undefined);
     const selectedResource = this.props.activeNode ? this.props.activeNode.get('url') : undefined;
 
@@ -175,13 +175,13 @@ class Section extends Component {
     }
   };
 
-  handleRemove = selection => {
+  handleRemove = (selection) => {
     if (selection === undefined) {
       console.log('handleRemove: selection undefined?');
       return;
     }
 
-    const removeModalCompletion = choice => {
+    const removeModalCompletion = (choice) => {
       console.log('remove:', choice);
       if (choice === 'ok') {
         this.props.resourceDelete(selection.get('url'));
@@ -201,7 +201,7 @@ class Section extends Component {
     this.props.showModal(content);
   };
 
-  handleRename = selection => {
+  handleRename = (selection) => {
     if (selection === undefined) {
       console.log('handleRename: selection undefined?');
       return;
@@ -229,7 +229,7 @@ class Section extends Component {
     this.props.showModal(content);
   };
 
-  handleNewFolder = clickedNode => {
+  handleNewFolder = (clickedNode) => {
     // if no selected node, validate/create against root names
     // if selected node is file, validate/create against siblings name
     // if selected node is dir, validate/create against *children* of dir
@@ -278,7 +278,7 @@ class Section extends Component {
 
   getNode() {
     const category = this.getCategory();
-    return this.props.data.find(n => n.name === category);
+    return this.props.data.find((n) => n.name === category);
   }
 
   getCategory() {
@@ -306,7 +306,7 @@ class Section extends Component {
     // console.log("treeHeight=", headerHeight, treeHeight, this.props.style);
 
     return (
-      <div className="explorer-section" ref={elem => (this.section = elem)}>
+      <div className="explorer-section" ref={(elem) => (this.section = elem)}>
         <SectionHeader
           style={{ height: headerHeight }}
           name={this.props.name}
@@ -358,7 +358,7 @@ class Explorer extends Component {
     return (
       <div
         className={`explorer${this.props.hidden ? ' hidden' : ''}`} // FIXME: change this to use classname
-        ref={elem => (this.explorer = elem)}
+        ref={(elem) => (this.explorer = elem)}
       >
         <Section
           name="files"

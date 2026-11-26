@@ -37,24 +37,21 @@ class UrlHandler extends Component {
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { hash } = state.router.location;
   return {
     pathname: hash && hash[0] === '#' ? hash.substring(1) : '',
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  bufferSelect: resource => {
+const mapDispatchToProps = (dispatch) => ({
+  bufferSelect: (resource) => {
     dispatch(bufferSelect(resource));
   },
-  directoryReadRecursive: async resource => {
+  directoryReadRecursive: async (resource) => {
     dispatch(directoryReadRecursive(resource));
   },
 });
 
-const BoundUrlHandler = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(UrlHandler);
+const BoundUrlHandler = connect(mapStateToProps, mapDispatchToProps)(UrlHandler);
 export default BoundUrlHandler;

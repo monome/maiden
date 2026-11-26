@@ -33,9 +33,9 @@ export const REPL_UNIT_MAP_FAILURE = 'REPL_UNIT_MAP_FAILURE';
 
 export const replEndpointsRequest = () => ({ type: REPL_ENDPOINTS_REQUEST });
 
-export const replEndpointsSuccess = endpoints => ({ type: REPL_ENDPOINTS_SUCCESS, endpoints });
+export const replEndpointsSuccess = (endpoints) => ({ type: REPL_ENDPOINTS_SUCCESS, endpoints });
 
-export const replEndpointsFailure = error => ({ type: REPL_ENDPOINTS_FAILURE, error });
+export const replEndpointsFailure = (error) => ({ type: REPL_ENDPOINTS_FAILURE, error });
 
 export const replConnectDial = (component, endpoint) => ({
   type: REPL_CONNECT_DIAL,
@@ -53,7 +53,7 @@ export const replConnectFailure = (component, error) =>
   // console.log(error);
   ({ type: REPL_CONNECT_FAILURE, component, error });
 
-export const replConnectClose = component => ({ type: REPL_CONNECT_CLOSE, component });
+export const replConnectClose = (component) => ({ type: REPL_CONNECT_CLOSE, component });
 
 export const replReceive = (component, data) => ({ type: REPL_RECEIVE, component, data });
 
@@ -61,23 +61,23 @@ export const replSend = (component, value) => ({ type: REPL_SEND, component, val
 
 export const replEcho = (component, value) => ({ type: REPL_ECHO, component, value });
 
-export const replSelect = component => ({ type: REPL_SELECT, component });
+export const replSelect = (component) => ({ type: REPL_SELECT, component });
 
-export const replClear = component => ({ type: REPL_CLEAR, component });
+export const replClear = (component) => ({ type: REPL_CLEAR, component });
 
 export const unitMappingRequest = () => ({ type: REPL_UNIT_MAP_REQUEST });
 
-export const unitMappingSuccess = units => ({ type: REPL_UNIT_MAP_SUCCESS, units });
+export const unitMappingSuccess = (units) => ({ type: REPL_UNIT_MAP_SUCCESS, units });
 
-export const unitMappingFailure = error => ({ type: REPL_UNIT_MAP_SUCCESS, error });
+export const unitMappingFailure = (error) => ({ type: REPL_UNIT_MAP_SUCCESS, error });
 
 //
 // async actions
 //
 
-export const replEndpoints = cb => dispatch => {
+export const replEndpoints = (cb) => (dispatch) => {
   dispatch(replEndpointsRequest());
-  return api.getReplEndpoints(endpoints => {
+  return api.getReplEndpoints((endpoints) => {
     // FIXME: handle errors
     dispatch(replEndpointsSuccess(endpoints));
     if (cb) {
@@ -87,7 +87,7 @@ export const replEndpoints = cb => dispatch => {
   });
 };
 
-export const replDisconnect = component => (dispatch, getState) => {
+export const replDisconnect = (component) => (dispatch, getState) => {
   const existing = getState().repl.connections.get(component);
   if (!existing) return;
   const socket = existing.get('socket');
@@ -110,9 +110,9 @@ export const replConnect = (component, endpoint, retryCount) => (dispatch, getSt
   socket.onopen = () => {
     dispatch(replConnectSuccess(component, socket));
   };
-  socket.onerror = error => {
+  socket.onerror = (error) => {
     if (retryCount && retryCount > 0) {
-      const attempt = new Promise(resolve => setTimeout(resolve, 250));
+      const attempt = new Promise((resolve) => setTimeout(resolve, 250));
       attempt.then(() => {
         dispatch(replConnect(component, endpoint, retryCount - 1));
       });
@@ -123,14 +123,14 @@ export const replConnect = (component, endpoint, retryCount) => (dispatch, getSt
   socket.onclose = () => {
     dispatch(replConnectClose(component));
   };
-  socket.onmessage = event => {
+  socket.onmessage = (event) => {
     dispatch(replReceive(component, event.data));
   };
 };
 
-export const unitMapping = cb => dispatch => {
+export const unitMapping = (cb) => (dispatch) => {
   dispatch(unitMappingRequest());
-  return api.getUnitMapping(mapping => {
+  return api.getUnitMapping((mapping) => {
     dispatch(unitMappingSuccess(mapping));
     if (cb) {
       cb(mapping);
@@ -154,14 +154,14 @@ export const replInput = (component, value) => (dispatch, getState) => {
       dispatch(replReceive(component, 'starting...'));
       api.installProjectFromURL(
         projectURL,
-        successResponse => {
+        (successResponse) => {
           dispatch(projectInstallURLSuccess(successResponse, projectURL));
           dispatch(
             replReceive(component, `installed "${successResponse.catalog_entry.project_name}"!`),
           );
           dispatch(directoryRead(DUST_CODE_RESOURCE));
         },
-        failResponse => {
+        (failResponse) => {
           dispatch(projectInstallURLFailure(failResponse.error, projectURL));
           dispatch(replReceive(component, failResponse.error));
         },
@@ -170,7 +170,7 @@ export const replInput = (component, value) => (dispatch, getState) => {
       // default to assuming this is a unit operation
       const state = getState().repl;
       const unitName = state.units.get(component);
-      api.doUnitOperation(unitName, operation[0], response => {
+      api.doUnitOperation(unitName, operation[0], (response) => {
         if (response.result === 'done') {
           const endpoint = state.endpoints.get(component);
           dispatch(replConnect(component, endpoint, 4));

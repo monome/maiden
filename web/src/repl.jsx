@@ -43,7 +43,7 @@ class ReplOutput extends Component {
 
     // this.isScrolledBottom()
     return (
-      <div className="repl-output" ref={elem => (this.output = elem)}>
+      <div className="repl-output" ref={(elem) => (this.output = elem)}>
         {lines}
       </div>
     );
@@ -56,7 +56,7 @@ class ReplInput extends Component {
     this.historyIdx = 0;
   }
 
-  onKeyDown = event => {
+  onKeyDown = (event) => {
     let history;
 
     switch (event.keyCode) {
@@ -102,7 +102,7 @@ class ReplInput extends Component {
         <span className="label">&gt;&gt;</span>
         <textarea
           className="value"
-          ref={e => {
+          ref={(e) => {
             this.input = e;
           }}
           onKeyDown={this.onKeyDown}
@@ -118,7 +118,7 @@ class ReplInput extends Component {
 }
 
 class Repl extends Component {
-  sendCommand = text => {
+  sendCommand = (text) => {
     this.props.replSend(this.props.activeRepl, text);
   };
 

@@ -22,9 +22,7 @@ class IconButton extends Component {
     this.parsedColor = { h, s, l };
 
     // Stable id so hover re-renders (color change) do not break react-tooltip v5
-    this.tooltipId = `icon-button-${Math.random()
-      .toString(36)
-      .slice(2, 11)}`;
+    this.tooltipId = `icon-button-${Math.random().toString(36).slice(2, 11)}`;
 
     this.state = {
       color: this.color,

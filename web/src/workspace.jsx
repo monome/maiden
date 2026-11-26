@@ -26,7 +26,7 @@ class Workspace extends Component {
     this.props.loadEditorConfig();
 
     // MAINT: this is a bit odd here but we initiate the connections for the repl early so that any actions taken in the editor (or output from norns-main) is captured even if the repl isn't being displayed
-    this.props.replEndpoints(endpoints => {
+    this.props.replEndpoints((endpoints) => {
       endpoints.forEach((endpoint, component) => {
         this.props.replConnect(component, endpoint);
       });
@@ -39,7 +39,7 @@ class Workspace extends Component {
     this.registerCommands();
 
     // prevent accidental navigation out of maiden via swipe gestures
-    const preventNavigation = e => {
+    const preventNavigation = (e) => {
       let delta = e.deltaX || e.wheelDeltaX;
       if (!delta) {
         return;
@@ -61,13 +61,13 @@ class Workspace extends Component {
     document.addEventListener('mousewheel', preventNavigation);
 
     // direct key events to the key service for handling
-    document.onkeydown = event => keyService.handleKey(event);
+    document.onkeydown = (event) => keyService.handleKey(event);
   }
 
   registerCommands() {
     commandService.registerCommand('show config', () => {
       // TODO (pq): consider pushing find into a service.
-      const activity = activities.find(a => a.selector === 'configure');
+      const activity = activities.find((a) => a.selector === 'configure');
       this.handleActivitySelection(activity);
     });
   }
@@ -86,7 +86,7 @@ class Workspace extends Component {
     };
   }
 
-  handleActivitySelection = activity => {
+  handleActivitySelection = (activity) => {
     if (activity.selector === this.props.selected) {
       this.props.toggleComponent(activity.toggle);
     } else {
@@ -94,7 +94,7 @@ class Workspace extends Component {
     }
   };
 
-  handleShowModal = content => {
+  handleShowModal = (content) => {
     this.setState({
       showModal: true,
       modalContent: content,
@@ -112,7 +112,7 @@ class Workspace extends Component {
     this.props.toggleComponent('config');
   };
 
-  handleConfigModalAction = choice => {
+  handleConfigModalAction = (choice) => {
     if (choice === 'ok') {
       this.child.save();
     }
@@ -126,7 +126,7 @@ class Workspace extends Component {
       document.documentElement.removeAttribute('data-theme');
     }
 
-    const selectedActivity = this.props.activities.find(a => this.props.selected === a.selector);
+    const selectedActivity = this.props.activities.find((a) => this.props.selected === a.selector);
     const ActivityView = selectedActivity.view;
 
     return (
@@ -157,7 +157,7 @@ class Workspace extends Component {
           overlayClassName="workspace-modal-overlay"
         >
           <ModalContent message="configure" buttonAction={this.handleConfigModalAction}>
-            <BoundConfigureActivity onRef={ref => (this.child = ref)} />
+            <BoundConfigureActivity onRef={(ref) => (this.child = ref)} />
           </ModalContent>
         </ReactModal>
       </div>

@@ -28,8 +28,8 @@ export const snippets = {
 
 export function nornsSnippetCompletionItems(monaco, prefix = '') {
   return Object.keys(snippets)
-    .filter(word => !prefix || word.startsWith(prefix))
-    .map(word => ({
+    .filter((word) => !prefix || word.startsWith(prefix))
+    .map((word) => ({
       label: word,
       kind: monaco.languages.CompletionItemKind.Snippet,
       detail: 'norns',
@@ -57,7 +57,7 @@ export function registerNornsSnippetProvider(monaco) {
         endColumn: word.endColumn,
       };
       return {
-        suggestions: nornsSnippetCompletionItems(monaco, prefix).map(item => ({
+        suggestions: nornsSnippetCompletionItems(monaco, prefix).map((item) => ({
           ...item,
           range,
         })),

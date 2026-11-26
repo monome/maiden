@@ -9,11 +9,11 @@ import ProjectControl from './project-control';
 
 import './catalog.css';
 
-const Catalog = props => {
+const Catalog = (props) => {
   const { catalog, installedProjects } = props;
   const catalogURL = catalog.get('url');
 
-  const entries = catalog.get('entries').map(e => {
+  const entries = catalog.get('entries').map((e) => {
     const projectName = e.get('project_name');
     const projectURL = e.get('project_url');
     const key = `${projectName}-${projectURL || ''}`; // to silence warnings

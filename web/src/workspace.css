@@ -1,34 +1,34 @@
 .workspace {
-    display: flex;
+  display: flex;
 }
 
 .activity-bar {
-    flex: 0 0 auto;
+  flex: 0 0 auto;
 }
 
 .workspace-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 100;  /* above Monaco suggest/hover/find widgets */
-    background-color: var(--overlay-fill);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100; /* above Monaco suggest/hover/find widgets */
+  background-color: var(--overlay-fill);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .workspace-modal {
-    width: 70%;
-    margin: 40px;
-    border: 1px solid var(--neutral-trim-default);
-    border-radius: 4px;
-    background: var(--neutral-surface-default);
-    padding: 20px;
-    outline: none;
+  width: 70%;
+  margin: 40px;
+  border: 1px solid var(--neutral-trim-default);
+  border-radius: 4px;
+  background: var(--neutral-surface-default);
+  padding: 20px;
+  outline: none;
 
-    /* are these needed? */
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
+  /* are these needed? */
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }

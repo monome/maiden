@@ -17,8 +17,8 @@ const SYSTEM_RESTART_RECOMMENDATION = 'Run SYSTEM > RESTART to ensure engine cha
 
 class ProjectActivity extends Component {
   componentDidMount() {
-    this.props.getCatalogSummary(summary => {
-      summary.get('catalogs').forEach(detail => {
+    this.props.getCatalogSummary((summary) => {
+      summary.get('catalogs').forEach((detail) => {
         const url = detail.get('url');
         this.props.getCatalogByURL(url);
       });
@@ -26,11 +26,11 @@ class ProjectActivity extends Component {
     this.props.getProjectSummary();
   }
 
-  handleTabSelection = name => {
+  handleTabSelection = (name) => {
     this.props.projectViewSelect(name);
   };
 
-  handleRefreshAction = url => {
+  handleRefreshAction = (url) => {
     console.log('refreshing catalog', url);
 
     const refreshModal = (
@@ -41,18 +41,18 @@ class ProjectActivity extends Component {
 
     this.props.updateCatalog(
       url,
-      _ => {
+      (_) => {
         this.props.hideModal();
       },
-      failure => {
+      (failure) => {
         console.log('refresh-catalog failed', failure);
         this.props.showModal(this.informModalContent(`Refreshing catalog failed`, failure.error));
       },
     );
   };
 
-  handleRefreshAllAction = catalogSummary => {
-    const modalCompletion = choice => {
+  handleRefreshAllAction = (catalogSummary) => {
+    const modalCompletion = (choice) => {
       if (choice === 'ok') {
         this.props.updateAllCatalogs(catalogSummary, (successArr, failureArr) => {
           this.props.showModal(this.updateRefreshAllModalContent(successArr, failureArr));
@@ -87,7 +87,7 @@ class ProjectActivity extends Component {
           <br />
           <table>
             <tbody>
-              {successArr.map(e => (
+              {successArr.map((e) => (
                 <tr>
                   <td>{e.name}</td>
                 </tr>
@@ -109,7 +109,7 @@ class ProjectActivity extends Component {
           <br />
           <table>
             <tbody>
-              {failureArr.map(e => (
+              {failureArr.map((e) => (
                 <tr>
                   <td style={{ width: '100px' }}>{e.name}</td>
                   <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
@@ -141,7 +141,7 @@ class ProjectActivity extends Component {
     this.props.installProject(
       url,
       name,
-      _ => {
+      (_) => {
         // refresh project list
         this.props.getProjectSummary();
         this.props.refreshCodeDir();
@@ -149,7 +149,7 @@ class ProjectActivity extends Component {
           this.informModalContent(`Installed project: "${name}"`, SYSTEM_RESTART_RECOMMENDATION),
         );
       },
-      failure => {
+      (failure) => {
         console.log('install-project failed', failure);
         this.props.showModal(
           this.informModalContent(`Installing project "${name}" failed`, failure.error),
@@ -158,7 +158,7 @@ class ProjectActivity extends Component {
     );
   };
 
-  modalDismiss = _ => {
+  modalDismiss = (_) => {
     this.props.hideModal();
   };
 
@@ -184,7 +184,7 @@ class ProjectActivity extends Component {
           <br />
           <table>
             <tbody>
-              {successArr.map(e => (
+              {successArr.map((e) => (
                 <tr>
                   <td>{e.name}</td>
                 </tr>
@@ -221,7 +221,7 @@ class ProjectActivity extends Component {
           <br />
           <table>
             <tbody>
-              {failureArr.map(e => (
+              {failureArr.map((e) => (
                 <tr>
                   <td style={{ width: '100px' }}>{e.name}</td>
                   <td style={{ width: 'auto' }}>{e.failureResult.error}</td>
@@ -241,8 +241,8 @@ class ProjectActivity extends Component {
     );
   };
 
-  handleUpdateAllAction = projectList => {
-    const modalCompletion = choice => {
+  handleUpdateAllAction = (projectList) => {
+    const modalCompletion = (choice) => {
       if (choice === 'ok') {
         this.props.updateAllProjects(
           projectList,
@@ -253,7 +253,7 @@ class ProjectActivity extends Component {
             if (successArr) {
               success = [...successArr]
                 .sort(orderResultsByProjectName)
-                .filter(response => response.successResult.updated);
+                .filter((response) => response.successResult.updated);
             }
             if (failureArr) {
               failure = [...failureArr].sort(orderResultsByProjectName);
@@ -292,12 +292,12 @@ class ProjectActivity extends Component {
   handleUpdateAction = (url, name) => {
     console.log('doing update', url);
 
-    const modalCompletion = choice => {
+    const modalCompletion = (choice) => {
       if (choice === 'ok') {
         this.props.updateProject(
           url,
           name,
-          success => {
+          (success) => {
             console.log('updated', success);
             if (success.updated) {
               this.props.getProjectSummary();
@@ -317,7 +317,7 @@ class ProjectActivity extends Component {
               );
             }
           },
-          failure => {
+          (failure) => {
             console.log('update-project failed', failure);
             this.props.showModal(
               this.informModalContent(`Updating project "${name}" failed`, failure.error),
@@ -344,18 +344,18 @@ class ProjectActivity extends Component {
   handleRemoveAction = (url, name) => {
     console.log('doing remove', url);
 
-    const modalCompletion = choice => {
+    const modalCompletion = (choice) => {
       if (choice === 'ok') {
         this.props.removeProject(
           url,
           name,
-          _ => {
+          (_) => {
             // refresh project list
             this.props.getProjectSummary();
             this.props.refreshCodeDir();
             this.props.hideModal();
           },
-          failure => {
+          (failure) => {
             console.log('remove-project failed', failure);
             this.props.showModal(
               this.informModalContent(`Removing project "${name}" failed`, failure.error),
@@ -404,7 +404,7 @@ class ProjectActivity extends Component {
             catalogSummary={this.props.catalogSummary}
             installedProjects={
               this.props.projectSummary.get('projects') &&
-              this.props.projectSummary.get('projects').map(e => e.get('project_name'))
+              this.props.projectSummary.get('projects').map((e) => e.get('project_name'))
             }
             catalogs={this.props.catalogs}
             refreshAllAction={this.handleRefreshAllAction}

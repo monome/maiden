@@ -5,11 +5,11 @@ import { ICONS } from '../svg-icons';
 
 import './project-info.css';
 
-const openLinkAction = url => () => {
+const openLinkAction = (url) => () => {
   window.open(url, '_blank');
 };
 
-const ProjectInfo = props => {
+const ProjectInfo = (props) => {
   // NOTE: props.project is an immutablejs map
   const name = props.project.get('project_name');
   const author = props.project.get('author');
@@ -20,7 +20,7 @@ const ProjectInfo = props => {
 
   let badges;
   if (tags) {
-    badges = tags.map(t => <Badge key={t}>{t}</Badge>);
+    badges = tags.map((t) => <Badge key={t}>{t}</Badge>);
   }
 
   let title;

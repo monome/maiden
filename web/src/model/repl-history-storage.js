@@ -1,7 +1,7 @@
 const localStorageKeyPrefix = 'maiden-repl-history-';
 const maxLocalStorageHistoryItems = 100;
 
-export const loadHistoryFromLocalStorage = component => {
+export const loadHistoryFromLocalStorage = (component) => {
   try {
     const history = JSON.parse(window.localStorage.getItem(`${localStorageKeyPrefix}${component}`));
     return Array.isArray(history) ? history : [];

@@ -48,13 +48,13 @@ export const EXPLORER_REVEAL_NODE_BY_URL = 'EXPLORER_REVEAL_NODE_BY_URL';
 // sync actions
 //
 
-export const rootListRequest = name => ({ type: ROOT_LIST_REQUEST, name });
+export const rootListRequest = (name) => ({ type: ROOT_LIST_REQUEST, name });
 
 export const rootListSuccess = (name, value) => ({ type: ROOT_LIST_SUCCESS, name, value });
 
 export const rootListFailure = (name, error) => ({ type: ROOT_LIST_FAILURE, name, error });
 
-export const bufferReadRequest = resource => ({ type: BUFFER_READ_REQUEST, resource });
+export const bufferReadRequest = (resource) => ({ type: BUFFER_READ_REQUEST, resource });
 
 export const bufferReadSuccess = (resource, value, contentType, lastModified) => ({
   type: BUFFER_READ_SUCCESS,
@@ -70,7 +70,7 @@ export const bufferReadFailure = (resource, error) => ({
   error,
 });
 
-export const directoryReadRequest = resource => ({ type: DIRECTORY_READ_REQUEST, resource });
+export const directoryReadRequest = (resource) => ({ type: DIRECTORY_READ_REQUEST, resource });
 
 export const directoryReadSuccess = (resource, value) => ({
   type: DIRECTORY_READ_SUCCESS,
@@ -103,15 +103,15 @@ export const bufferSaveFailure = (resource, error) => ({
   error,
 });
 
-export const bufferMarkStale = resource => ({ type: BUFFER_MARK_STALE, resource });
+export const bufferMarkStale = (resource) => ({ type: BUFFER_MARK_STALE, resource });
 
-export const bufferDismissStale = resource => ({ type: BUFFER_DISMISS_STALE, resource });
+export const bufferDismissStale = (resource) => ({ type: BUFFER_DISMISS_STALE, resource });
 
-export const bufferClearStale = resource => ({ type: BUFFER_CLEAR_STALE, resource });
+export const bufferClearStale = (resource) => ({ type: BUFFER_CLEAR_STALE, resource });
 
 export const bufferChange = (resource, value) => ({ type: BUFFER_CHANGE, resource, value });
 
-export const bufferSelect = resource => ({ type: BUFFER_SELECT, resource });
+export const bufferSelect = (resource) => ({ type: BUFFER_SELECT, resource });
 
 export const scriptNew = (siblingResource, value, name, category) => ({
   type: SCRIPT_NEW,
@@ -121,7 +121,7 @@ export const scriptNew = (siblingResource, value, name, category) => ({
   category,
 });
 
-export const scriptDuplicate = resource => ({ type: SCRIPT_DUPLICATE, resource });
+export const scriptDuplicate = (resource) => ({ type: SCRIPT_DUPLICATE, resource });
 
 export const resourceRenameRequest = (resource, name) => ({
   type: RESOURCE_RENAME_REQUEST,
@@ -165,9 +165,9 @@ export const directoryCreateFailure = (resource, name, category, error) => ({
   error,
 });
 
-export const resourceDeleteRequest = resource => ({ type: RESOURCE_DELETE_REQUEST, resource });
+export const resourceDeleteRequest = (resource) => ({ type: RESOURCE_DELETE_REQUEST, resource });
 
-export const resourceDeleteSuccess = resource => ({ type: RESOURCE_DELETE_SUCCESS, resource });
+export const resourceDeleteSuccess = (resource) => ({ type: RESOURCE_DELETE_SUCCESS, resource });
 
 export const resourceDeleteFailure = (resource, error) => ({
   type: RESOURCE_DELETE_FAILURE,
@@ -175,9 +175,9 @@ export const resourceDeleteFailure = (resource, error) => ({
   error,
 });
 
-export const toolInvoke = name => ({ type: TOOL_INVOKE, name });
+export const toolInvoke = (name) => ({ type: TOOL_INVOKE, name });
 
-export const explorerActiveNode = node => ({ type: EXPLORER_ACTIVE_NODE, node });
+export const explorerActiveNode = (node) => ({ type: EXPLORER_ACTIVE_NODE, node });
 
 export const explorerToggleNode = (node, toggled) => ({
   type: EXPLORER_TOGGLE_NODE,
@@ -185,7 +185,7 @@ export const explorerToggleNode = (node, toggled) => ({
   toggled,
 });
 
-export const explorerRevealNodeByURL = url => ({
+export const explorerRevealNodeByURL = (url) => ({
   type: EXPLORER_REVEAL_NODE_BY_URL,
   url,
 });
@@ -194,11 +194,11 @@ export const explorerRevealNodeByURL = url => ({
 // async actions
 //
 
-export const rootList = (rootName, cb) => dispatch => {
+export const rootList = (rootName, cb) => (dispatch) => {
   dispatch(rootListRequest(rootName));
-  return api.listRoot(rootName, response => {
+  return api.listRoot(rootName, (response) => {
     if (response.ok) {
-      response.json().then(data => {
+      response.json().then((data) => {
         dispatch(rootListSuccess(rootName, data));
         if (cb) {
           cb(rootName, data);
@@ -210,19 +210,19 @@ export const rootList = (rootName, cb) => dispatch => {
   });
 };
 
-export const bufferRead = resource => dispatch => {
+export const bufferRead = (resource) => (dispatch) => {
   dispatch(bufferReadRequest(resource));
   fetch(resource, { cache: 'no-store' })
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
         const contentType = response.headers.get('Content-Type');
         const lastModified = readLastModified(response.headers);
         if (contentType.includes('text') || contentType.includes('application/json')) {
-          response.text().then(content => {
+          response.text().then((content) => {
             dispatch(bufferReadSuccess(resource, content, contentType, lastModified));
           });
         } else {
-          response.blob().then(content => {
+          response.blob().then((content) => {
             dispatch(bufferReadSuccess(resource, content, contentType, lastModified));
           });
         }
@@ -230,13 +230,13 @@ export const bufferRead = resource => dispatch => {
         dispatch(bufferReadFailure(resource));
       }
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(bufferReadFailure(resource, error));
     });
 };
 
 // Returns a promise of true when the device copy is newer than the buffer stamp.
-export const bufferCheckStale = resource => (dispatch, getState) => {
+export const bufferCheckStale = (resource) => (dispatch, getState) => {
   const buffer = getState().edit.buffers.get(resource);
   if (!buffer) {
     return Promise.resolve(false);
@@ -247,7 +247,7 @@ export const bufferCheckStale = resource => (dispatch, getState) => {
   }
   return api
     .headResource(resource)
-    .then(result => {
+    .then((result) => {
       if (!result.ok || !result.lastModified) {
         return false;
       }
@@ -261,26 +261,26 @@ export const bufferCheckStale = resource => (dispatch, getState) => {
     .catch(() => false);
 };
 
-export const directoryRead = resource => dispatch => {
+export const directoryRead = (resource) => (dispatch) => {
   dispatch(directoryReadRequest(resource));
   return fetch(resource)
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
-        response.json().then(data => {
+        response.json().then((data) => {
           dispatch(directoryReadSuccess(resource, data));
         });
       } else {
         dispatch(directoryReadFailure(resource));
       }
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(directoryReadFailure(resource, error));
     });
 };
 
 // This is async because nested directories don't
 // like opening until their parents have loaded
-export const directoryReadRecursive = resource => async dispatch => {
+export const directoryReadRecursive = (resource) => async (dispatch) => {
   if (!resource) {
     return;
   }
@@ -310,63 +310,65 @@ export const directoryReadRecursive = resource => async dispatch => {
   });
 };
 
-export const bufferSave = (resource, value, cb, options = {}) => (dispatch, getState) => {
-  dispatch(bufferSaveRequest(resource, value));
-  const buffer = getState().edit.buffers.get(resource);
-  const lastModified = options.force
-    ? undefined
-    : options.lastModified !== undefined
-      ? options.lastModified
-      : buffer && buffer.get('lastModified');
-  return api.writeTextResource(
-    resource,
-    value,
-    response => {
-      if (response.status === 412) {
-        return cb ? cb({ conflict: true }) : null;
-      }
-      if (!response.ok) {
-        response
-          .json()
-          .then(data => {
-            dispatch(bufferSaveFailure(resource, data.error || response.statusText));
-            if (cb) {
-              cb({ ok: false, error: data.error || response.statusText });
-            }
-          })
-          .catch(() => {
-            dispatch(bufferSaveFailure(resource, response.statusText));
-            if (cb) {
-              cb({ ok: false, error: response.statusText });
-            }
-          });
-        return null;
-      }
-      const savedLastModified = readLastModified(response.headers);
-      dispatch(bufferSaveSuccess(resource, response.entity, savedLastModified));
-      return cb ? cb({ ok: true, lastModified: savedLastModified }) : null;
-    },
-    { lastModified },
-  );
-};
+export const bufferSave =
+  (resource, value, cb, options = {}) =>
+  (dispatch, getState) => {
+    dispatch(bufferSaveRequest(resource, value));
+    const buffer = getState().edit.buffers.get(resource);
+    const lastModified = options.force
+      ? undefined
+      : options.lastModified !== undefined
+        ? options.lastModified
+        : buffer && buffer.get('lastModified');
+    return api.writeTextResource(
+      resource,
+      value,
+      (response) => {
+        if (response.status === 412) {
+          return cb ? cb({ conflict: true }) : null;
+        }
+        if (!response.ok) {
+          response
+            .json()
+            .then((data) => {
+              dispatch(bufferSaveFailure(resource, data.error || response.statusText));
+              if (cb) {
+                cb({ ok: false, error: data.error || response.statusText });
+              }
+            })
+            .catch(() => {
+              dispatch(bufferSaveFailure(resource, response.statusText));
+              if (cb) {
+                cb({ ok: false, error: response.statusText });
+              }
+            });
+          return null;
+        }
+        const savedLastModified = readLastModified(response.headers);
+        dispatch(bufferSaveSuccess(resource, response.entity, savedLastModified));
+        return cb ? cb({ ok: true, lastModified: savedLastModified }) : null;
+      },
+      { lastModified },
+    );
+  };
 
-export const resourceDelete = (resource, cb) => dispatch => {
+export const resourceDelete = (resource, cb) => (dispatch) => {
   dispatch(resourceDeleteRequest(resource));
-  return api.deleteResource(resource, response => {
+  return api.deleteResource(resource, (response) => {
     // FIXME: handle errors
     dispatch(resourceDeleteSuccess(resource, response.entity));
     return cb ? cb() : null;
   });
 };
 
-export const resourceRename = (resource, name, virtual) => dispatch => {
+export const resourceRename = (resource, name, virtual) => (dispatch) => {
   dispatch(resourceRenameRequest(resource, name));
   if (virtual) {
     dispatch(resourceRenameSuccess(resource, name, undefined));
   } else {
-    api.renameResource(resource, name, response => {
+    api.renameResource(resource, name, (response) => {
       if (response.ok) {
-        response.json().then(data => {
+        response.json().then((data) => {
           dispatch(resourceRenameSuccess(resource, name, data.url));
         });
       } else {
@@ -376,15 +378,15 @@ export const resourceRename = (resource, name, virtual) => dispatch => {
   }
 };
 
-export const directoryCreate = (resource, name, category) => dispatch => {
+export const directoryCreate = (resource, name, category) => (dispatch) => {
   dispatch(directoryCreateRequest(resource, name, category));
-  return api.createFolder(resource, response => {
+  return api.createFolder(resource, (response) => {
     if (response.ok) {
       response.json().then(() => {
         dispatch(directoryCreateSuccess(resource, name, category));
       });
     } else {
-      response.json().then(data => {
+      response.json().then((data) => {
         dispatch(directoryCreateFailure(resource, name, category, data.error));
       });
     }

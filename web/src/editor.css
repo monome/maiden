@@ -1,34 +1,34 @@
 .monaco-editor-host {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
 }
 
 .monaco-editor-container {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: hidden;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Vim normal / overwrite indicator — floats over the buffer, no layout cost. */
 .monaco-editor-mode-badge {
-    position: absolute;
-    top: 6px;
-    /* `right` is set inline from Monaco layout (left of minimap / scrollbar). */
-    z-index: 5;
-    pointer-events: none;
-    font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
-    font-size: 11px;
-    line-height: 1;
-    letter-spacing: 0.04em;
-    padding: 3px 6px;
-    border-radius: 3px;
-    background: var(--neutral-surface-default);
-    color: var(--neutral-heavy-default);
-    border: 1px solid var(--neutral-trim-default);
-    opacity: 0.92;
-    user-select: none;
+  position: absolute;
+  top: 6px;
+  /* `right` is set inline from Monaco layout (left of minimap / scrollbar). */
+  z-index: 5;
+  pointer-events: none;
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: var(--neutral-surface-default);
+  color: var(--neutral-heavy-default);
+  border: 1px solid var(--neutral-trim-default);
+  opacity: 0.92;
+  user-select: none;
 }
 
 /*
@@ -36,35 +36,35 @@
  * from JS when an input or notification is present — no permanent strip.
  */
 .monaco-editor-vim-prompt {
-    display: none;
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
-    z-index: 6;
-    font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
-    font-size: 12px;
-    line-height: 20px;
-    padding: 2px 8px;
-    background: var(--neutral-surface-default);
-    color: var(--neutral-heavy-default);
-    border: 1px solid var(--neutral-trim-default);
-    border-radius: 3px;
+  display: none;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 6;
+  font-family: Monaco, Menlo, 'Ubuntu Mono', Consolas, source-code-pro, monospace;
+  font-size: 12px;
+  line-height: 20px;
+  padding: 2px 8px;
+  background: var(--neutral-surface-default);
+  color: var(--neutral-heavy-default);
+  border: 1px solid var(--neutral-trim-default);
+  border-radius: 3px;
 }
 
 /* Mode / key-buffer spans from monaco-vim — badge covers mode; hide the rest. */
 .monaco-editor-vim-prompt > span:nth-child(1),
 .monaco-editor-vim-prompt > span:nth-child(4) {
-    display: none;
+  display: none;
 }
 
 .monaco-editor-vim-prompt input {
-    font: inherit;
-    color: inherit;
-    background: transparent;
-    border: none;
-    outline: none;
-    width: 100%;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
 }
 
 /*
@@ -76,7 +76,7 @@
 .monaco-editor .margin-view-overlays .cldr.codicon-folding-collapsed,
 .monaco-editor .margin-view-overlays .cldr.codicon-folding-manual-expanded,
 .monaco-editor .margin-view-overlays .cldr.codicon-folding-manual-collapsed {
-    margin-left: 0 !important;
+  margin-left: 0 !important;
 }
 
 /*
@@ -86,14 +86,14 @@
  * 3px = 0.25em at fontSize 12.
  */
 .monaco-editor .lines-content {
-    padding-left: 3px !important;
+  padding-left: 3px !important;
 }
 
 /* Keep Monaco overflow widgets (suggest, hover, find) below workspace modals */
 .monaco-editor .suggest-widget,
 .monaco-editor .monaco-hover,
 .monaco-editor .find-widget {
-    z-index: 40;
+  z-index: 40;
 }
 
 /*
@@ -110,13 +110,13 @@
 .quick-input-widget .monaco-list-row,
 .quick-input-widget .monaco-keybinding,
 .quick-input-widget .monaco-keybinding > * {
-    font-family: monospace !important;
+  font-family: monospace !important;
 }
 
 .quick-input-widget {
-    border: 1px solid var(--neutral-trim-default) !important;
-    border-radius: 4px;
-    overflow: hidden;
-    /* Maiden modals are flat; drop Monaco's default elevated shadow. */
-    box-shadow: none !important;
+  border: 1px solid var(--neutral-trim-default) !important;
+  border-radius: 4px;
+  overflow: hidden;
+  /* Maiden modals are flat; drop Monaco's default elevated shadow. */
+  box-shadow: none !important;
 }

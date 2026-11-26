@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Icon = props => {
+const Icon = (props) => {
   const styles = {
     svg: {
       display: 'inline-block',

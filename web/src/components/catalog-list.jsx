@@ -3,8 +3,8 @@ import Catalog from './catalog';
 import './catalog-list.css';
 import TextButton from './text-button';
 
-const CatalogList = props => {
-  const catalogs = props.catalogSummary.valueSeq().map(c => {
+const CatalogList = (props) => {
+  const catalogs = props.catalogSummary.valueSeq().map((c) => {
     const name = c.get('name');
     const catalog = props.catalogs.get(name);
     return (

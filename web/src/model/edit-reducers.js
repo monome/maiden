@@ -160,7 +160,7 @@ const handleRootList = (action, state) => {
   // FIXME: change the virtualNode resource to be the api path
   let rootNode = directoryNode(action.name, action.value.url, fromJS(action.value.entries));
 
-  const existingRootIndex = state.rootNodes.findIndex(n => n.get('name') === action.name);
+  const existingRootIndex = state.rootNodes.findIndex((n) => n.get('name') === action.name);
   if (existingRootIndex > 0) {
     const virtuals = collectVirtualNodes(state.rootNodes.getIn([existingRootIndex, 'children']));
     const rootChildren = rootNode.get('children');

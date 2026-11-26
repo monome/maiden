@@ -10,12 +10,12 @@ const monacoStub = {
 describe('nornsSnippetCompletionItems', () => {
   it('returns all snippets when prefix is empty', () => {
     const items = nornsSnippetCompletionItems(monacoStub, '');
-    expect(items.map(i => i.label).sort()).toEqual(Object.keys(snippets).sort());
+    expect(items.map((i) => i.label).sort()).toEqual(Object.keys(snippets).sort());
   });
 
   it('filters by prefix', () => {
     const items = nornsSnippetCompletionItems(monacoStub, 'in');
-    expect(items.map(i => i.label)).toEqual(['init']);
+    expect(items.map((i) => i.label)).toEqual(['init']);
   });
 
   it('uses snippet insert rules', () => {

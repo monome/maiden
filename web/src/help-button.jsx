@@ -60,7 +60,7 @@ class HelpButton extends Component {
         <div className="help-button-menu">?</div>
         {open && (
           <div className="help-button-popup-panel">
-            {links.map(link => (
+            {links.map((link) => (
               <div key={link.href}>
                 <a
                   className="help-button-link"

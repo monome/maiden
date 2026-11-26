@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classname';
 import './switcher.css';
 
-const Tab = props => {
+const Tab = (props) => {
   const className = cx(
     'switcher-tab',
     { noselect: true },
@@ -16,7 +16,7 @@ const Tab = props => {
   );
 };
 
-const Switcher = props => {
+const Switcher = (props) => {
   const { activeTab, children, size } = props;
 
   const tabContinerHeight = { height: 38 }; // FIXME: this is tightly coupled to the css
@@ -27,7 +27,7 @@ const Switcher = props => {
 
   // console.log('children', children);
 
-  const tabs = children.map(c => (
+  const tabs = children.map((c) => (
     <Tab
       name={c.props.name}
       isActive={c.props.name === activeTab}
@@ -36,7 +36,7 @@ const Switcher = props => {
     />
   ));
 
-  const which = children.find(c => c.props.name === activeTab);
+  const which = children.find((c) => c.props.name === activeTab);
 
   // console.log('which', which);
 

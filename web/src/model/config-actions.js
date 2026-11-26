@@ -19,7 +19,7 @@ export const updateEditorConfigSuccess = (resource, value) => ({
   value,
 });
 
-export const editorConfigRequest = resource => ({ type: EDITOR_CONFIG_REQUEST, resource });
+export const editorConfigRequest = (resource) => ({ type: EDITOR_CONFIG_REQUEST, resource });
 
 export const editorConfigSuccess = (resource, value) => ({
   type: EDITOR_CONFIG_SUCCESS,
@@ -37,26 +37,26 @@ export const editorConfigFailure = (resource, error) => ({
 // async actions
 //
 
-export const editorConfig = resource => dispatch => {
+export const editorConfig = (resource) => (dispatch) => {
   dispatch(editorConfigRequest(resource));
   fetch(resource)
-    .then(response => {
+    .then((response) => {
       if (response.ok) {
         // syntax error here means config/editor.json is
         // malformed.
-        response.json().then(content => {
+        response.json().then((content) => {
           dispatch(editorConfigSuccess(resource, content));
         });
       } else {
         dispatch(editorConfigFailure(resource, response));
       }
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(editorConfigFailure(resource, error));
     });
 };
 
-export const updateEditorConfig = (resource, value) => dispatch => {
+export const updateEditorConfig = (resource, value) => (dispatch) => {
   dispatch(updateEditorConfigRequest(resource, value));
   api.writeJSONResource(resource, value, () => {
     // FIXME: handle errors

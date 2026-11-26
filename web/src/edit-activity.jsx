@@ -16,13 +16,11 @@ import './edit-activity.css';
 
 const STALE_BANNER_HEIGHT = 32;
 
-const resourceBasename = resource => {
+const resourceBasename = (resource) => {
   if (!resource) {
     return '';
   }
-  const parts = String(resource)
-    .split('/')
-    .filter(Boolean);
+  const parts = String(resource).split('/').filter(Boolean);
   return parts[parts.length - 1] || resource;
 };
 
@@ -51,8 +49,8 @@ const tools = [
   },
 ];
 
-const EditTools = props => {
-  const items = props.tools.map(tool => (
+const EditTools = (props) => {
+  const items = props.tools.map((tool) => (
     <IconButton
       tooltipMessage={tool.tooltipMessage}
       tooltipPosition={tool.tooltipPosition}
@@ -183,7 +181,7 @@ class EditActivity extends Component {
     };
   }
 
-  handleSidebarResize = panelSize => {
+  handleSidebarResize = (panelSize) => {
     const size = panelSize.inPixels;
     if (this.props.ui.sidebarHidden && size > 1) {
       // reveal when dragging out of the collapsed strip
@@ -202,7 +200,7 @@ class EditActivity extends Component {
     }
   };
 
-  handleReplResize = panelSize => {
+  handleReplResize = (panelSize) => {
     const size = panelSize.inPixels;
     if (size > 0) {
       this.setState({
@@ -226,14 +224,14 @@ class EditActivity extends Component {
     this.props.bufferSave(
       resource,
       value,
-      result => {
+      (result) => {
         if (result && result.conflict) {
           const name = resourceBasename(resource);
           this.props.showModal(
             <ModalContent
               message="File changed on device. Overwrite?"
               supporting={name}
-              buttonAction={choice => {
+              buttonAction={(choice) => {
                 this.props.hideModal();
                 if (choice === 'ok') {
                   this.saveActiveBuffer(afterSave, { force: true });
@@ -268,7 +266,7 @@ class EditActivity extends Component {
     }
   };
 
-  handleToolInvoke = tool => {
+  handleToolInvoke = (tool) => {
     const buffer = this.getActiveBuffer();
     const resource = this.props.activeBuffer; // FIXME: this assumes the activeBuffer is a URL
 
@@ -297,7 +295,7 @@ class EditActivity extends Component {
         });
       } else {
         // Clean buffer: don't run a device script that differs from the editor view.
-        Promise.resolve(this.props.bufferCheckStale(resource)).then(stale => {
+        Promise.resolve(this.props.bufferCheckStale(resource)).then((stale) => {
           if (!stale) {
             this.props.scriptRun(resource);
           }
@@ -318,9 +316,9 @@ class EditActivity extends Component {
     this.props.explorerResourceRename(resource, name, virtual);
   };
 
-  isText = buffer => buffer && bufferIsEditable(buffer);
+  isText = (buffer) => buffer && bufferIsEditable(buffer);
 
-  isAudio = buffer => buffer && bufferIsAudio(buffer);
+  isAudio = (buffer) => buffer && bufferIsAudio(buffer);
 
   render() {
     const activeBuffer = this.props.activeBuffer;
@@ -331,7 +329,7 @@ class EditActivity extends Component {
 
     const canListen = this.isAudio(buffer);
 
-    const enabledTools = tools.map(t => ({ ...t, disabled: !(canEdit || t.alwaysEnable) }));
+    const enabledTools = tools.map((t) => ({ ...t, disabled: !(canEdit || t.alwaysEnable) }));
 
     // TODO (pq): move this somewhere more appropriate.
     commandService.registerCommand('toggle repl', () => this.props.replToggle());
@@ -360,7 +358,7 @@ class EditActivity extends Component {
         <div className="editor-pane">
           <Editor
             className="editor-container"
-            ref={component => {
+            ref={(component) => {
               this.editor = component;
             }}
             {...this.editorSize(bannerVisible)}

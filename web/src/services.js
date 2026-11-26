@@ -17,14 +17,14 @@ const Modifier = {
     1: {
       name: 'Ctrl',
       label: 'ctrl+',
-      matches: e => e.ctrlKey,
+      matches: (e) => e.ctrlKey,
     },
   },
   mac: {
     1: {
       name: 'Command',
       label: '⌘',
-      matches: e => e.metaKey,
+      matches: (e) => e.metaKey,
     },
   },
 };
@@ -88,7 +88,7 @@ class KeyService {
   }
 
   findCommand(event) {
-    const binding = this.bindings.find(b => b.keystroke.matches(event));
+    const binding = this.bindings.find((b) => b.keystroke.matches(event));
     if (binding != null) {
       const id = binding.commandId;
       return commandService.commands.get(id);

@@ -56,8 +56,8 @@ export const orderByTypeThenName = (a, b) => {
 };
 
 export const muxInVirtualNodes = (base, incoming) => {
-  const keys = new Set(incoming.map(n => n.get('url')));
-  const virtuals = base.filter(n => n.get('virtual', false) && !keys.has(n.get('url')));
+  const keys = new Set(incoming.map((n) => n.get('url')));
+  const virtuals = base.filter((n) => n.get('virtual', false) && !keys.has(n.get('url')));
   return incoming.push(...virtuals);
 };
 
@@ -69,9 +69,9 @@ export const nodeForResource = (rootNodes, resource) => {
   return undefined;
 };
 
-export const nodeIsDir = node => node.has('children');
+export const nodeIsDir = (node) => node.has('children');
 
-export const keyPathParent = keyPath => {
+export const keyPathParent = (keyPath) => {
   if (keyPath && keyPath.size > 2) {
     return keyPath.pop().pop();
   }
@@ -160,7 +160,7 @@ export const spliceNodes = (rootNodes, nodes) => {
     if (keyPath) {
       const siblingPath = keyPath.push('children');
       const children = acc.getIn(siblingPath);
-      const matches = children.find(c => url === c.get('url'));
+      const matches = children.find((c) => url === c.get('url'));
       if (matches === undefined) {
         // this node isn't in the listing, add
         return acc.setIn(siblingPath, children.push(node).sort(orderByTypeThenName));
@@ -189,9 +189,9 @@ export const orderByName = (a, b) => {
 };
 
 // take a list of nodes (script/dir info objects) and return a set containing all the names used at that top level
-export const getNodeNames = nodes => new Set(nodes.map(node => node.get('name')));
+export const getNodeNames = (nodes) => new Set(nodes.map((node) => node.get('name')));
 
-export const getNodeByName = (nodes, name) => nodes.find(n => n.get('name') === name);
+export const getNodeByName = (nodes, name) => nodes.find((n) => n.get('name') === name);
 
 // given a set of existing names and [optionally] an exemplar generate a new name which isn't taken by adding a number at the end of the name
 export const generateNodeName = (siblingNodes, exemplar = 'untitled.lua') => {
@@ -242,7 +242,7 @@ export const virtualRoot = (children, name = 'ROOT') => {
   return rootNodes.setIn([0, 'children'], children);
 };
 
-export const collectVirtualNodes = listing => {
+export const collectVirtualNodes = (listing) => {
   const reducer = (acc, node) => {
     if (node.get('virtual')) {
       return acc.push(node);
@@ -254,15 +254,15 @@ export const collectVirtualNodes = listing => {
 
 // append new nodes into base list if they are new (no sorting)
 export const appendNodes = (base, additions) => {
-  const keys = new Set(base.map(n => n.get('url')));
-  const adds = additions.filterNot(n => keys.has(n.get('url')));
+  const keys = new Set(base.map((n) => n.get('url')));
+  const adds = additions.filterNot((n) => keys.has(n.get('url')));
   return base.push(...adds);
 };
 
 export const childrenOfRoot = (rootNodes, index = 0) => rootNodes.getIn([index, 'children']);
 
 export const rootCategoryIndex = (rootNodes, category) =>
-  rootNodes.findIndex(n => n.get('name') === category);
+  rootNodes.findIndex((n) => n.get('name') === category);
 
 export const siblingNamesForResource = (rootNodes, resource) => {
   // if resource is a file, returns the names of sibling files
@@ -273,7 +273,7 @@ export const siblingNamesForResource = (rootNodes, resource) => {
     // this is a script/file itself, get sibling names by listing the parent node
     node = rootNodes.getIn(keyPathParent(keyPath));
   }
-  const names = new Set(node.get('children').map(node => node.get('name')));
+  const names = new Set(node.get('children').map((node) => node.get('name')));
   // console.log("sibs: ", names);
   return names;
 };

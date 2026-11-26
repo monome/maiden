@@ -18,8 +18,8 @@ const tools = [
 ];
 
 // TODO: refactor this and EditTools into a common function
-const ReplTools = props => {
-  const items = props.tools.map(tool => (
+const ReplTools = (props) => {
+  const items = props.tools.map((tool) => (
     <IconButton
       key={tool.name}
       tooltipMessage={tool.tooltipMessage}
@@ -36,7 +36,7 @@ const ReplTools = props => {
 };
 
 // TODO: refactor this into a generic message/action widget
-const ReplConnect = props => {
+const ReplConnect = (props) => {
   const { height, width } = props;
   const style = { height, width };
 
@@ -58,7 +58,7 @@ const ReplConnect = props => {
   );
 };
 
-const ReplSwitcherTab = props => {
+const ReplSwitcherTab = (props) => {
   const className = cx(
     'repl-switcher-tab',
     { noselect: true },
@@ -87,7 +87,7 @@ const ReplSwitcherTab = props => {
   );
 };
 
-const ReplSwitcher = props => {
+const ReplSwitcher = (props) => {
   const { activeRepl, height, width } = props;
 
   const switcherSize = {
@@ -95,7 +95,7 @@ const ReplSwitcher = props => {
     height: 30,
   };
 
-  const tabs = props.endpoints.keySeq().map(k => {
+  const tabs = props.endpoints.keySeq().map((k) => {
     const isActive = props.activeRepl === k;
     return (
       <ReplSwitcherTab
@@ -142,7 +142,7 @@ class ReplActivity extends Component {
     this.props.unitMapping();
   }
 
-  handleToolInvoke = name => {
+  handleToolInvoke = (name) => {
     if (name === 'clear') {
       this.props.replClear(this.props.activeRepl);
     }
@@ -162,7 +162,7 @@ class ReplActivity extends Component {
     };
   }
 
-  handleConnect = component => {
+  handleConnect = (component) => {
     const endpoint = this.props.endpoints.get(component);
     this.props.replConnect(component, endpoint);
   };

@@ -3,7 +3,7 @@ import ReplActivity from './repl-activity';
 
 import { replInput, replClear, replConnect, replSelect, unitMapping } from './model/repl-actions';
 
-const isConnected = state => component => {
+const isConnected = (state) => (component) => {
   const conn = state.repl.connections.get(component);
   if (!conn) {
     return false;
@@ -14,7 +14,7 @@ const isConnected = state => component => {
   return false;
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   // TODO: pull out the buffer and history for the active repl to avoid re-renders if output to no-active repl is received.
   const { activeRepl, endpoints, buffers, history } = state.repl;
   return {
@@ -27,27 +27,24 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   replInput: (component, value) => {
     dispatch(replInput(component, value));
   },
-  replClear: component => {
+  replClear: (component) => {
     dispatch(replClear(component));
   },
   replConnect: (component, endpoint) => {
     dispatch(replConnect(component, endpoint));
   },
-  replSelect: component => {
+  replSelect: (component) => {
     dispatch(replSelect(component));
   },
-  unitMapping: cb => {
+  unitMapping: (cb) => {
     dispatch(unitMapping(cb));
   },
 });
 
-const BoundReplActivity = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ReplActivity);
+const BoundReplActivity = connect(mapStateToProps, mapDispatchToProps)(ReplActivity);
 
 export default BoundReplActivity;

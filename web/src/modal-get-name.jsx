@@ -6,8 +6,8 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import { INVALID_NAME_CHARS } from './constants';
 
-const mapStateToProps = state => {
-  const getSiblingNames = selectedResource => {
+const mapStateToProps = (state) => {
+  const getSiblingNames = (selectedResource) => {
     if (selectedResource) {
       return siblingNamesForResource(state.edit.rootNodes, selectedResource);
     }
@@ -32,7 +32,7 @@ class ModalGetName extends Component {
     this.siblingNames = props.getSiblingNames(this.props.selectedResource);
   }
 
-  handleKeyDown = event => {
+  handleKeyDown = (event) => {
     // filter out chars we can't have in names
     if (INVALID_NAME_CHARS.has(event.key)) {
       console.log("character '", event.key, "' not allowed in names");
@@ -76,10 +76,10 @@ class ModalGetName extends Component {
     }
   };
 
-  isValidName = name =>
+  isValidName = (name) =>
     (name === this.props.initialName || !this.siblingNames.has(name)) && !name.startsWith('.');
 
-  complete = choice => {
+  complete = (choice) => {
     const name = this.state.newName;
     if (choice === 'ok' && !this.isValidName(name)) {
       // prevent completion if name is bad
@@ -101,7 +101,7 @@ class ModalGetName extends Component {
         </div>
         <textarea
           className="get-name-modal-text-area"
-          ref={e => (this.textArea = e)}
+          ref={(e) => (this.textArea = e)}
           value={this.state.newName || ''}
           rows="1"
           maxLength="128"

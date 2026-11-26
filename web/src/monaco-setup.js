@@ -65,16 +65,16 @@ function installShadowMenuChrome() {
   }
   menuChromeInstalled = true;
 
-  const scan = root => {
+  const scan = (root) => {
     if (!root || !root.querySelectorAll) {
       return;
     }
     root.querySelectorAll('.shadow-root-host').forEach(applyShadowMenuChrome);
   };
 
-  const observer = new MutationObserver(mutations => {
+  const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      mutation.addedNodes.forEach(node => {
+      mutation.addedNodes.forEach((node) => {
         if (node.nodeType !== Node.ELEMENT_NODE) {
           return;
         }

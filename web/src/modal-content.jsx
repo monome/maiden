@@ -3,7 +3,7 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import './modal-content.css';
 
-const ModalContent = props => {
+const ModalContent = (props) => {
   const cancelButton = (
     <IconButton
       key="cancel"

@@ -6,17 +6,17 @@ import ProjectControl from './project-control';
 
 import './project-list.css';
 
-const ProjectList = props => {
+const ProjectList = (props) => {
   const { projects, updateAllAction, updateAction, removeAction } = props;
   let entries;
   const projectList = projects.get('projects')
     ? projects
         .get('projects')
-        .map(e => ({ url: e.get('url'), name: e.get('project_name') }))
+        .map((e) => ({ url: e.get('url'), name: e.get('project_name') }))
         .toArray()
     : [];
   if (projects && projects.has('projects')) {
-    entries = projects.get('projects').map(p => {
+    entries = projects.get('projects').map((p) => {
       // layer project data over catalog entry (if it exists)
       let composed = p;
       const entry = p.getIn(['meta_data', 'catalog_entry']);

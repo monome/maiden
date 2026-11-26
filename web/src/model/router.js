@@ -4,7 +4,7 @@ export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE';
 
 export const history = createBrowserHistory();
 
-export const push = path => () => {
+export const push = (path) => () => {
   history.push(path);
 };
 

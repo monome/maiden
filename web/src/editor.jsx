@@ -99,7 +99,7 @@ class Editor extends Component {
       snippetSuggestions: 'inline',
     });
 
-    this.keyDownListener = this.editor.onKeyDown(e => {
+    this.keyDownListener = this.editor.onKeyDown((e) => {
       const cmd = keyService.findCommand(e.browserEvent);
       if (cmd) {
         e.preventDefault();
@@ -178,7 +178,7 @@ class Editor extends Component {
       this.layoutListener.dispose();
       this.layoutListener = null;
     }
-    this.models.forEach(model => model.dispose());
+    this.models.forEach((model) => model.dispose());
     this.models.clear();
     if (this.editor) {
       this.editor.dispose();
@@ -193,14 +193,14 @@ class Editor extends Component {
     return this.editor.getValue();
   };
 
-  bufferWillSave = bufferName => {
+  bufferWillSave = (bufferName) => {
     if (bufferName !== this.props.bufferName) {
       console.log('buffer save mismatch ', bufferName, ' vs ', this.props.bufferName);
     }
     this.props.bufferChange(this.props.bufferName, this.getValue());
   };
 
-  bufferWasSaved = bufferName => {
+  bufferWasSaved = (bufferName) => {
     if (this.props.bufferName === bufferName) {
       this.modified = false;
     }
@@ -306,7 +306,7 @@ class Editor extends Component {
       // shown via the floating badge instead of a status strip.
       this.vimMode = initVimMode(this.editor, this.vimPromptRef.current);
       nextState.vimBadge = 'normal';
-      this.vimModeChangeHandler = ev => {
+      this.vimModeChangeHandler = (ev) => {
         this.setState({ vimBadge: vimBadgeLabel(ev.mode) });
       };
       this.vimMode.on('vim-mode-change', this.vimModeChangeHandler);
@@ -321,7 +321,7 @@ class Editor extends Component {
       }
     } else if (mode === 'emacs') {
       this.emacsMode = new EmacsExtension(this.editor);
-      this.emacsMode.onDidChangeKey(str => {
+      this.emacsMode.onDidChangeKey((str) => {
         this.setState({ emacsChord: str || '' });
       });
       this.emacsMode.start();

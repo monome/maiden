@@ -1,65 +1,65 @@
 .editor-container {
-    flex-grow: 1 1 auto;
-    background-color: green;
+  flex-grow: 1 1 auto;
+  background-color: green;
 }
 
 .explorer-container {
-    flex: 0 0 auto;
-    background-color: var(--neutral-base-default);
-    height: 20px;
+  flex: 0 0 auto;
+  background-color: var(--neutral-base-default);
+  height: 20px;
 }
 
 .editor-pane-wrap {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .editor-pane {
-    display: flex;
-    flex: 1 1 auto;
-    min-height: 0;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .stale-banner {
-    display: flex;
-    align-items: center;
-    flex: 0 0 auto;
-    gap: 12px;
-    padding: 0 12px;
-    background-color: var(--stale-banner-background);
-    color: var(--stale-banner-color);
-    border-bottom: 1px solid var(--neutral-trim-default);
-    font-family: monospace;
-    font-size: 13px;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 12px;
+  padding: 0 12px;
+  background-color: var(--stale-banner-background);
+  color: var(--stale-banner-color);
+  border-bottom: 1px solid var(--neutral-trim-default);
+  font-family: monospace;
+  font-size: 13px;
 }
 
 .stale-banner-message {
-    flex: 1 1 auto;
+  flex: 1 1 auto;
 }
 
 .stale-banner-action {
-    background: none;
-    border: none;
-    color: var(--stale-banner-color);
-    cursor: pointer;
-    font: inherit;
-    padding: 0;
-    text-decoration: underline;
+  background: none;
+  border: none;
+  color: var(--stale-banner-color);
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
 }
 
 .stale-banner-action:hover {
-    color: var(--stale-banner-color);
-    opacity: 0.85;
+  color: var(--stale-banner-color);
+  opacity: 0.85;
 }
 
 .editor-pane-common {
-    background-color: var(--neutral-surface-default);
+  background-color: var(--neutral-surface-default);
 }
 
 .edit-activity-split {
-    height: 100%;
-    width: 100%;
+  height: 100%;
+  width: 100%;
 }
 
 .listener-pane {
@@ -70,44 +70,44 @@
 }
 
 .repl-pane {
-    display: flex;
+  display: flex;
 }
 
 .spinner-pane {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 .spinner {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: 3px solid #F1F1F1;
-    border-top-color: #979797;
-    animation: spinner-rotate 0.8s linear infinite;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid #f1f1f1;
+  border-top-color: #979797;
+  animation: spinner-rotate 0.8s linear infinite;
 }
 
 @keyframes spinner-rotate {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .landing-pane {
-    color: var(--neutral-medium-default);
-    background-color: var(--neutral-surface-default);
-    display: flex;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+  color: var(--neutral-medium-default);
+  background-color: var(--neutral-surface-default);
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
 .landing-pane > .message {
-    /*color: #757575;*/
-    font-style: italic;
-    text-transform: lowercase;
+  /*color: #757575;*/
+  font-style: italic;
+  text-transform: lowercase;
 }
 
 /* styling for react-resizable-panels separators
@@ -115,46 +115,46 @@
    Avoid element opacity and negative margins (stacking / flex issues). */
 
 .edit-activity-separator {
-    position: relative;
-    background: transparent;
-    box-sizing: border-box;
-    flex: 0 0 auto;
-    z-index: 1;
+  position: relative;
+  background: transparent;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  z-index: 1;
 }
 
 .edit-activity-separator::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--resizer-background-default);
-    opacity: 0.1;
-    pointer-events: none;
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--resizer-background-default);
+  opacity: 0.1;
+  pointer-events: none;
 }
 
 .edit-activity-separator:hover::before,
-.edit-activity-separator[data-separator="active"]::before,
-.edit-activity-separator[data-separator="focus"]::before {
-    background: var(--resizer-border-default);
-    opacity: 1;
+.edit-activity-separator[data-separator='active']::before,
+.edit-activity-separator[data-separator='focus']::before {
+  background: var(--resizer-border-default);
+  opacity: 1;
 }
 
 .edit-activity-separator-horizontal {
-    height: 1px;
-    width: 100%;
-    cursor: row-resize;
+  height: 1px;
+  width: 100%;
+  cursor: row-resize;
 }
 
 .edit-activity-separator-vertical {
-    width: 1px;
-    height: 100%;
-    cursor: col-resize;
+  width: 1px;
+  height: 100%;
+  cursor: col-resize;
 }
 
 .edit-activity-separator[data-disabled] {
-    cursor: not-allowed;
+  cursor: not-allowed;
 }
 
 .edit-activity-separator[data-disabled]:hover::before {
-    background: var(--resizer-background-default);
-    opacity: 0.1;
+  background: var(--resizer-background-default);
+  opacity: 0.1;
 }

@@ -39,19 +39,19 @@ import { replSend } from './model/repl-actions';
 
 import { editorConfig } from './model/config-actions';
 
-const getBuffers = editState => editState.buffers;
-const getActiveBuffer = editState => editState.activeBuffer;
-const getActiveNodeResource = editState => editState.activeNode;
-const getRootNodes = editState => editState.rootNodes;
-const getExpandedNodes = editState => editState.expandedNodes;
+const getBuffers = (editState) => editState.buffers;
+const getActiveBuffer = (editState) => editState.activeBuffer;
+const getActiveNodeResource = (editState) => editState.activeNode;
+const getRootNodes = (editState) => editState.rootNodes;
+const getExpandedNodes = (editState) => editState.expandedNodes;
 
 const getExplorerData = createSelector(
   [getBuffers, getActiveBuffer, getActiveNodeResource, getRootNodes, getExpandedNodes],
   (buffers, activeBuffer, activeNode, rootNodes, expandedNodes) => {
     // enrich script listing w/ modification state, etc.
 
-    const enrich = items =>
-      items.map(l => {
+    const enrich = (items) =>
+      items.map((l) => {
         const item = { ...l };
         item.activeBuffer = l.url === activeBuffer;
         item.activeNode = l.url === activeNode;
@@ -80,7 +80,7 @@ const getActiveNode = createSelector(
   (activeNode, rootNodes) => nodeForResource(rootNodes, activeNode),
 );
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { activeBuffer, buffers } = state.edit;
   return {
     activeBuffer,
@@ -93,7 +93,7 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   // scripts
   scriptList: () => {
     dispatch(rootList('scripts'));
@@ -104,20 +104,20 @@ const mapDispatchToProps = dispatch => ({
   audioList: () => {
     dispatch(rootList('audio'));
   },
-  bufferRead: resource => {
+  bufferRead: (resource) => {
     dispatch(bufferRead(resource));
   },
-  bufferCheckStale: resource => dispatch(bufferCheckStale(resource)),
-  bufferDismissStale: resource => {
+  bufferCheckStale: (resource) => dispatch(bufferCheckStale(resource)),
+  bufferDismissStale: (resource) => {
     dispatch(bufferDismissStale(resource));
   },
-  directoryRead: resource => {
+  directoryRead: (resource) => {
     dispatch(directoryRead(resource));
   },
   bufferChange: (resource, value) => {
     dispatch(bufferChange(resource, value));
   },
-  bufferSelect: resource => {
+  bufferSelect: (resource) => {
     dispatch(bufferSelect(resource));
 
     const path = resourceToEditPath(resource);
@@ -128,7 +128,7 @@ const mapDispatchToProps = dispatch => ({
   bufferSave: (resource, code, completionCB = () => {}, options = {}) => {
     dispatch(bufferSave(resource, code, completionCB, options));
   },
-  scriptRun: resource => {
+  scriptRun: (resource) => {
     const file = api.fileFromResource(resource);
     if (file) {
       if (file.includes('/lib/') || file.includes('/data/') || file.includes('/audio/')) {
@@ -145,7 +145,7 @@ const mapDispatchToProps = dispatch => ({
     const cmd = 'norns.script.clear()';
     dispatch(replSend(MATRON_COMPONENT, cmd));
   },
-  selectionEval: code => {
+  selectionEval: (code) => {
     dispatch(replSend(MATRON_COMPONENT, code));
   },
 
@@ -153,23 +153,23 @@ const mapDispatchToProps = dispatch => ({
   sidebarToggle: () => {
     dispatch(sidebarToggle());
   },
-  sidebarSize: width => {
+  sidebarSize: (width) => {
     dispatch(sidebarSize(width));
   },
   replToggle: () => {
     dispatch(replToggle());
   },
-  replSize: height => {
+  replSize: (height) => {
     dispatch(replSize(height));
   },
 
   // tools
-  toolInvoke: name => {
+  toolInvoke: (name) => {
     dispatch(toolInvoke(name));
   },
 
   // explorer
-  explorerActiveNode: node => {
+  explorerActiveNode: (node) => {
     dispatch(explorerActiveNode(node));
   },
   explorerToggleNode: (node, toggled) => {
@@ -178,10 +178,10 @@ const mapDispatchToProps = dispatch => ({
   explorerScriptNew: (sibling, value, name, category) => {
     dispatch(scriptNew(sibling, value, name, category));
   },
-  explorerScriptDuplicate: source => {
+  explorerScriptDuplicate: (source) => {
     dispatch(scriptDuplicate(source));
   },
-  explorerResourceDelete: resource => {
+  explorerResourceDelete: (resource) => {
     dispatch(resourceDelete(resource));
   },
   explorerResourceRename: (activeNode, newName, virtual) => {
@@ -190,7 +190,7 @@ const mapDispatchToProps = dispatch => ({
   explorerDirectoryCreate: (resource, name, category) => {
     dispatch(directoryCreate(resource, name, category));
   },
-  explorerToggleCategory: name => {
+  explorerToggleCategory: (name) => {
     dispatch(toggleCategory(name));
   },
 
@@ -201,14 +201,11 @@ const mapDispatchToProps = dispatch => ({
   },
 
   // config
-  editorConfig: resource => {
+  editorConfig: (resource) => {
     dispatch(editorConfig(resource));
   },
 });
 
-const BoundEditActivity = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(EditActivity);
+const BoundEditActivity = connect(mapStateToProps, mapDispatchToProps)(EditActivity);
 
 export default BoundEditActivity;

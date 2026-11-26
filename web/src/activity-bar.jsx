@@ -8,7 +8,7 @@ class ActivityBar extends Component {
     const upperItems = [];
     const lowerItems = [];
 
-    this.props.activities.forEach(activity => {
+    this.props.activities.forEach((activity) => {
       let button;
 
       if (activity.component) {

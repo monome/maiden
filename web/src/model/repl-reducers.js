@@ -58,7 +58,7 @@ const handleReplEcho = (action, state, input) => {
 
 const handleReplRecieve = (action, state) => {
   let buffer = state.buffers.get(action.component);
-  action.data.split('\n').forEach(line => {
+  action.data.split('\n').forEach((line) => {
     buffer = outputAppend(buffer, state.scrollbackLimit, line);
   });
 

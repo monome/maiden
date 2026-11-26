@@ -3,7 +3,7 @@ import IconButton from './icon-button';
 import { ICONS } from './svg-icons';
 import './modal-content.css';
 
-const ModalProgress = props => {
+const ModalProgress = (props) => {
   const cancelButton = (
     <IconButton
       key="cancel"
