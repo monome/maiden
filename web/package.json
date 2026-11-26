@@ -52,6 +52,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.4.5",
+    "@emnapi/core": "1.11.1",
+    "@emnapi/runtime": "1.11.1",
     "@storybook/addon-actions": "^9.0.8",
     "@storybook/addon-links": "^10.6.8",
     "@storybook/addons": "^7.6.17",
@@ -83,5 +85,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "resolutions": {
+    "@napi-rs/wasm-runtime": "1.2.7"
   }
 }

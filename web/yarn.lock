@@ -605,17 +605,10 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@napi-rs/wasm-runtime@^1.1.4", "@napi-rs/wasm-runtime@^1.1.5":
+"@napi-rs/wasm-runtime@1.2.7", "@napi-rs/wasm-runtime@^1.1.4", "@napi-rs/wasm-runtime@^1.1.5", "@napi-rs/wasm-runtime@^1.1.6":
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.7.tgz#8af2f08d9c9ef4fbbee90060dc6b5c1ca19e4739"
   integrity sha512-zJccwplOAbgfZju95IUHazLnx9RAPtPN2YGJXI6UbrgeaR9QfPjGrQL6ERkSAtnVCA4Q+83ApGyaX5zdpCaKkQ==
-  dependencies:
-    "@tybys/wasm-util" "^0.10.3"
-
-"@napi-rs/wasm-runtime@^1.1.6":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.0.tgz#d7aa398845e3ab1c9c8f81ea50f527ed37d16715"
-  integrity sha512-kDoONqMa+VnZ4vvvu/ZUurpJ4gkZU57e7g69qpNgWhYcZFPUHZM2CEMKm+cG6ufDVALbjMvfmMjFVqaK7uEMnA==
   dependencies:
     "@tybys/wasm-util" "^0.10.3"
 
