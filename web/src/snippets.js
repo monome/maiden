@@ -1,4 +1,3 @@
-/* eslint-disable no-template-curly-in-string */
 export const snippets = {
   cleanup: {
     code: '-- cleanup, release memory\nfunction cleanup()\n  ${0}\nend',
@@ -26,7 +25,6 @@ export const snippets = {
   },
   // TODO (pq): add midi, hid, ...
 };
-/* eslint-enable no-template-curly-in-string */
 
 export function nornsSnippetCompletionItems(monaco, prefix = '') {
   return Object.keys(snippets)
