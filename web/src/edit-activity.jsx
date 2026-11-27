@@ -70,10 +70,15 @@ const EditTools = (props) => {
 class EditActivity extends Component {
   constructor(props) {
     super(props);
+    // sidebarWidth / replHeight remember the last open size for restore.
+    // sidebarLayoutWidth / replLayoutHeight track live panel pixels (including
+    // collapsedSize) so the editor can fill space when a panel snaps shut.
     this.state = {
       toolbarWidth: 50,
       sidebarWidth: props.ui.sidebarWidth,
+      sidebarLayoutWidth: props.ui.sidebarHidden ? 1 : props.ui.sidebarWidth,
       replHeight: props.ui.replHeight,
+      replLayoutHeight: props.ui.replHidden ? 0 : props.ui.replHeight,
     };
 
     // defaultSize must stay stable: react-resizable-panels re-registers the panel
@@ -84,29 +89,35 @@ class EditActivity extends Component {
     this.replPanelRef = React.createRef();
   }
 
-  syncCollapsedPanels() {
+  syncSidebarPanel() {
     const sidebarPanel = this.sidebarPanelRef.current;
-    if (sidebarPanel) {
-      if (this.props.ui.sidebarHidden) {
-        sidebarPanel.collapse();
-      } else if (sidebarPanel.isCollapsed()) {
-        sidebarPanel.expand();
-        sidebarPanel.resize(this.state.sidebarWidth);
-      }
+    if (!sidebarPanel) {
+      return;
     }
+    if (this.props.ui.sidebarHidden) {
+      sidebarPanel.collapse();
+    } else if (sidebarPanel.isCollapsed()) {
+      sidebarPanel.expand();
+      sidebarPanel.resize(this.state.sidebarWidth);
+    }
+  }
+
+  syncReplPanel() {
     const replPanel = this.replPanelRef.current;
-    if (replPanel) {
-      if (this.props.ui.replHidden) {
-        replPanel.collapse();
-      } else if (replPanel.isCollapsed()) {
-        replPanel.expand();
-        replPanel.resize(this.state.replHeight);
-      }
+    if (!replPanel) {
+      return;
+    }
+    if (this.props.ui.replHidden) {
+      replPanel.collapse();
+    } else if (replPanel.isCollapsed()) {
+      replPanel.expand();
+      replPanel.resize(this.state.replHeight);
     }
   }
 
   componentDidMount() {
-    this.syncCollapsedPanels();
+    this.syncSidebarPanel();
+    this.syncReplPanel();
   }
 
   getSnapshotBeforeUpdate(prevProps) {
@@ -144,22 +155,26 @@ class EditActivity extends Component {
       this.props.bufferCheckStale(activeBuffer);
     }
 
-    if (
-      prevProps.ui.sidebarHidden !== this.props.ui.sidebarHidden ||
-      prevProps.ui.replHidden !== this.props.ui.replHidden
-    ) {
-      this.syncCollapsedPanels();
+    // Sync only the panel whose hidden flag changed. Syncing both would
+    // expand a snap-closed panel that is collapsed but not yet marked hidden.
+    if (prevProps.ui.sidebarHidden !== this.props.ui.sidebarHidden) {
+      this.syncSidebarPanel();
+    }
+    if (prevProps.ui.replHidden !== this.props.ui.replHidden) {
+      this.syncReplPanel();
     }
   }
 
-  getSidebarWidth() {
-    return this.props.ui.sidebarHidden ? 1 : this.state.sidebarWidth;
+  getSidebarLayoutWidth() {
+    // Toggle-hidden applies before onResize; snap-closed uses live pixels.
+    return this.props.ui.sidebarHidden ? 1 : this.state.sidebarLayoutWidth;
   }
 
   getEditorHeight() {
+    // Toggle-hidden reclaims the separator too; snap-closed leaves it.
     return this.props.ui.replHidden
       ? this.props.height
-      : this.props.height - this.state.replHeight - 1;
+      : this.props.height - this.state.replLayoutHeight - 1;
   }
 
   showStaleBanner(buffer) {
@@ -167,7 +182,7 @@ class EditActivity extends Component {
   }
 
   editorSize(bannerVisible) {
-    const sidebarWidth = this.getSidebarWidth();
+    const sidebarWidth = this.getSidebarLayoutWidth();
     const toolbarWidth = this.state.toolbarWidth;
     const width = this.props.width - sidebarWidth - toolbarWidth - 1;
     const height = this.getEditorHeight() - (bannerVisible ? STALE_BANNER_HEIGHT : 0);
@@ -186,8 +201,8 @@ class EditActivity extends Component {
 
   replSize() {
     return {
-      width: this.props.width - this.getSidebarWidth(),
-      height: this.state.replHeight,
+      width: this.props.width - this.getSidebarLayoutWidth(),
+      height: this.state.replLayoutHeight,
     };
   }
 
@@ -196,31 +211,39 @@ class EditActivity extends Component {
     if (this.props.ui.sidebarHidden && size > 1) {
       // reveal when dragging out of the collapsed strip
       this.props.sidebarToggle();
+    } else if (!this.props.ui.sidebarHidden && size <= 1) {
+      // snap-closed: keep Redux hidden in sync so toggles don't need two clicks
+      this.props.sidebarToggle();
     }
-    if (size > 1) {
-      this.setState({
-        sidebarWidth: size,
-      });
+    const next = { sidebarLayoutWidth: size };
+    if (size >= this.props.ui.sidebarMinWidth) {
+      next.sidebarWidth = size;
     }
+    this.setState(next);
   };
 
   handleSidebarLayoutChanged = (_layout, meta) => {
-    if (meta.isUserInteraction && this.state.sidebarWidth > 1) {
+    if (meta.isUserInteraction && this.state.sidebarWidth >= this.props.ui.sidebarMinWidth) {
       this.props.sidebarSize(this.state.sidebarWidth);
     }
   };
 
   handleReplResize = (panelSize) => {
     const size = panelSize.inPixels;
-    if (size > 0) {
-      this.setState({
-        replHeight: size,
-      });
+    if (this.props.ui.replHidden && size > 0) {
+      this.props.replToggle();
+    } else if (!this.props.ui.replHidden && size <= 0) {
+      this.props.replToggle();
     }
+    const next = { replLayoutHeight: size };
+    if (size >= this.props.ui.replMinHeight) {
+      next.replHeight = size;
+    }
+    this.setState(next);
   };
 
   handleReplLayoutChanged = (_layout, meta) => {
-    if (meta.isUserInteraction && this.state.replHeight > 0) {
+    if (meta.isUserInteraction && this.state.replHeight >= this.props.ui.replMinHeight) {
       this.props.replSize(this.state.replHeight);
     }
   };
