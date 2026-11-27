@@ -91,19 +91,14 @@ paths:
             Last-Modified:
               $ref: "#/components/headers/LastModified"
             Content-Length:
-              description: length of the json body that get would return
-              schema:
-                type: string
+              $ref: "#/components/headers/ContentLength"
           content:
             application/json:
               schema:
                 type: string
                 maxLength: 0
         "404":
-          description: path does not exist (empty body for head)
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
+          $ref: "#/components/responses/HeadNotFound"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
     put:
@@ -120,14 +115,14 @@ paths:
         $ref: "#/components/requestBodies/DustPut"
       responses:
         "200":
-          description: directory created or file uploaded
+          description: |
+            directory created or file uploaded. `Last-Modified` is present
+            after a successful file upload.
           headers:
             Cache-Control:
               $ref: "#/components/headers/NoStore"
             Last-Modified:
-              description: present after a successful file upload
-              schema:
-                type: string
+              $ref: "#/components/headers/LastModified"
           content:
             application/json:
               schema:
@@ -254,9 +249,7 @@ paths:
             Last-Modified:
               $ref: "#/components/headers/LastModified"
             Content-Length:
-              description: length of the body that get would return
-              schema:
-                type: string
+              $ref: "#/components/headers/ContentLength"
           content:
             application/json:
               schema:
@@ -274,10 +267,7 @@ paths:
         "400":
           $ref: "#/components/responses/BadRequest"
         "404":
-          description: path does not exist (empty body for head)
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
+          $ref: "#/components/responses/HeadNotFound"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
     put:
@@ -301,14 +291,14 @@ paths:
         $ref: "#/components/requestBodies/DustPut"
       responses:
         "200":
-          description: directory created or file uploaded
+          description: |
+            directory created or file uploaded. `Last-Modified` is present
+            after a successful file upload.
           headers:
             Cache-Control:
               $ref: "#/components/headers/NoStore"
             Last-Modified:
-              description: present after a successful file upload
-              schema:
-                type: string
+              $ref: "#/components/headers/LastModified"
           content:
             application/json:
               schema:
@@ -409,36 +399,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/UnitStatus"
         "400":
-          description: unrecognized operation (when dbus is available)
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/UnrecognizedOperation"
         "404":
-          description: unknown unit
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/UnknownUnit"
         "500":
           $ref: "#/components/responses/InternalError"
         "503":
-          description: no dbus / systemctl connection
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-              example:
-                error: no dbus connection
+          $ref: "#/components/responses/NoDbus"
         "405":
           $ref: "#/components/responses/MethodNotAllowed"
 
@@ -462,12 +429,7 @@ paths:
 
   /api/v1/catalog/{name}:
     parameters:
-      - name: name
-        in: path
-        required: true
-        description: catalog name
-        schema:
-          type: string
+      - $ref: "#/components/parameters/CatalogName"
     get:
       tags: [catalog]
       operationId: getCatalog
@@ -493,12 +455,7 @@ paths:
       operationId: updateCatalog
       summary: refresh a catalog from its configured source
       parameters:
-        - name: name
-          in: path
-          required: true
-          description: catalog name
-          schema:
-            type: string
+        - $ref: "#/components/parameters/CatalogName"
       responses:
         "200":
           description: updated catalog document
@@ -522,12 +479,7 @@ paths:
       operationId: installFromCatalog
       summary: install a project from a catalog entry
       parameters:
-        - name: name
-          in: path
-          required: true
-          description: catalog name
-          schema:
-            type: string
+        - $ref: "#/components/parameters/CatalogName"
         - name: project
           in: path
           required: true
@@ -545,14 +497,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/InstallResult"
         "404":
-          description: unknown catalog or project not in catalog
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/CatalogOrProjectNotFound"
         "500":
           $ref: "#/components/responses/InternalError"
         "405":
@@ -664,14 +609,7 @@ paths:
                     name: awake
                     updated: true
         "404":
-          description: unknown project, or update cannot find a catalog entry
-          headers:
-            Cache-Control:
-              $ref: "#/components/headers/NoStore"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: "#/components/responses/UnknownProject"
         "500":
           $ref: "#/components/responses/InternalError"
         "405":
@@ -708,8 +646,19 @@ components:
       description: imf-fix http-date (exactly 29 characters), for example `Sun, 06 Nov 1994 08:49:37 GMT`
       schema:
         type: string
+    ContentLength:
+      description: length of the body that GET would return
+      schema:
+        type: string
 
   parameters:
+    CatalogName:
+      name: name
+      in: path
+      required: true
+      description: catalog name
+      schema:
+        type: string
     DustPath:
       name: path
       in: path
@@ -762,20 +711,10 @@ components:
       content:
         multipart/form-data:
           schema:
-            type: object
-            required: [name]
-            properties:
-              name:
-                type: string
-                description: new basename within the same parent directory
+            $ref: "#/components/schemas/DustRenameForm"
         application/x-www-form-urlencoded:
           schema:
-            type: object
-            required: [name]
-            properties:
-              name:
-                type: string
-                description: new basename within the same parent directory
+            $ref: "#/components/schemas/DustRenameForm"
 
   responses:
     BadRequest:
@@ -836,6 +775,58 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CatalogNotFound"
+    HeadNotFound:
+      description: path does not exist (empty body for head)
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+    UnrecognizedOperation:
+      description: unrecognized operation (when dbus is available)
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    UnknownUnit:
+      description: unknown unit
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NoDbus:
+      description: no dbus / systemctl connection
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            error: no dbus connection
+    CatalogOrProjectNotFound:
+      description: unknown catalog or project not in catalog
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    UnknownProject:
+      description: unknown project, or update cannot find a catalog entry
+      headers:
+        Cache-Control:
+          $ref: "#/components/headers/NoStore"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
 
   schemas:
     Error:
@@ -913,6 +904,14 @@ components:
         url:
           type: string
           description: absolute api url of the renamed resource
+
+    DustRenameForm:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: new basename within the same parent directory
 
     CatalogSummary:
       type: object
