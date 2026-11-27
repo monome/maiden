@@ -1,14 +1,11 @@
-import Linkify, { linkify } from 'react-linkify';
 import React, { Component } from 'react';
+import linkifyText from './linkify-text';
 import './repl.css';
 
 class ReplOutput extends Component {
   constructor(props) {
     super(props);
     this.scrollAdjusted = false;
-
-    // ignore repl output that looks host-like
-    linkify.set({ fuzzyLink: false });
   }
 
   componentDidUpdate() {
@@ -30,14 +27,10 @@ class ReplOutput extends Component {
     return atBottom;
   }
 
-  linkify(l) {
-    return <Linkify properties={{ target: '_blank' }}>{l}</Linkify>;
-  }
-
   render() {
     const lines = this.props.lines.map((l, key) => (
       <div className="repl-line" key={key}>
-        {this.linkify(l)}
+        {linkifyText(l)}
       </div>
     ));
 

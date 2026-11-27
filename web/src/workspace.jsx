@@ -21,7 +21,7 @@ class Workspace extends Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     // grab the config so that the theming data is available
     this.props.loadEditorConfig();
 
@@ -39,7 +39,7 @@ class Workspace extends Component {
     this.registerCommands();
 
     // prevent accidental navigation out of maiden via swipe gestures
-    const preventNavigation = (e) => {
+    this.preventNavigation = (e) => {
       let delta = e.deltaX || e.wheelDeltaX;
       if (!delta) {
         return;
@@ -58,10 +58,20 @@ class Workspace extends Component {
         e.preventDefault();
       }
     };
-    document.addEventListener('mousewheel', preventNavigation);
+    document.addEventListener('mousewheel', this.preventNavigation);
 
     // direct key events to the key service for handling
-    document.onkeydown = (event) => keyService.handleKey(event);
+    this.handleDocumentKeyDown = (event) => keyService.handleKey(event);
+    document.onkeydown = this.handleDocumentKeyDown;
+  }
+
+  componentWillUnmount() {
+    if (this.preventNavigation) {
+      document.removeEventListener('mousewheel', this.preventNavigation);
+    }
+    if (document.onkeydown === this.handleDocumentKeyDown) {
+      document.onkeydown = null;
+    }
   }
 
   registerCommands() {

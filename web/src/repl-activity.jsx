@@ -137,7 +137,7 @@ const ReplSwitcher = (props) => {
 class ReplActivity extends Component {
   TOOLBAR_WIDTH = 50;
 
-  componentWillMount() {
+  componentDidMount() {
     // get the unit mapping so that the unit commands know what to do
     this.props.unitMapping();
   }

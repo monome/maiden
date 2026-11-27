@@ -11,6 +11,14 @@ class UrlHandler extends Component {
     this._loadedPath = '';
   }
 
+  componentDidMount() {
+    this.showFileFromUrl();
+  }
+
+  componentDidUpdate() {
+    this.showFileFromUrl();
+  }
+
   showFileFromUrl() {
     const { pathname } = this.props;
     if (!isEditPath(pathname) || pathname === this._loadedPath) {
@@ -30,9 +38,6 @@ class UrlHandler extends Component {
   }
 
   render() {
-    if (this.props.pathname !== this._loadedPath) {
-      this.showFileFromUrl();
-    }
     return null;
   }
 }

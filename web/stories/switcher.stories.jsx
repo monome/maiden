@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 import Switcher from '../src/components/switcher';
 

@@ -3,7 +3,7 @@ import React from 'react';
 import { fromJS } from 'immutable';
 
 import { storiesOf } from '@storybook/react';
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 import Badge from '../src/components/badge';
 import TextButton from '../src/components/text-button';

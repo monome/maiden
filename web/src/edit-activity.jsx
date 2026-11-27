@@ -109,36 +109,46 @@ class EditActivity extends Component {
     this.syncCollapsedPanels();
   }
 
-  componentDidUpdate(prevProps) {
+  getSnapshotBeforeUpdate(prevProps) {
+    // Capture Monaco text for the previous buffer before Editor switches
+    // models.
+    //
+    // FIXME: Revisit this approach as some point as it may not fully apply to
+    // the setup with Monaco. With Ace there was only a single instance and the
+    // buffer data was held internal to the instance so buffer switch meant
+    // swapping contents. With Monace there are multiple model instances with
+    // separate buffers/undo stacks etc. A future side-by-side presentation
+    // would require a different way to associate buffer with the editor instance.
+    const { activeBuffer, buffers } = prevProps;
+    if (activeBuffer !== this.props.activeBuffer && buffers.has(activeBuffer) && this.editor) {
+      return this.editor.getValue();
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps, _prevState, snapshot) {
+    if (snapshot != null) {
+      this.props.bufferChange(prevProps.activeBuffer, snapshot);
+    }
+
+    const { activeBuffer, buffers } = this.props;
+    if (activeBuffer && !buffers.has(activeBuffer)) {
+      // active buffer isn't (yet) loaded, trigger read
+      this.props.bufferRead(activeBuffer);
+    } else if (
+      activeBuffer &&
+      activeBuffer !== prevProps.activeBuffer &&
+      buffers.has(activeBuffer)
+    ) {
+      // switching back to an already-buffered file; check device mtime
+      this.props.bufferCheckStale(activeBuffer);
+    }
+
     if (
       prevProps.ui.sidebarHidden !== this.props.ui.sidebarHidden ||
       prevProps.ui.replHidden !== this.props.ui.replHidden
     ) {
       this.syncCollapsedPanels();
-    }
-  }
-
-  componentWillReceiveProps(newProps) {
-    // if the active buffer is dirty grab it out of the child prior to a potential re-render so that the current buffer state isn't lost
-    const { activeBuffer, buffers } = this.props;
-    const newActiveBuffer = newProps.activeBuffer;
-    if (activeBuffer !== newActiveBuffer && buffers.has(activeBuffer)) {
-      if (this.editor) {
-        this.props.bufferChange(activeBuffer, this.editor.getValue());
-      }
-    }
-
-    const newBuffers = newProps.buffers;
-    if (newActiveBuffer && !newBuffers.has(newActiveBuffer)) {
-      // active buffer isn't (yet) loaded, trigger read
-      this.props.bufferRead(newActiveBuffer);
-    } else if (
-      newActiveBuffer &&
-      newActiveBuffer !== activeBuffer &&
-      newBuffers.has(newActiveBuffer)
-    ) {
-      // switching back to an already-buffered file; check device mtime
-      this.props.bufferCheckStale(newActiveBuffer);
     }
   }
 
