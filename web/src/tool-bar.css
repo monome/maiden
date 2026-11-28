@@ -1,20 +1,20 @@
 .tool-bar {
-    display: flex;
-    flex-direction: column;
-    background-color: var(--neutral-background-default);
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--neutral-background-default);
+  justify-content: space-between;
 }
 
 .tool-bar-upper {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    display: flex;
-    flex-direction: column;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .tool-bar-lower {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    display: flex;
-    flex-direction: column;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column;
 }

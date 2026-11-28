@@ -58,7 +58,7 @@ const handleReplEcho = (action, state, input) => {
 
 const handleReplRecieve = (action, state) => {
   let buffer = state.buffers.get(action.component);
-  action.data.split('\n').forEach(line => {
+  action.data.split('\n').forEach((line) => {
     buffer = outputAppend(buffer, state.scrollbackLimit, line);
   });
 
@@ -142,7 +142,10 @@ const repl = (state = initialReplState, action) => {
         ...state,
         connections: state.connections.set(action.component, conn.merge(changes)),
         buffers: state.buffers.set(action.component, new List()),
-        history: state.history.set(action.component, new List(loadHistoryFromLocalStorage(action.component))),
+        history: state.history.set(
+          action.component,
+          new List(loadHistoryFromLocalStorage(action.component)),
+        ),
       };
 
     case REPL_RECEIVE:

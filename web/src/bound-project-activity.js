@@ -20,7 +20,7 @@ import { directoryRead } from './model/edit-actions';
 
 import { DUST_CODE_RESOURCE } from './api';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { activeComponent, catalogSummary, catalogs, projectSummary, projects } = state.projects;
   return {
     activeComponent,
@@ -31,11 +31,11 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  projectViewSelect: component => {
+const mapDispatchToProps = (dispatch) => ({
+  projectViewSelect: (component) => {
     dispatch(projectViewSelect(component));
   },
-  getCatalogSummary: onSuccess => {
+  getCatalogSummary: (onSuccess) => {
     dispatch(getCatalogSummary(onSuccess));
   },
   getCatalog: (name, onSuccess) => {
@@ -53,7 +53,7 @@ const mapDispatchToProps = dispatch => ({
   refreshCodeDir: () => {
     dispatch(directoryRead(DUST_CODE_RESOURCE));
   },
-  getProjectSummary: onSuccess => {
+  getProjectSummary: (onSuccess) => {
     dispatch(getProjectSummary(onSuccess));
   },
   getProject: (name, onSuccess) => {

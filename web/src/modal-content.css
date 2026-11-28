@@ -1,38 +1,38 @@
 .modal-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    font-family: monospace;
-    color: var(--neutral-medium-default);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: monospace;
+  color: var(--neutral-medium-default);
 }
 
 .modal-content > .message-container > .message {
-    font-weight: bolder;
-    font-size: 18px;
+  font-weight: bolder;
+  font-size: 18px;
 }
 
 .modal-content > .message-container > .supporting {
-    font-style: italic;
+  font-style: italic;
 }
 
 .modal-content > .button-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }
 
 .get-name-modal-error-message {
-    font-style: italic;
-    color: rgb(151, 80, 49);
-    height: 1em;
+  font-style: italic;
+  color: rgb(151, 80, 49);
+  height: 1em;
 }
 
 .modal-content table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .modal-content td {
-    padding: 5px;
-    border: 1px solid #ccc;
+  padding: 5px;
+  border: 1px solid #ccc;
 }

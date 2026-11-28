@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv, transformWithOxc } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import commonjs from "vite-plugin-commonjs";
 
@@ -52,21 +52,6 @@ const getReplJSONProxyConfig = (targetURL) => {
   }
 }
 
-// enable using JSX transformations in files with .js extension
-const transformJsxInJs = () => ({
-  name: "transform-jsx-in-js",
-  enforce: "pre",
-  async transform(code, id) {
-    if (!id.match(/.*\.js$/)) {
-      return null;
-    }
-
-    return await transformWithOxc(code, id, {
-      lang: "jsx",
-    });
-  },
-});
-
 export default defineConfig(({ mode }) => {
 
   const maiden_env = loadEnv(mode, process.cwd(), "MAIDEN_");
@@ -74,7 +59,6 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [
-      transformJsxInJs(),
       react(),
       commonjs(),
     ],

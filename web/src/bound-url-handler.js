@@ -11,6 +11,14 @@ class UrlHandler extends Component {
     this._loadedPath = '';
   }
 
+  componentDidMount() {
+    this.showFileFromUrl();
+  }
+
+  componentDidUpdate() {
+    this.showFileFromUrl();
+  }
+
   showFileFromUrl() {
     const { pathname } = this.props;
     if (!isEditPath(pathname) || pathname === this._loadedPath) {
@@ -30,25 +38,22 @@ class UrlHandler extends Component {
   }
 
   render() {
-    if (this.props.pathname !== this._loadedPath) {
-      this.showFileFromUrl();
-    }
     return null;
   }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { hash } = state.router.location;
   return {
     pathname: hash && hash[0] === '#' ? hash.substring(1) : '',
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  bufferSelect: resource => {
+const mapDispatchToProps = (dispatch) => ({
+  bufferSelect: (resource) => {
     dispatch(bufferSelect(resource));
   },
-  directoryReadRecursive: async resource => {
+  directoryReadRecursive: async (resource) => {
     dispatch(directoryReadRecursive(resource));
   },
 });

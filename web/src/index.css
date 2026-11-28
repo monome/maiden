@@ -1,25 +1,25 @@
 /* Add switchable theme vars for light/dark mode */
 :root {
-  --neutral-background-default: #F4F4F4;
+  --neutral-background-default: #f4f4f4;
   --neutral-surface-default: #f7f7f7;
   --neutral-surface-highlighted: #f0f0f0;
   --neutral-surface-selected: #89b5f14f;
   --neutral-subdued-default: #eaeaea;
   --neutral-medium-default: #757575;
-  --neutral-base-default: #AFAFAF;
+  --neutral-base-default: #afafaf;
   --neutral-heavy-default: #434351;
-  --neutral-trim-default: #DADADA;
-  --interactive-background-base: #F9F9F9;
-  --interactive-medium-disabled: #C2C2C2;
+  --neutral-trim-default: #dadada;
+  --interactive-background-base: #f9f9f9;
+  --interactive-medium-disabled: #c2c2c2;
   --interactive-medium-default: #969696;
   --interactive-medium-hover: #656565;
   --interactive-medium-selected: #757575;
-  --interactive-trim-default: #C5C5C5;
-  --interactive-trim-selected: #C5C5C5;
+  --interactive-trim-default: #c5c5c5;
+  --interactive-trim-selected: #c5c5c5;
   --interactive-surface-hover: #d3d3d3;
   --critical-medium-default: #975031;
-  --accent1-background-default: #DEB887;
-  --accent2-background-default: #AD8888;
+  --accent1-background-default: #deb887;
+  --accent2-background-default: #ad8888;
   --overlay-fill: rgb(120, 120, 120, 0.5);
   --resizer-background-default: rgb(0, 0, 0);
   --resizer-border-default: rgba(0, 0, 0, 0.5);
@@ -28,28 +28,28 @@
   --stale-banner-color: #f7f7f7;
 }
 
-:root[data-theme="dark"] {
-  --neutral-background-default: #1D1F21;
-  --neutral-surface-default: #25282C;
-  --neutral-surface-highlighted: #1F2123;
-  --neutral-surface-selected: #4B4231;
-  --neutral-subdued-default: #1D2023;
+:root[data-theme='dark'] {
+  --neutral-background-default: #1d1f21;
+  --neutral-surface-default: #25282c;
+  --neutral-surface-highlighted: #1f2123;
+  --neutral-surface-selected: #4b4231;
+  --neutral-subdued-default: #1d2023;
   --neutral-medium-default: #969896;
   --neutral-medium-selected: #fffc9f;
-  --neutral-base-default: #2E2E2E;
-  --neutral-heavy-default: #AAAAAA;
+  --neutral-base-default: #2e2e2e;
+  --neutral-heavy-default: #aaaaaa;
   --neutral-trim-default: #333333;
-  --interactive-background-base: #1B1C1D;
+  --interactive-background-base: #1b1c1d;
   --interactive-medium-disabled: #444444;
   --interactive-medium-default: #777777;
-  --interactive-medium-hover: #9F9F9F;
+  --interactive-medium-hover: #9f9f9f;
   --interactive-medium-selected: #757575;
   --interactive-trim-default: #555555;
-  --interactive-trim-selected: #C5C5C5;
+  --interactive-trim-selected: #c5c5c5;
   --interactive-surface-hover: #444444;
   --critical-medium-default: #975031;
-  --accent1-background-default: #DEB887;
-  --accent2-background-default: #AD8888;
+  --accent1-background-default: #deb887;
+  --accent2-background-default: #ad8888;
   --overlay-fill: rgb(0, 0, 0, 0.6);
   --resizer-background-default: rgb(255, 255, 255);
   --resizer-border-default: rgba(255, 255, 255, 0.5);
@@ -60,7 +60,7 @@
 
 *::-webkit-scrollbar {
   width: 12px;
-  transition: opacity .3s ease-in-out;
+  transition: opacity 0.3s ease-in-out;
   opacity: 0;
 }
 
@@ -84,7 +84,6 @@ body {
   font-family: sans-serif;
   background-color: var(--neutral-background-default);
 }
-
 
 /* Override svg colouring to match theme */
 .icon-button path {

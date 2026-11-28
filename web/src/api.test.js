@@ -34,8 +34,8 @@ describe('siblingResourceForName', () => {
 });
 
 describe('readLastModified', () => {
-  const headers = value => ({
-    get: name => (name.toLowerCase() === 'last-modified' ? value : null),
+  const headers = (value) => ({
+    get: (name) => (name.toLowerCase() === 'last-modified' ? value : null),
   });
 
   it('returns null when missing', () => {

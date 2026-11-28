@@ -1,4 +1,3 @@
-import 'jest';
 import * as urlUtils from './url-utils';
 
 describe('url-utils', () => {

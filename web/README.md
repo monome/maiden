@@ -9,7 +9,7 @@ known compatible versions:
 tool | version
 -----|--------
 node.js | 22.23.2
-yarn | 1.22.22
+yarn | 4.19.0
 
 
 Using [`nvm`](https://www.nvmnode.com/) and `corepack enable` to manage toolchain dependencies is recommended.

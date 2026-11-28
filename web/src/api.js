@@ -1,4 +1,4 @@
-import parsePath from 'parse-filepath';
+import parsePath from './path-utils';
 
 const API_ROOT = '/api/v1';
 
@@ -34,7 +34,7 @@ export const DUST_PROTECTED_RESOURCES = new Set([
   DUST_CATALOGS_RESOURCE,
 ]);
 
-export const isProtectedResource = resource => DUST_PROTECTED_RESOURCES.has(resource);
+export const isProtectedResource = (resource) => DUST_PROTECTED_RESOURCES.has(resource);
 
 class API {
   static siblingResourceForName(name, siblingResource, category = 'scripts') {
@@ -72,7 +72,7 @@ class API {
   }
 
   static headResource(resource) {
-    return fetch(resource, { method: 'HEAD', cache: 'no-store' }).then(response => ({
+    return fetch(resource, { method: 'HEAD', cache: 'no-store' }).then((response) => ({
       ok: response.ok,
       status: response.status,
       lastModified: readLastModified(response.headers),
@@ -120,8 +120,8 @@ class API {
 
   static getReplEndpoints(cb) {
     const origin = document.location.hostname;
-    fetch('repl-endpoints.json').then(response => {
-      response.json().then(data => {
+    fetch('repl-endpoints.json').then((response) => {
+      response.json().then((data) => {
         // this is ugly; if hostname is missing from the ws urls for the repls insert the hostname of this document
         const config = new Map();
         const template = new Map(Object.entries(data));
@@ -138,8 +138,8 @@ class API {
   }
 
   static getUnitMapping(cb) {
-    fetch('units.json').then(response => {
-      response.json().then(data => {
+    fetch('units.json').then((response) => {
+      response.json().then((data) => {
         cb(new Map(Object.entries(data.units)));
       });
     });
@@ -147,8 +147,8 @@ class API {
 
   static doUnitOperation(unit, operation, cb) {
     const url = `${API_ROOT}/unit/${unit}?do=${operation}`;
-    fetch(url).then(response => {
-      response.json().then(body => {
+    fetch(url).then((response) => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -180,18 +180,18 @@ class API {
 
   static getCatalogSummary(onSuccess, onFailure) {
     const url = `${API_ROOT}/catalogs`;
-    fetch(url).then(response => {
+    fetch(url).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
   }
 
   static getCatalogByURL(catalogURL, onSuccess, onFailure) {
-    fetch(catalogURL).then(response => {
+    fetch(catalogURL).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -200,9 +200,9 @@ class API {
   static getCatalog(catalogName, onSuccess, onFailure) {
     const name = encodeURIComponent(catalogName);
     const url = `${API_ROOT}/catalog/${name}`;
-    fetch(url).then(response => {
+    fetch(url).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -210,9 +210,9 @@ class API {
 
   static updateCatalog(catalogURL, onSuccess, onFailure) {
     const url = `${catalogURL}/update`;
-    fetch(url, { method: 'POST' }).then(response => {
+    fetch(url, { method: 'POST' }).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -220,9 +220,9 @@ class API {
 
   static getProjectSummary(onSuccess, onFailure) {
     const url = `${API_ROOT}/projects`;
-    fetch(url).then(response => {
+    fetch(url).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -231,9 +231,9 @@ class API {
   static getProject(projectName, onSuccess, onFailure) {
     const name = encodeURIComponent(projectName);
     const url = `${API_ROOT}/project/${name}`;
-    fetch(url).then(response => {
+    fetch(url).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -242,9 +242,9 @@ class API {
   static installProject(catalogURL, name, onSuccess, onFailure) {
     const encodedName = encodeURIComponent(name);
     const url = `${catalogURL}/install/${encodedName}`;
-    fetch(url, { method: 'POST' }).then(response => {
+    fetch(url, { method: 'POST' }).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -253,9 +253,9 @@ class API {
   static installProjectFromURL(sourceURL, onSuccess, onFailure) {
     const encodedURL = encodeURIComponent(sourceURL);
     const url = `${API_ROOT}/project/install?url=${encodedURL}`;
-    fetch(url, { method: 'POST' }).then(response => {
+    fetch(url, { method: 'POST' }).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
@@ -264,18 +264,18 @@ class API {
   static updateProject(projectURL, onSuccess, onFailure) {
     // FIXME: this really shouldn't be a GET verb
     const url = `${projectURL}?update=`;
-    return fetch(url, { method: 'GET' }).then(response => {
+    return fetch(url, { method: 'GET' }).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });
   }
 
   static removeProject(projectURL, onSuccess, onFailure) {
-    fetch(projectURL, { method: 'DELETE' }).then(response => {
+    fetch(projectURL, { method: 'DELETE' }).then((response) => {
       const cb = response.ok ? onSuccess : onFailure;
-      response.json().then(body => {
+      response.json().then((body) => {
         cb(body);
       });
     });

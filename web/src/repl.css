@@ -1,5 +1,5 @@
 .repl {
-    /* font-style: normal;
+  /* font-style: normal;
     font-variant-ligatures: normal;
     font-variant-caps: normal;
     font-variant-numeric: normal;
@@ -9,27 +9,27 @@
     font-size: 16px;
     line-height: normal;
     font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace; */
-    /* background-color: #EBEBEB; */
-    background-color: var(--neutral-surface-default);
-    /* position: relative; */
-    /* user-select: none; */
-    display: flex;
-    flex-direction: column;
+  /* background-color: #EBEBEB; */
+  background-color: var(--neutral-surface-default);
+  /* position: relative; */
+  /* user-select: none; */
+  display: flex;
+  flex-direction: column;
 }
 
 .repl-output {
-    flex: 1 1 auto;
-    margin: 0px 0px 0px 5px;
-    color:  rgb(117, 117, 117);
-    overflow: overlay;
-    overflow-x: hidden;
-    /* display: flex; */
-    /* flex-direction: row */
-    font-family: monospace;
+  flex: 1 1 auto;
+  margin: 0px 0px 0px 5px;
+  color: rgb(117, 117, 117);
+  overflow: overlay;
+  overflow-x: hidden;
+  /* display: flex; */
+  /* flex-direction: row */
+  font-family: monospace;
 }
 
 .repl-line {
-    white-space: pre;
+  white-space: pre;
 }
 
 /*
@@ -58,38 +58,37 @@
 */
 
 .repl-input {
-    flex: 0 0 auto;
-    background-color: var(--neutral-subdued-default);
-    color: var(--neutral-medium-default);
-    /* height: 20px; */
-    display: flex;
-    flex-direction: row;
+  flex: 0 0 auto;
+  background-color: var(--neutral-subdued-default);
+  color: var(--neutral-medium-default);
+  /* height: 20px; */
+  display: flex;
+  flex-direction: row;
 }
 
 .repl-input > .label {
-    flex: 0 0 auto;
-    /* height: 40px; */
-    padding: 5px 5px 5px 5px;
-    color:  var(--neutral-heavy-default);
-    font-size: 16px;
-    font-family: monospace;
+  flex: 0 0 auto;
+  /* height: 40px; */
+  padding: 5px 5px 5px 5px;
+  color: var(--neutral-heavy-default);
+  font-size: 16px;
+  font-family: monospace;
 }
 
 .repl-input > .value {
-    flex: 1 1 auto;
-    background-color: var(--neutral-subdued-default);
-    color:  var(--neutral-heavy-default);
-    border: none;
-    resize: none;
-    overflow: auto;
-    outline: none;
+  flex: 1 1 auto;
+  background-color: var(--neutral-subdued-default);
+  color: var(--neutral-heavy-default);
+  border: none;
+  resize: none;
+  overflow: auto;
+  outline: none;
 
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    box-shadow: none;
-    font-size: 16px;
-    font-family: monospace;
-    padding-top: 5px;
-    /* text-align: center; */
-
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  font-size: 16px;
+  font-family: monospace;
+  padding-top: 5px;
+  /* text-align: center; */
 }

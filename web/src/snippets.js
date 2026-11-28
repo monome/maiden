@@ -1,5 +1,4 @@
-/* eslint-disable no-template-curly-in-string */
-const snippets = {
+export const snippets = {
   cleanup: {
     code: '-- cleanup, release memory\nfunction cleanup()\n  ${0}\nend',
     doc: 'called on script quit, release memory',
@@ -26,39 +25,43 @@ const snippets = {
   },
   // TODO (pq): add midi, hid, ...
 };
-/* eslint-enable no-template-curly-in-string */
 
-export const nornsSnippetCompleter = {
-  getCompletions(editor, session, pos, prefix, callback) {
-    // Skip null prefixes until we can find a way to de-dup results.
-    if (prefix.length === 0) {
-      callback(null, []);
-      return;
-    }
-    callback(
-      null,
-      Object.keys(snippets).map(word => ({
-        caption: word,
-        value: word,
-        snippet: snippets[word].code,
-        score: 1000,
-        meta: 'norns',
-        doc: snippets[word].doc,
-      })),
-    );
-  },
-  getDocTooltip(item) {
-    if (item.meta === 'norns' && !item.docHTML) {
-      /* eslint-disable-next-line no-param-reassign */
-      item.docHTML = [
-        '<b>',
-        item.caption,
-        '</b>',
-        '<hr></hr>',
-        item.doc,
-        // "<hr></hr>",
-        // item.snippet
-      ].join('');
-    }
-  },
-};
+export function nornsSnippetCompletionItems(monaco, prefix = '') {
+  return Object.keys(snippets)
+    .filter((word) => !prefix || word.startsWith(prefix))
+    .map((word) => ({
+      label: word,
+      kind: monaco.languages.CompletionItemKind.Snippet,
+      detail: 'norns',
+      documentation: snippets[word].doc,
+      insertText: snippets[word].code,
+      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+      sortText: `0_${word}`,
+    }));
+}
+
+export function registerNornsSnippetProvider(monaco) {
+  return monaco.languages.registerCompletionItemProvider('lua', {
+    triggerCharacters: [],
+    provideCompletionItems(model, position) {
+      const word = model.getWordUntilPosition(position);
+      const prefix = word.word || '';
+      // Skip empty prefixes to avoid flooding suggestions (same as Ace completer).
+      if (prefix.length === 0) {
+        return { suggestions: [] };
+      }
+      const range = {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn,
+      };
+      return {
+        suggestions: nornsSnippetCompletionItems(monaco, prefix).map((item) => ({
+          ...item,
+          range,
+        })),
+      };
+    },
+  });
+}

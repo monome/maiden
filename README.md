@@ -126,4 +126,4 @@ tool | version
 -----|---------
 zig  | 0.17.1
 node.js | see `web/package.json` / `.nvmrc`
-yarn | 1.x (compatible with react-scripts 1.0.17)
+yarn | 4.19.0

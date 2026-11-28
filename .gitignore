@@ -23,7 +23,15 @@ maiden-v*.tgz
 
 # build tools
 tool/node/nvm
-web/yarn.lock
+
+# yarn berry
+**/.yarn/*
+!**/.yarn/patches
+!**/.yarn/plugins
+!**/.yarn/releases
+!**/.yarn/sdks
+!**/.yarn/versions
+**/.pnp.*
 
 # node modules
 node_modules/

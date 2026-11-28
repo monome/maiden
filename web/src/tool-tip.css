@@ -1,18 +1,14 @@
 .customTooltip {
-		font-size: 11px !important;
-		border-radius: 0 !important;
-		padding: 6px !important;
-		transition:
-			opacity .3s,
-			visibility .3s .2s;
+  font-size: 11px !important;
+  border-radius: 0 !important;
+  padding: 6px !important;
+  /* Activity-bar tooltips sit earlier in the DOM than the editor panes;
+		   without a z-index they paint underneath the explorer/editor. */
+  z-index: 1000 !important;
 }
 
-.customTooltip.place-left,
-.customTooltip.place-right {
-		margin-left: 0 !important;
-		margin-right: 0 !important;
-}
-
-.customTooltip.show {
-  transition: opacity .3s;
+.customTooltip[class*='react-tooltip__place-left'],
+.customTooltip[class*='react-tooltip__place-right'] {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }

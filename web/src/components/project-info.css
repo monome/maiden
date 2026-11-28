@@ -26,7 +26,8 @@
   /* font-size: 110%; */
 }
 
-.project-info-name-link, .project-info-name-link:visited {
+.project-info-name-link,
+.project-info-name-link:visited {
   font-weight: bold;
   text-decoration: none;
   color: var(--interactive-medium-default);
@@ -41,7 +42,8 @@
   font-style: italic;
 }
 
-.project-info-version, .project-info-version:visited {
+.project-info-version,
+.project-info-version:visited {
   font-weight: bolder;
   text-decoration: none;
   color: var(--interactive-medium-default);

@@ -10,7 +10,7 @@ import { directoryRead, rootList } from './model/edit-actions';
 import { USER_DATA_PATH } from './constants';
 import api, { DUST_CODE_RESOURCE } from './api';
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const selected = state.activity.selected;
   const endpoints = state.repl.endpoints;
   const configHidden = state.ui.configHidden;
@@ -18,17 +18,17 @@ const mapStateToProps = state => {
   return { selected, endpoints, configHidden, editorTheme };
 };
 
-const mapDispatchToProps = dispatch => ({
-  activitySelect: name => {
+const mapDispatchToProps = (dispatch) => ({
+  activitySelect: (name) => {
     dispatch(activitySelect(name));
   },
   loadEditorConfig: () => {
     dispatch(editorConfig(api.editorConfigResource()));
   },
-  toggleComponent: name => {
+  toggleComponent: (name) => {
     dispatch(toggleComponent(name));
   },
-  replEndpoints: cb => {
+  replEndpoints: (cb) => {
     dispatch(replEndpoints(cb));
   },
   replConnect: (component, endpoint) => {

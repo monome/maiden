@@ -6,7 +6,7 @@ const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   stories: ['../stories/**/*.@(js|jsx|mjs|ts|tsx)'],
   // Optional
-  addons: ['@storybook/addon-actions', '@storybook/addon-links'],
+  addons: ['@storybook/addon-links'],
   staticDirs: ['../public'],
 };
 

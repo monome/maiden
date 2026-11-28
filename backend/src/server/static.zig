@@ -6,7 +6,16 @@ const server = @import("server.zig");
 
 const App = server.App;
 
-const large_file_threshold: u64 = 256 * 1024;
+/// Responses at or below this size are copied into the request arena.
+/// Larger bodies are streamed with Content-Length using a buffer of the
+/// same size so resident memory stays bounded on norns.
+const transfer_buffer_size: usize = 64 * 1024;
+
+/// Inclusive byte range within a resource of `total` bytes.
+const ByteRange = struct {
+    start: u64,
+    end: u64, // inclusive
+};
 
 /// GET / → 302 /maiden/
 pub fn redirectRoot(_: *App, _: *httpz.Request, res: *httpz.Response) !void {
@@ -53,6 +62,7 @@ fn serveStatic(app: *App, req: *httpz.Request, res: *httpz.Response, root: []con
 }
 
 /// Send a filesystem path as the response body (or headers-only for HEAD).
+/// Supports a single `Range: bytes=` request so media elements can seek.
 pub fn sendPath(req: *httpz.Request, res: *httpz.Response, path: []const u8, sniff: bool) !void {
     const file = fsx.openFile(path) catch {
         try respond.notFound(req, res, "not found");
@@ -65,37 +75,125 @@ pub fn sendPath(req: *httpz.Request, res: *httpz.Response, path: []const u8, sni
     var lm_buf: [respond.http_date_len]u8 = undefined;
     const last_modified = respond.formatHttpDateFromStat(&lm_buf, st);
 
-    res.setStatus(.ok);
     res.header("Content-Type", ctype);
     try res.headerOpts("Last-Modified", last_modified, .{ .dupe_value = true });
     res.header("Cache-Control", "no-store");
+    res.header("Accept-Ranges", "bytes");
+
+    const range_result = parseBytesRange(req.header("Range"), st.size);
+    const range: ?ByteRange = switch (range_result) {
+        .none => null,
+        .one => |r| r,
+        .unsatisfiable => {
+            res.setStatus(.range_not_satisfiable);
+            const cr = try std.fmt.allocPrint(res.arena, "bytes */{d}", .{st.size});
+            res.header("Content-Range", cr);
+            // Empty body; httpz will emit Content-Length: 0.
+            return;
+        },
+    };
+
+    if (range) |r| {
+        res.setStatus(.partial_content);
+        const cr = try std.fmt.allocPrint(res.arena, "bytes {d}-{d}/{d}", .{ r.start, r.end, st.size });
+        res.header("Content-Range", cr);
+    } else {
+        res.setStatus(.ok);
+    }
+
+    const start: u64 = if (range) |r| r.start else 0;
+    const end: u64 = if (range) |r| r.end else if (st.size == 0) 0 else st.size - 1;
+    const length: u64 = if (st.size == 0) 0 else end - start + 1;
 
     if (req.method == .HEAD) {
-        const len = try std.fmt.allocPrint(res.arena, "{d}", .{st.size});
+        const len = try std.fmt.allocPrint(res.arena, "{d}", .{length});
         res.header("Content-Length", len);
         return;
     }
 
-    if (st.size <= large_file_threshold) {
-        const data = try res.arena.alloc(u8, @intCast(st.size));
-        const n = file.readPositionalAll(fsx.io, data, 0) catch 0;
+    if (length == 0) {
+        res.body = "";
+        return;
+    }
+
+    // Prefer Content-Length over Transfer-Encoding: chunked so media elements
+    // can seek. Keep the arena allocation small; stream anything larger.
+    if (length <= transfer_buffer_size) {
+        const data = try res.arena.alloc(u8, @intCast(length));
+        const n = file.readPositionalAll(fsx.io, data, start) catch 0;
         res.body = data[0..n];
         return;
     }
 
-    var read_buf: [8192]u8 = undefined;
-    var fr = file.reader(fsx.io, &read_buf);
-    var chunk_buf: [8192]u8 = undefined;
-    while (true) {
-        const n = fr.interface.readSliceShort(&chunk_buf) catch |e| switch (e) {
-            error.ReadFailed => {
-                if (fr.err) |file_err| return file_err;
-                return e;
-            },
-        };
+    try streamFileBody(res, file, start, length);
+}
+
+/// Write response headers with Content-Length, then copy `length` bytes from
+/// `file` starting at `start` using a fixed stack buffer.
+fn streamFileBody(res: *httpz.Response, file: std.Io.File, start: u64, length: u64) !void {
+    const len = try std.fmt.allocPrint(res.arena, "{d}", .{length});
+    res.header("Content-Length", len);
+
+    // Empty body + Content-Length header → prepareHeader ends headers without
+    // chunked encoding. Mark written so httpz does not send a second response.
+    try res.writeHeader();
+    res.written = true;
+
+    var offset = start;
+    var remaining = length;
+    var buf: [transfer_buffer_size]u8 = undefined;
+    while (remaining > 0) {
+        const want: usize = @intCast(@min(remaining, buf.len));
+        const n = file.readPositionalAll(fsx.io, buf[0..want], offset) catch 0;
         if (n == 0) break;
-        try res.chunk(chunk_buf[0..n]);
+        try res.conn.writeAll(buf[0..n]);
+        offset += n;
+        remaining -= n;
     }
+}
+
+const RangeParse = union(enum) {
+    none,
+    one: ByteRange,
+    unsatisfiable,
+};
+
+/// Parse `Range: bytes=...` for a single contiguous range. Multiple ranges and
+/// non-bytes units are ignored (full response).
+fn parseBytesRange(header: ?[]const u8, total: u64) RangeParse {
+    const raw = header orelse return .none;
+    if (!std.mem.startsWith(u8, raw, "bytes=")) return .none;
+    const spec = raw["bytes=".len..];
+    if (std.mem.indexOfScalar(u8, spec, ',') != null) return .none; // multi-range unsupported
+
+    const dash = std.mem.indexOfScalar(u8, spec, '-') orelse return .none;
+    const start_s = spec[0..dash];
+    const end_s = spec[dash + 1 ..];
+
+    if (total == 0) {
+        if (start_s.len == 0) return .unsatisfiable;
+        return .unsatisfiable;
+    }
+
+    if (start_s.len == 0) {
+        // suffix: bytes=-N → last N bytes
+        const suffix = std.fmt.parseInt(u64, end_s, 10) catch return .none;
+        if (suffix == 0) return .unsatisfiable;
+        const n = @min(suffix, total);
+        return .{ .one = .{ .start = total - n, .end = total - 1 } };
+    }
+
+    const start = std.fmt.parseInt(u64, start_s, 10) catch return .none;
+    if (start >= total) return .unsatisfiable;
+
+    const end = if (end_s.len == 0)
+        total - 1
+    else blk: {
+        const e = std.fmt.parseInt(u64, end_s, 10) catch return .none;
+        break :blk @min(e, total - 1);
+    };
+    if (end < start) return .unsatisfiable;
+    return .{ .one = .{ .start = start, .end = end } };
 }
 
 fn contentType(file: std.Io.File, path: []const u8, sniff: bool) []const u8 {
@@ -149,4 +247,28 @@ fn looksLikeText(data: []const u8) bool {
         if (c > 0x0d and c < 0x20 and c != 0x1b) return false;
     }
     return true;
+}
+
+test "parseBytesRange open end" {
+    const r = parseBytesRange("bytes=0-1", 100);
+    try std.testing.expectEqual(RangeParse{ .one = .{ .start = 0, .end = 1 } }, r);
+}
+
+test "parseBytesRange to end" {
+    const r = parseBytesRange("bytes=10-", 100);
+    try std.testing.expectEqual(RangeParse{ .one = .{ .start = 10, .end = 99 } }, r);
+}
+
+test "parseBytesRange suffix" {
+    const r = parseBytesRange("bytes=-20", 100);
+    try std.testing.expectEqual(RangeParse{ .one = .{ .start = 80, .end = 99 } }, r);
+}
+
+test "parseBytesRange unsatisfiable" {
+    const r = parseBytesRange("bytes=100-", 100);
+    try std.testing.expect(r == .unsatisfiable);
+}
+
+test "parseBytesRange absent" {
+    try std.testing.expect(parseBytesRange(null, 100) == .none);
 }

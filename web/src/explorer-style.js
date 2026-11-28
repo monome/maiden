@@ -28,9 +28,8 @@ export default {
       toggle: {
         base: {
           position: 'relative',
-          // display: 'inline-block',
-          verticalAlign: 'top',
-          marginLeft: '-8px',
+          display: 'block',
+          lineHeight: 0,
         },
         height: 8,
         width: 8,
